@@ -75,27 +75,28 @@ void file_logger_periodic(void)
     return;
   }
   static uint32_t counter;
-  struct Int32Quat* quat = stateGetNedToBodyQuat_i();
+//   struct Int32Quat* quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d\n",
     counter,
-    imu.gyro_unscaled.p,
-    imu.gyro_unscaled.q,
+    filtered_rate.r,
+    filtered_rate_deriv.r,
+    angular_accel_ref.r,
+    indi_u.r,
+    indi_du.r,
     imu.gyro_unscaled.r,
-    imu.accel_unscaled.x,
-    imu.accel_unscaled.y,
-    imu.accel_unscaled.z,
-    imu.mag_unscaled.x,
-    imu.mag_unscaled.y,
-    imu.mag_unscaled.z,
-    stabilization_cmd[COMMAND_THRUST],
-    stabilization_cmd[COMMAND_ROLL],
-    stabilization_cmd[COMMAND_PITCH],
-    stabilization_cmd[COMMAND_YAW],
-    quat->qi,
-    quat->qx,
-    quat->qy,
-    quat->qz
+    filtered_rate.p,
+    filtered_rate_deriv.p,
+    angular_accel_ref.p,
+    indi_u.p,
+    indi_du.p,
+    imu.gyro_unscaled.p,
+    filtered_rate.q,
+    filtered_rate_deriv.q,
+    angular_accel_ref.q,
+    indi_u.q,
+    indi_du.q,
+    imu.gyro_unscaled.q
   );
   counter++;
 }

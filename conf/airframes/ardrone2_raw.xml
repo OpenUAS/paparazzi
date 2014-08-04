@@ -21,8 +21,10 @@
     <subsystem name="actuators" type="ardrone2"/>
     <subsystem name="imu" type="ardrone2"/>
     <subsystem name="gps" type="ublox"/>
-    <subsystem name="stabilization" type="int_quat"/>
-    <subsystem name="ahrs" type="int_cmpl_quat"/>
+    <subsystem name="stabilization" type="indi"/>
+    <subsystem name="ahrs" type="int_cmpl_quat">
+      <configure name="USE_MAGNETOMETER" value="FALSE"/>
+    </subsystem>
     <subsystem name="ins" type="extended"/>
   </firmware>
 
@@ -136,11 +138,47 @@
     <define name="DDGAIN_R" value="300"/>
   </section>
 
+  <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
+
+    <!-- setpoints -->
+    <define name="SP_MAX_PHI" value="60." unit="deg"/>
+    <define name="SP_MAX_THETA" value="60." unit="deg"/>
+    <define name="SP_MAX_R" value="180." unit="deg/s"/>
+    <define name="DEADBAND_R" value="250"/>
+    <define name="DEADBAND_A" value="250"/>
+    <define name="SP_PSI_DELTA_LIMIT" value="90" unit="deg"/>
+
+    <!-- control effectiveness -->
+    <define name="CONTROL_EFFECTIVENESS_P" value="14.0"/>
+    <define name="CONTROL_EFFECTIVENESS_Q" value="18.0"/>
+    <define name="CONTROL_EFFECTIVENESS_R" value="120.0"/>
+
+    <!-- reference acceleration for attitude control -->
+    <define name="REF_ERR_P" value="140.0"/>
+    <define name="REF_ERR_Q" value="140.0"/>
+    <define name="REF_ERR_R" value="120.0"/>
+    <define name="REF_RATE_P" value="12.0"/>
+    <define name="REF_RATE_Q" value="12.0"/>
+    <define name="REF_RATE_R" value="12.0"/>
+
+    <!-- second order filter parameters -->
+    <define name="FILT_OMEGA" value="50.0"/>
+    <define name="FILT_ZETA" value="0.37"/>
+    <define name="FILT_OMEGA_R" value="20.0"/>
+    <define name="FILT_ZETA_R" value="0.5"/>
+
+    <!-- first order actuator dynamics -->
+    <define name="ACT_DYN_P" value="0.06"/>
+    <define name="ACT_DYN_Q" value="0.06"/>
+    <define name="ACT_DYN_R" value="0.06"/>
+
+  </section>
+
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
     <!-- setpoints -->
-    <define name="SP_MAX_PHI" value="45" unit="deg"/>
-    <define name="SP_MAX_THETA" value="45" unit="deg"/>
-    <define name="SP_MAX_R" value="600" unit="deg/s"/>
+    <define name="SP_MAX_PHI" value="30" unit="deg"/>
+    <define name="SP_MAX_THETA" value="30" unit="deg"/>
+    <define name="SP_MAX_R" value="100" unit="deg/s"/>
     <define name="DEADBAND_A" value="0"/>
     <define name="DEADBAND_E" value="0"/>
     <define name="DEADBAND_R" value="250"/>
