@@ -1,0 +1,13 @@
+A simple GLIB based program which periodically reads coordinates from gpsd.
+
+The logs directory contains a sample gps log which can be fed to gpsfake:
+
+gpsfake 1334-N-20071129-GTA01-A3.log
+
+Make sure gpsd is not running before attempting to run gpsfake.
+
+The data was taken from a Neo 1973 in central London. It will take a moment
+to start showing coordinates.
+
+==
+jmoore@zedstar.org

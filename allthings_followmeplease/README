@@ -1,0 +1,23 @@
+ --------
+|BUILDING|
+ --------
+
+Build with make via:
+
+ $ make
+
+ --------------------
+|USING WITH PAPARAZZI|
+ --------------------
+In order for the demo application "move_waypoint" to function properly with Paparazzi, you must
+use the included flight plan.
+
+ -----------
+|DEVELOPMENT|
+ -----------
+
+Project Layout:
+---------------
+All source files (.c, .h, etc) should be placed under the src directory.
+The move_waypoint_example executable (and other executables) will be placed in the bin
+directory.
