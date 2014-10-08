@@ -252,10 +252,6 @@
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/>
 
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
-    <define name="USE_HCF" value="TRUE"/>
-    <define name="INCREMENTAL_GUIDANCE" value="TRUE"/>
-    <define name="GUIDANCE_INDI_REF_P" value="5.0"/>
-    <define name="GUIDANCE_INDI_REF_D" value="4.5"/>
   </section>
 
   <section name="BAT">

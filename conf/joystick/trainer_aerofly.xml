@@ -11,7 +11,7 @@
 		<message class="datalink" name="RC_4CH" send_always="true">
 			<field name="mode" value="mode" />
 			<field name="throttle" value="Fit(throttle,-117,117,0,127)" />
-			<field name="roll" value="roll" />
+			<field name="roll" value="-roll" />
 			<field name="yaw" value="-yaw" />
 			<field name="pitch" value="-pitch" />
 		</message>
