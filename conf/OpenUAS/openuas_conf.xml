@@ -1,0 +1,12 @@
+<conf>
+  <aircraft
+   name="ardrone2_followmeplease"
+   ac_id="201"
+   airframe="airframes/ardrone2_raw_outdoor.xml"
+   radio="radios/cockpitSX.xml"
+   telemetry="telemetry/default_ardrone.xml"
+   flight_plan="flight_plans/OpenUAS/ardrone_followmeplease.xml"
+   settings=" settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_rate.xml settings/control/stabilization_att_int.xml"
+   gui_color="#fffff526825e"
+  />
+</conf>
