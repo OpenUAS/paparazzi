@@ -162,7 +162,7 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
         //Also send this to the AC TODO
         if (verbose) printf("sending MOVE_WAYPOIN to servant AC also... \n");
 
-        new_wp.ac_id = 213;
+        new_wp.ac_id = arg_ac_id;
         new_wp.wp = STAY_WP_INDEX;
         new_wp.lat = gpsdata->fix.latitude;
         new_wp.lon = gpsdata->fix.longitude;
