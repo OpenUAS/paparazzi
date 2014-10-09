@@ -45,7 +45,7 @@
 
 float END_LAT = 0.0; //latitude of the "end" waypoint (the fifth waypoint defined in flight plan)
 float END_LON = 0.0; //longitude of the "end" waypoint (the fifth waypoint defined in flight plan)
-int CONTINUE = 1; //When this variable is set to 0 x_track will stop moving the waypoint around
+int CONTINUE = 1; //When this variable is set to 0 river_track will stop moving the waypoint around
 float ADD = 0; //just to move the waypoint around for fun
 
 #define MSG_DEST	"ground"
@@ -162,7 +162,7 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
         //Also send this to the AC TODO
         if (verbose) printf("sending MOVE_WAYPOIN to servant AC also... \n");
 
-        new_wp.ac_id = 201;//FIXME make it take the commandline vars
+        new_wp.ac_id = arg_ac_id;
         new_wp.wp = STAY_WP_INDEX;
         new_wp.lat = gpsdata->fix.latitude;
         new_wp.lon = gpsdata->fix.longitude;
