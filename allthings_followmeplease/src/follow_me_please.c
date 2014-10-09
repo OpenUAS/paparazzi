@@ -146,23 +146,27 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
             printf("sending gps info via Ivy: lat %g, lon %g, speed %g, course %g, alt %g, climb %g\n",
                    gpsdata->fix.latitude, gpsdata->fix.longitude, fix_speed, fix_track, fix_altitude, fix_climb);
 
+        fix_time = gpsdata->fix.time;
+
+
         //Move on regular PPRZ GCS map the current  groundstation position
-        IvySendMsg("%s %s %s %f %f %f %f %f %f %f %f %f %f %f %d",
-                MSG_DEST,
-                MSG_NAME,
-                MSG_ID, // ac_id
-                0.0, // roll,
-                0.0, // pitch,
-                0.0, // heading
-                gpsdata->fix.latitude,
-                gpsdata->fix.longitude,
-                fix_speed,
-                fix_track, // course
-                fix_altitude,
-                fix_climb,
-                0.0, // agl
-                gpsdata->fix.time,
-                0); // itow
+        IvySendMsg("%s %s %s %f %f %f %f %f %f %f %f %f %f %f %d %f",
+                  MSG_DEST,
+                  MSG_NAME,
+                  MSG_ID, // ac_id
+                  0.0, // roll,
+                  0.0, // pitch,
+                  0.0, // heading
+                  gpsdata->fix.latitude,
+                  gpsdata->fix.longitude,
+                  fix_speed,
+                  fix_track, // course
+                  fix_altitude,
+                  fix_climb,
+                  0.0, // agl
+                  gpsdata->fix.time,
+                  0, // itow
+                  0.0); // airspeed
 
         //Also send this to the AC TODO
         if (verbose) printf("sending MOVE_WAYPOIN to servant AC also... \n");
@@ -381,7 +385,7 @@ int main(int argc, char** argv)
     IvyInit("follow_me_please", "follow_me_please READY", NULL, NULL, NULL, NULL);
     IvyBindMsg(textCallback,0,"^follow_me_please hello(.*)");
     IvyBindMsg(start_follow,0,"(NAV_STATUS 1 1 +.*)");
-    //IvyBindMsg(update_gps,0,"(WAYPOINT_MOVED 1 5 +.*)");
+    IvyBindMsg(update_gps,0,"(WAYPOINT_MOVED 1 5 +.*)");
     IvyStart(ivy_bus);
 
     g_timeout_add(TIMEOUT_PERIOD, gps_periodic, NULL);
