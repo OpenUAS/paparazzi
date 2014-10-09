@@ -6,10 +6,14 @@
  *   This application receives position information through gpsd and moves the "stay" waypoint
  *   through ivy bus to the AC
  *
+ *   Note that at the moment it is very intertwined with the follow me please flightplan.
+ *   Feel free to improve and submit  your changes.
+ *
  *  For testing GPSFake comes in handy
  *   http://manpages.ubuntu.com/manpages/precise/man1/gpsfake.1.html
  *
  *   In the end we will have one button only with text "Follow me <> Stop following"
+ *   TODO and FIXME alre allowed to be done and fixed ;)
  */
 
 #include <stdio.h>
@@ -45,7 +49,7 @@
 
 float END_LAT = 0.0; //latitude of the "end" waypoint (the fifth waypoint defined in flight plan)
 float END_LON = 0.0; //longitude of the "end" waypoint (the fifth waypoint defined in flight plan)
-int CONTINUE = 1; //When this variable is set to 0 river_track will stop moving the waypoint around
+int CONTINUE = 1; //When this variable is set to 0(FALSE) the application will stop moving the waypoint around
 float ADD = 0; //just to move the waypoint around for fun
 
 #define MSG_DEST	"ground"
@@ -59,6 +63,7 @@ float ADD = 0; //just to move the waypoint around for fun
 #define WP_Landingspot 3
 #define WP__TDEMERGENCY 4
 #define WP_A 5
+//TEMP a shadow waypoint with a small offset so it is easier to seee n debug on GCS not under GPSd red dot
 #define WP_B 6
 
 /* #define FP_BLOCKS { \
@@ -168,7 +173,7 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
         new_wp.lon = gpsdata->fix.longitude;
         new_wp.alt = fix_altitude+10;
         IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, new_wp.wp, new_wp.lat, new_wp.lon, new_wp.alt);
-        IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, 600.);
+        //IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, 600.);
         //IvyBindMsg(start_track,0,"(NAV_STATUS 1 1 +.*)");
         //IvyBindMsg(set_end,0,"(WAYPOINT_MOVED 1 5 +.*)");
         IvyBindMsg(set_end,0,"(WAYPOINT_MOVED 1 5 +.*)");
@@ -275,7 +280,7 @@ void init_follow_me_please( GtkWidget *widget, gpointer data )
   int LAND_BLOCK_INDEX =4;
 
   //Waypoint new_wp;
-  new_wp.ac_id = 213; /* TODO Take value from arguments */
+  new_wp.ac_id = arg_ac_id;
 
    //If not following, start following
    if (!doFollowMe) {
@@ -302,10 +307,11 @@ void start_follow(IvyClientPtr app, void *data, int argc, char **argv)
 // later
 }
 
-/* Destroys the window */
-static void destroy( GtkWidget *widget, gpointer data )
+void destroy( GtkWidget *widget, gpointer data )
 {
-    gtk_main_quit ();
+    gtk_main_quit();
+    gtk_widget_destroy(widget);
+    exit(0);
 }
 
 int main(int argc, char** argv)
@@ -347,7 +353,8 @@ int main(int argc, char** argv)
             
     //Quit button
     btnQuit = gtk_button_new_with_label("Quit");
-    g_signal_connect(G_OBJECT(btnQuit), "clicked", G_CALLBACK(destroy), 0);
+    g_signal_connect(G_OBJECT(btnQuit), "clicked", G_CALLBACK(destroy), NULL);
+
     gtk_box_pack_start(GTK_BOX (box1), btnQuit, TRUE, TRUE, 0);
     gtk_widget_show (btnQuit);
 

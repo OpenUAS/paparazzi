@@ -81,7 +81,7 @@ This flightplan should be kept as simple as possible and *not* to be extended wi
 <!-- TODO see if adding this 2nd stage is better -->
    <!--  <attitude pitch="0" roll="0" throttle="0.90" until="stage_time > 2" vmode="throttle"/>-->
 <!--Alternative <exception cond="WaypointAlt(WP_A) > stateGetPositionEnu_f()->z" deroute="A_to_B_and_back"/>-->
-     <stay vmode="climb" climb="0.8" until="stateGetPositionEnu_f()->z > 1" wp="CLIMB"/>-->
+     <stay vmode="climb" climb="0.8" until="stateGetPositionEnu_f()->z > 2" wp="CLIMB"/>
     </block>
 <!-- The From A to B and back, The only one visible block so no GCS choices to toy around with, a non expert would get confused -->
     <block key="f" name="Follow">
