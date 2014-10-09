@@ -48,17 +48,10 @@
 #include "subsystems/datalink/telemetry.h"
 #endif
 
-#ifdef MCU_SPI_LINK
-#include "link_mcu_spi.h"
-#endif
-
-#ifdef MCU_UART_LINK
-#include "link_mcu_usart.h"
-#endif
-
 uint8_t fbw_mode;
 
 #include "inter_mcu.h"
+#include "link_mcu.h"
 
 #ifdef USE_NPS
 #include "nps_autopilot.h"
@@ -130,8 +123,10 @@ void init_fbw( void ) {
 #ifdef INTER_MCU
   inter_mcu_init();
 #endif
-#ifdef MCU_SPI_LINK
+#if defined MCU_SPI_LINK || defined MCU_CAN_LINK
   link_mcu_init();
+#endif
+#ifdef MCU_SPI_LINK
   link_mcu_restart();
 #endif
 
@@ -177,7 +172,7 @@ static inline void handle_rc_frame( void ) {
 }
 #endif
 
-
+uint8_t ap_has_been_ok = FALSE;
 /********** EVENT ************************************************************/
 
 void event_task_fbw( void) {
@@ -185,13 +180,26 @@ void event_task_fbw( void) {
   RadioControlEvent(handle_rc_frame);
 #endif
 
+#if USE_I2C0 || USE_I2C1 || USE_I2C2 || USE_I2C3
   i2c_event();
+#endif
 
 #ifdef INTER_MCU
 #if defined MCU_SPI_LINK | defined MCU_UART_LINK
-    link_mcu_event_task();
+  link_mcu_event_task();
 #endif /* MCU_SPI_LINK */
 
+
+#if OUTBACK_CHALLENGE_VERY_DANGEROUS_RULE_NO_AP_MUST_FAILSAFE
+#warning OUTBACK_CHALLENGE_VERY_DANGEROUS_RULE_NO_AP_MUST_FAILSAFE loose ap is forced crash
+  if (ap_ok) {
+    ap_has_been_ok = TRUE;
+  }
+
+  if ((ap_has_been_ok) && (!ap_ok)) {
+    commands[COMMAND_FORCECRASH] = 9600;
+  }
+#endif
 
   if (inter_mcu_received_ap) {
     inter_mcu_received_ap = FALSE;
@@ -199,7 +207,11 @@ void event_task_fbw( void) {
     command_roll_trim = ap_state->command_roll_trim;
     command_pitch_trim = ap_state->command_pitch_trim;
     command_yaw_trim = ap_state->command_yaw_trim;
-#ifndef OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP
+#if OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP
+    // LOST-RC: do NOT go to autonomous
+    // auto = stay in auto
+    // manual = stay in manual
+#else
     if (ap_ok && fbw_mode == FBW_MODE_FAILSAFE) {
       fbw_mode = FBW_MODE_AUTO;
     }
@@ -222,7 +234,7 @@ void event_task_fbw( void) {
 
 #if OUTBACK_CHALLENGE_VERY_DANGEROUS_RULE_AP_CAN_FORCE_FAILSAFE
 #warning DANGER DANGER DANGER DANGER: Outback Challenge Rule FORCE-CRASH-RULE: DANGER DANGER: AP is now capable to FORCE your FBW in failsafe mode EVEN IF RC IS NOT LOST: Consider the consequences.
-
+  // OUTBACK: JURY REQUEST FLIGHT TERMINATION
   int crash = 0;
   if (commands[COMMAND_FORCECRASH] >= 8000)
   {
@@ -279,9 +291,10 @@ void periodic_task_fbw( void ) {
 #ifdef RADIO_CONTROL
   radio_control_periodic_task();
   if (fbw_mode == FBW_MODE_MANUAL && radio_control.status == RC_REALLY_LOST) {
-#ifdef OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP
+#if OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP
 #warning WARNING DANGER: OUTBACK_CHALLENGE RULE RC_LOST_NO_AP defined. If you loose RC you will NOT go to automatically go to AUTO2 Anymore!!
-set_failsafe_mode();
+    set_failsafe_mode();
+    commands[COMMAND_FORCECRASH] = 9600;
 #else
     fbw_mode = FBW_MODE_AUTO;
 #endif
@@ -297,6 +310,11 @@ set_failsafe_mode();
 #endif
 
 #ifdef MCU_UART_LINK
+  inter_mcu_fill_fbw_state();
+  link_mcu_periodic_task();
+#endif
+
+#ifdef MCU_CAN_LINK
   inter_mcu_fill_fbw_state();
   link_mcu_periodic_task();
 #endif

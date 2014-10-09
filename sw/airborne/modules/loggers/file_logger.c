@@ -26,7 +26,7 @@
 
 #include "file_logger.h"
 
-#include <stdio.h> 
+#include <stdio.h>
 #include "subsystems/imu.h"
 #include "firmwares/rotorcraft/stabilization.h"
 #include "state.h"

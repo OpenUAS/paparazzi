@@ -16,7 +16,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/versatile.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml"
    gui_color="blue"
   />
   <aircraft
@@ -26,7 +26,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu_9k6.xml"
    flight_plan="flight_plans/versatile.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/modules/photogrammetry_calculator.xml settings/modules/dc.xml settings/estimation/ins_neutrals.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/modules/photogrammetry_calculator.xml settings/modules/dc.xml"
    gui_color="blue"
   />
   <aircraft
@@ -57,6 +57,16 @@
    telemetry="telemetry/default_rotorcraft.xml"
    flight_plan="flight_plans/dummy.xml"
    settings="settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml"
+   gui_color="white"
+  />
+  <aircraft
+   name="LadyLisa"
+   ac_id="164"
+   airframe="airframes/examples/ladybird_lisa_s.xml"
+   radio="radios/cockpitSX.xml"
+   telemetry="telemetry/default_rotorcraft.xml"
+   flight_plan="flight_plans/rotorcraft_basic.xml"
+   settings=" settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml settings/control/stabilization_rate.xml settings/superbitrf.xml"
    gui_color="white"
   />
   <aircraft
@@ -106,7 +116,7 @@
    radio="radios/R6107SP_7ch.xml"
    telemetry="telemetry/default_fixedwing_imu_9k6.xml"
    flight_plan="flight_plans/versatile_airspeed.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_energy.xml settings/estimation/ins_neutrals.xml settings/estimation/ac_char.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_energy.xml settings/estimation/ac_char.xml"
    gui_color="#ffffffffffff"
   />
   <aircraft
@@ -126,7 +136,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/nav_modules.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml settings/control/ctl_dash_loiter_trim.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/control/ctl_dash_loiter_trim.xml"
    gui_color="blue"
   />
   <aircraft
@@ -136,7 +146,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/basic.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml"
    gui_color="blue"
   />
   <aircraft
@@ -146,7 +156,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/basic.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml"
    gui_color="blue"
   />
   <aircraft
@@ -180,16 +190,6 @@
    gui_color="white"
   />
   <aircraft
-   name="Quad_LisaS"
-   ac_id="163"
-   airframe="airframes/examples/quadrotor_lisa_s.xml"
-   radio="radios/cockpitSX.xml"
-   telemetry="telemetry/default_rotorcraft.xml"
-   flight_plan="flight_plans/rotorcraft_basic.xml"
-   settings="settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml settings/control/stabilization_rate.xml"
-   gui_color="white"
-  />
-  <aircraft
    name="Quad_NavGo"
    ac_id="151"
    airframe="airframes/examples/quadrotor_navgo.xml"
@@ -216,7 +216,7 @@
    radio="radios/cockpitMM.xml"
    telemetry="telemetry/default_fixedwing.xml"
    flight_plan="flight_plans/versatile.xml"
-   settings="settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/infrared.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/infrared.xml"
    gui_color="#ba6293"
   />
   <aircraft
@@ -236,7 +236,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/versatile.xml"
-   settings="settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   settings="settings/fixedwing_basic.xml settings/control/ctl_basic.xml"
    gui_color="blue"
   />
   <aircraft
@@ -246,7 +246,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/basic.xml"
-   settings="settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   settings="settings/fixedwing_basic.xml settings/control/ctl_basic.xml"
    gui_color="blue"
   />
   <aircraft
@@ -306,7 +306,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/basic.xml"
-   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/control/ctl_dash_loiter_trim.xml settings/estimation/ins_neutrals.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/control/ctl_dash_loiter_trim.xml"
    gui_color="blue"
   />
   <aircraft
@@ -346,7 +346,7 @@
    radio="radios/cockpitSX.xml"
    telemetry="telemetry/default_fixedwing_imu.xml"
    flight_plan="flight_plans/versatile.xml"
-   settings=" settings/fixedwing_basic.xml settings/estimation/ins_neutrals.xml settings/control/ctl_dash_loiter_trim.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_dash_loiter_trim.xml"
    gui_color="blue"
   />
 </conf>
