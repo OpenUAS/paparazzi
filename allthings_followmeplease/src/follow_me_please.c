@@ -25,17 +25,30 @@
 #include <math.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-//#include <glib.h>
+#include <glib.h>
 /*#include <gtk/gtk.h> is what the previous line should read when compiling with pkg-config --cflags --libs gtk+-2.0 */
 #include <gtk-2.0/gtk/gtk.h>
 #include <unistd.h>
+
+//#include <signal.h>
+
 #include <Ivy/ivy.h>
-#include <Ivy/ivyglibloop.h>
+#include <Ivy/ivyloop.h>
+#include <Ivy/version.h>
 
 #include "gps.h" /* GPS d Library */
 
 #include "nextwp.c" /* remove later*/
 //#include "waypoint.h" /* remove later */
+
+/* Interface widget  */
+GtkWidget *wndMain;
+GtkWidget *btnQuit;
+GtkWidget *boxMain;
+GtkWidget *lblStatusline;
+GtkWidget *btnStartStop ;
+
+char status_str[256];
 
 /* typedef struct Waypoint {
     int ac_id;
@@ -75,16 +88,17 @@ float ADD = 0; //just to move the waypoint around for fun
  { "Emergency" }, 5\
  { "HOME" }, 6\ */
 
-
 int doFollowMe = 0;  //When this variable is set to FALSE follow_me_please will stop the following
-int arg_ac_id; //make nicer or a char*
-int STAY_WP_INDEX = WP_A; //From flightplan, TODO get by name not index dynamically
+
+int STAY_WP_INDEX = WP_A;
 
 struct gps_data_t *gpsdata;
 
 Waypoint new_wp;
 
 gboolean verbose;
+
+int arg_ac_id;
 char* server;
 char* port;
 char* ivy_bus;
@@ -111,7 +125,7 @@ void set_end(IvyClientPtr app, void *data, int argc, char **argv)
     END_LAT = atof(current);
     current = strtok(NULL, " ");
     END_LON = atof(current);
-    if (verbose) printf("END_LAT=%f. END_LON=%f.\n", END_LAT, END_LON);
+    if (verbose) g_print ("END_LAT=%f. END_LON=%f.\n", END_LAT, END_LON);
     //fprintf(stderr, "END_LAT=%f. END_LON=%f.", END_LAT, END_LON);
 }
 
@@ -143,7 +157,7 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
         }
 
         if (verbose)
-            printf("sending gps info via Ivy: lat %g, lon %g, speed %g, course %g, alt %g, climb %g\n",
+          g_print ("sending gps info via Ivy: lat %g, lon %g, speed %g, course %g, alt %g, climb %g\n",
                    gpsdata->fix.latitude, gpsdata->fix.longitude, fix_speed, fix_track, fix_altitude, fix_climb);
 
         fix_time = gpsdata->fix.time;
@@ -168,26 +182,28 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
                   0, // itow
                   0.0); // airspeed
 
-        //Also send this to the AC TODO
-        if (verbose) printf("sending MOVE_WAYPOIN to servant AC also... \n");
 
-        new_wp.ac_id = arg_ac_id;
+        //Also send this to the aircraft
+        new_wp.ac_id = 213;
         new_wp.wp = STAY_WP_INDEX;
         new_wp.lat = gpsdata->fix.latitude;
         new_wp.lon = gpsdata->fix.longitude;
         new_wp.alt = fix_altitude+10;
+
+        if (verbose) g_print ("Now sending MOVE_WAYPOINT to servant AC with ID: %d\n",new_wp.ac_id);
         IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, new_wp.wp, new_wp.lat, new_wp.lon, new_wp.alt);
-        //IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, 600.);
+        //A shaddow point for easier debugging, is viewable next to other tht moves
+        IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, 600.);
         //IvyBindMsg(start_track,0,"(NAV_STATUS 1 1 +.*)");
-        //IvyBindMsg(set_end,0,"(WAYPOINT_MOVED 1 5 +.*)");
         IvyBindMsg(set_end,0,"(WAYPOINT_MOVED 1 5 +.*)");
 
         fix_time = gpsdata->fix.time;
+
     }
     else
     {
         if (verbose)
-            printf("ignoring gps data: lat %f, lon %f, mode %d, time %f\n", gpsdata->fix.latitude,
+            g_print ("ignoring gps data: lat %f, lon %f, mode %d, time %f\n", gpsdata->fix.latitude,
                    gpsdata->fix.longitude, gpsdata->fix.mode, gpsdata->fix.time);
     }
 }
@@ -206,11 +222,11 @@ static gboolean gps_periodic(gpointer data __attribute__ ((unused)))
 
 gboolean parse_args(int argc, char** argv)
 {
+    arg_ac_id = 201;
     verbose = FALSE;
     server = "localhost";
     port = DEFAULT_GPSD_PORT;
 
-//note TODO check this for iOS also
 #ifdef __APPLE__
     ivy_bus = "224.255.255.255";
 #else
@@ -241,14 +257,16 @@ gboolean parse_args(int argc, char** argv)
         int option_index = 0;
         int c = getopt_long(argc, argv, "vh",
                             long_options, &option_index);
+
         if (c == -1)
             break;
 
         switch (c) {
             case 0:
                 switch (option_index) {
+
                     case 0:
-                        arg_ac_id = strtol(strdup(optarg),NULL,1); break;
+                        arg_ac_id = atol(strdup(optarg)); break;
                     case 1:
                         ivy_bus = strdup(optarg); break;
                     case 2:
@@ -269,7 +287,7 @@ gboolean parse_args(int argc, char** argv)
                 exit(0);
 
             default: /* ’?’ */
-                printf("?? getopt returned character code 0%o ??\n", c);
+                g_print ("?? getopt returned character code 0%o ??\n", c);
                 fprintf(stderr, usage, argv[0]);
                 exit(EXIT_FAILURE);
         }
@@ -290,14 +308,14 @@ void init_follow_me_please( GtkWidget *widget, gpointer data )
    if (!doFollowMe) {
      doFollowMe = 1;
      gtk_button_set_label(GTK_BUTTON(widget), "Stop Following Me");
-     if (verbose) printf("I've started following you my master...\n");
+     if (verbose) g_print ("I've started following you my master...\n");
      //The takeoff block of the new ardrone_follow flightplan
      IvySendMsg("dl JUMP_TO_BLOCK %d %d", new_wp.ac_id, TAKEOFF_BLOCK_INDEX);
    }
    else {
      doFollowMe = 0;
      gtk_button_set_label(GTK_BUTTON(widget), "Start Following Me");
-     if (verbose) printf("Your wish is my command, I stopped following you my master...\n");
+     if (verbose) g_print ("Your wish is my command, I stopped following you my master...\n");
      //The Land Block
      IvySendMsg("dl JUMP_TO_BLOCK %d %d", new_wp.ac_id, LAND_BLOCK_INDEX);
    }
@@ -318,17 +336,18 @@ void destroy( GtkWidget *widget, gpointer data )
     exit(0);
 }
 
+gint delete_event( GtkWidget *widget,
+                   GdkEvent  *event,
+                   gpointer   data )
+{
+  g_print ("Clean exit\n");
+  IvyStop();
+  exit(0);
+  return(FALSE); // false = delete window, FALSE = keep active
+}
+
 int main(int argc, char** argv)
 {
-    /* Interface widget  */
-    GtkWidget *window;
-    GtkWidget *btnQuit;
-    GtkWidget *box1;
-    //Start and End...
-    //char *ButtonStance = "Start following me";
-    //ButtonStance = "Start following me";
-    GtkWidget *StartStopButton ; //= gtk_button_new_with_label(ButtonStance);
-
     int ret = 0;
 
     if (!parse_args(argc, argv)) {
@@ -336,41 +355,53 @@ int main(int argc, char** argv)
     }
     
     gtk_init(&argc, &argv);
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-    gtk_window_set_title (GTK_WINDOW (window), "FMP");
+
+    //Main window
+    GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_signal_connect (GTK_OBJECT (window), "delete_event", GTK_SIGNAL_FUNC (delete_event), NULL);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 5);
+    gtk_window_set_title (GTK_WINDOW (window), "FMP AppServer");
+    gtk_window_set_default_size(GTK_WINDOW(window), 200, 100);
     
-    box1 = gtk_hbox_new (FALSE, 0);
+    GtkWidget *box1 = gtk_vbox_new(TRUE, 1);
     gtk_container_add (GTK_CONTAINER (window), box1);
-    
-    //gtk_button_set_label(GTK_BUTTON(EntryButton), ButtonStance);
 
-    StartStopButton = gtk_button_new_with_label("Plz wait...");
-    g_signal_connect(G_OBJECT(StartStopButton), "clicked", G_CALLBACK(init_follow_me_please), 0);
-    gtk_box_pack_start(GTK_BOX(box1), StartStopButton, TRUE, TRUE, 0);
-    gtk_widget_show (StartStopButton);
+    btnStartStop = gtk_button_new_with_label("Plz wait...");
+    g_signal_connect(G_OBJECT(btnStartStop), "clicked", G_CALLBACK(init_follow_me_please), 0);
+    gtk_box_pack_start(GTK_BOX(box1), btnStartStop, TRUE, TRUE, 0);
+    gtk_widget_show (btnStartStop);
 
-    //TODO color Red/Green see http://ometer.com/gtk-colors.html
+    //TODO toggle color between Red/Green see http://ometer.com/gtk-colors.html
     //GdkColor color;
     //gdk_color_parse ("red", &color);
     //gtk_widget_modify_fg (widget, GTK_STATE_NORMAL, &color);
             
-    //Quit button
     btnQuit = gtk_button_new_with_label("Quit");
     g_signal_connect(G_OBJECT(btnQuit), "clicked", G_CALLBACK(destroy), NULL);
 
     gtk_box_pack_start(GTK_BOX (box1), btnQuit, TRUE, TRUE, 0);
-    gtk_widget_show (btnQuit);
 
-    gtk_widget_show(box1);
-    gtk_widget_show(window);
+    /*
+    GtkWidget *hbox = gtk_hbox_new(FALSE, 1);
+    gtk_container_add (GTK_CONTAINER (box1), hbox);
+
+    lblStatusline = gtk_label_new( "Status:" );
+    gtk_box_pack_start(GTK_BOX(hbox), status, FALSE, FALSE, 1);
+    gtk_label_set_justify( (GtkLabel*) status, GTK_JUSTIFY_LEFT );
+
+    status = gtk_label_new( status_str );
+    gtk_box_pack_start(GTK_BOX(hbox), status, FALSE, FALSE, 1);
+    gtk_label_set_justify( (GtkLabel*) status, GTK_JUSTIFY_LEFT );
+    */
+    gtk_widget_show_all(window);
 
     GMainLoop *ml =  g_main_loop_new(NULL, FALSE);
 
     gpsdata = malloc(sizeof(struct gps_data_t));
 
-    //TODO to status debug label
-    printf("Connecting to gpsd server %s, port %s\n", server, port);
+    g_print ("Connecting to gpsd server %s, port %s\n", server, port);
+    g_print ("Using AC ID %d\n", arg_ac_id);
 
     ret = gps_open(server, port, gpsdata);
     if (ret != 0) {
@@ -401,4 +432,7 @@ int main(int argc, char** argv)
     
     /* GTK main */
     gtk_main();
+
+    fprintf(stderr,"Stopped\n");
+    return 0;
 }
