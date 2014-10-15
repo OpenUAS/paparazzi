@@ -217,6 +217,7 @@ bool_t navdata_init()
   gpio_setup_output(ARDRONE_GPIO_PORT, ARDRONE_GPIO_PIN_NAVDATA);
   gpio_set(ARDRONE_GPIO_PORT,ARDRONE_GPIO_PIN_NAVDATA);
 
+
 #if PERIODIC_TELEMETRY
   register_periodic_telemetry(DefaultPeriodic, "ARDRONE_NAVDATA", send_navdata);
 #endif
@@ -307,14 +308,30 @@ static void mag_freeze_check(void) {
 
       // do the navboard reset via GPIOs
       gpio_clear(ARDRONE_GPIO_PORT, ARDRONE_GPIO_PIN_NAVDATA);
+      usleep(20000);
       gpio_set(ARDRONE_GPIO_PORT, ARDRONE_GPIO_PIN_NAVDATA);
 
-      // wait 20ms to retrieve data
-      usleep(20000);
+      // do the navboard reset via GPIOs
+      //@param[in] gpioport Unsigned int32. Port identifier @ref gpio_port_id
+      //@param[in] gpios Unsigned int16. Pin identifiers @ref gpio_pin_id
+      //       If multiple pins are to be changed, use logical OR '|' to separate
+      //       them.
+
+      // wait 40ms to retrieve data
+      for (int i=0;i<40;i++)
+      {
+        usleep(1000);
+      }
 
       // restart acquisition
       cmd = 0x01;
-      navdata_write(&cmd, 1);
+
+      usleep(5000);
+      for (int i=0;i<10;i++)
+      {
+        usleep(1000);
+        navdata_write(&cmd, 1);
+      }
 
       MagFreezeCounter = 0; // reset counter back to zero
     }
@@ -440,7 +457,7 @@ static void baro_update_logic(void)
     spike_detected = 3;
 
     spikes++;
-    printf("Spike! # %d\n",spikes);
+    //printf("Spike! # %d\n",spikes);
   }
 
   if (spike_detected > 0)
@@ -471,6 +488,7 @@ void navdata_update()
   // Check if initialized
   if (!nav_port.isInitialized) {
     navdata_init();
+    mag_freeze_check();
     return;
   }
 

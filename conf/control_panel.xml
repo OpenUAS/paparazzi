@@ -395,6 +395,43 @@
         <arg flag="-c" constant="telemetry"/>
       </program>
     </session>
+    <session name="ARDrone2 NEWDEBUG">
+      <program name="Server">
+        <arg flag="-n"/>
+      </program>
+      <program name="GCS">
+        <arg flag="-speech"/>
+        <arg flag="-mercator"/>
+        <arg flag="-track_size" constant="100"/>
+        <arg flag="-zoom" constant="0.5"/>
+        <arg flag="-maps_zoom" constant="17"/>
+      </program>
+      <program name="Messages"/>
+      <program name="Data Link">
+        <arg flag="-udp"/>
+      </program>
+      <program name="Real-time Plotter">
+        <arg flag="-t" constant="'MX'"/>
+        <arg flag="-u" constant="0.05"/>
+        <arg flag="-m" constant="1000"/>
+        <arg flag="-g" constant="'640x300+0+0'"/>
+        <arg flag="-c" constant="'*:telemetry:ARDRONE_NAVDATA:mx'"/>
+      </program>
+      <program name="Real-time Plotter">
+        <arg flag="-t" constant="'MY'"/>
+        <arg flag="-u" constant="0.05"/>
+        <arg flag="-m" constant="1000"/>
+        <arg flag="-g" constant="'640x300+640+0'"/>
+        <arg flag="-c" constant="'*:telemetry:ARDRONE_NAVDATA:my'"/>
+      </program>
+      <program name="Real-time Plotter">
+        <arg flag="-t" constant="'MZ'"/>
+        <arg flag="-u" constant="0.05"/>
+        <arg flag="-m" constant="1000"/>
+        <arg flag="-g" constant="'640x300+1280+0'"/>
+        <arg flag="-c" constant="'*:telemetry:ARDRONE_NAVDATA:mz'"/>
+      </program>
+    </session>
     <session name="ARDrone2 Magneto Debug Graphs">
       <program name="Server">
         <arg flag="-n"/>
