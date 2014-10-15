@@ -3,7 +3,7 @@
 The goal of this flightplan is to have a safe, simple no-brainer flightplan for a rotorcraft to follow you
 This flightplan should be kept as simple as possible and *not* to be extended with more functionality, if one needs that, plz use another flightplan.
 -->
-<flight_plan alt="20" ground_alt="0" lat0="51.991231" lon0="4.378035" max_dist_from_home="60" name="FolowMePlease" security_height="15">
+<flight_plan alt="20" ground_alt="0" lat0="51.991231" lon0="4.378035" max_dist_from_home="120" name="FolowMePlease" security_height="15">
   <header>
 #include "autopilot.h"
 #include "subsystems/ahrs.h"
