@@ -31,8 +31,8 @@
 
   <modules main_freq="512">
     <load name="gps_ubx_ucenter.xml"/>
-    <load name="send_imu_mag_current.xml"/>
-    <load name="file_logger.xml"/>
+    <!--  <load name="send_imu_mag_current.xml"/>-->
+    <!--   <load name="file_logger.xml"/>-->
     <!--  load name="../../sw/ext/ardrone2_vision/modules/Mjpeg/ViewVideo.xml"/-->
   </modules>
 
@@ -100,13 +100,13 @@
   <!-- http://paparazzi.enac.fr/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
     <!-- Toulouse -->
-    <define name="H_X" value="0.513081"/>
+ <!--   <define name="H_X" value="0.513081"/>
     <define name="H_Y" value="-0.00242783"/>
-    <define name="H_Z" value="0.858336"/>
+    <define name="H_Z" value="0.858336"/>-->
     <!-- Delft -->
-    <!--define name="H_X" value="0.3892503"/>
+    <define name="H_X" value="0.3892503"/>
     <define name="H_Y" value="0.0017972"/>
-    <define name="H_Z" value="0.9211303"/ -->
+    <define name="H_Z" value="0.9211303"/>
   </section>
 
   <section name="INS" prefix="INS_">
@@ -120,8 +120,8 @@
     <define name="SP_MAX_P" value="10000"/>
     <define name="SP_MAX_Q" value="10000"/>
     <define name="SP_MAX_R" value="10000"/>
-    <define name="DEADBAND_P" value="20"/>
-    <define name="DEADBAND_Q" value="20"/>
+    <define name="DEADBAND_P" value="30"/>
+    <define name="DEADBAND_Q" value="30"/>
     <define name="DEADBAND_R" value="200"/>
     <define name="REF_TAU" value="4"/>
 
@@ -143,12 +143,12 @@
   <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
 
     <!-- setpoints -->
-    <define name="SP_MAX_PHI" value="60." unit="deg"/>
-    <define name="SP_MAX_THETA" value="60." unit="deg"/>
+    <define name="SP_MAX_PHI" value="50." unit="deg"/>
+    <define name="SP_MAX_THETA" value="50." unit="deg"/>
     <define name="SP_MAX_R" value="180." unit="deg/s"/>
     <define name="DEADBAND_R" value="250"/>
     <define name="DEADBAND_A" value="250"/>
-    <define name="SP_PSI_DELTA_LIMIT" value="90" unit="deg"/>
+    <define name="SP_PSI_DELTA_LIMIT" value="80" unit="deg"/>
 
     <!-- control effectiveness -->
     <define name="CONTROL_EFFECTIVENESS_P" value="14.0"/>

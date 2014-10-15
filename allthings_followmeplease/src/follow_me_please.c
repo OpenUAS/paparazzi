@@ -193,7 +193,7 @@ static void update_gps(struct gps_data_t *gpsdata, char *message, size_t len) {
         if (verbose) g_print ("Now sending MOVE_WAYPOINT to servant AC with ID: %d\n",new_wp.ac_id);
         IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, new_wp.wp, new_wp.lat, new_wp.lon, new_wp.alt);
         //A shaddow point for easier debugging, is viewable next to other tht moves
-        IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, 600.);
+        IvySendMsg("gcs MOVE_WAYPOINT %d %d %f %f %f", new_wp.ac_id, WP_B, new_wp.lat+.00008, new_wp.lon+.00006, new_wp.alt);
         //IvyBindMsg(start_track,0,"(NAV_STATUS 1 1 +.*)");
         IvyBindMsg(set_end,0,"(WAYPOINT_MOVED 1 5 +.*)");
 

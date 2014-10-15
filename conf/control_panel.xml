@@ -254,21 +254,17 @@
       <program name="Server"/>
       <program name="GCS">
         <arg flag="-speech"/>
+        <arg flag="-maps_fill"/>
         <arg flag="-mercator"/>
-        <arg flag="-track_size" constant="100"/>
+        <arg flag="-maps_no_http"/>
+        <arg flag="-track_size" constant="300"/>
         <arg flag="-zoom" constant="0.5"/>
-        <arg flag="-maps_zoom" constant="17"/>
       </program>
-      <program name="Messages">
-        <arg flag="-c" constant="datalink"/>
-      </program>
+      <program name="Messages"/>
       <program name="Data Link">
         <arg flag="-udp"/>
       </program>
-      <program name="Follow Me Please Server">
-        <arg flag="--ac_id" constant="213"/>
-        <arg flag="--verbose"/>
-      </program>
+      <program name="Follow Me Please Server"/>
     </session>
     <session name="OpenUAS VisionEx">
       <program name="Vision"/>
