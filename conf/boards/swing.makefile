@@ -2,10 +2,11 @@
 #
 # swing.makefile
 #
-# http://wiki.paparazziuav.org/wiki/Swing
+# https://wiki.paparazziuav.org/wiki/Ap.parrot_minidrone
 #
 
 BOARD=swing
+BOARD_VERSION=
 BOARD_CFG=\"boards/$(BOARD).h\"
 
 ARCH=linux
@@ -18,14 +19,14 @@ ARCH_CFLAGS = -march=armv5
 
 # -----------------------------------------------------------------------
 USER=foobar
-HOST?=192.168.4.1
+HOST?=192.168.3.1
 SUB_DIR=paparazzi
 FTP_DIR=/data/edu
 TARGET_DIR=$(FTP_DIR)/$(SUB_DIR)
 # -----------------------------------------------------------------------
 
 # The datalink default uses UDP
-MODEM_HOST         ?= 192.168.4.255
+MODEM_HOST         ?= 192.168.3.255
 
 # The GPS sensor is connected internally
 GPS_PORT           ?= UART1

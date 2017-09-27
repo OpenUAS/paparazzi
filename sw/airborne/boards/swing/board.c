@@ -25,8 +25,6 @@
  *
  */
 
-#include "boards/swing.h"
-#include "mcu.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,6 +33,8 @@
 #include <pthread.h>
 #include <linux/input.h>
 #include "subsystems/electrical.h"
+#include "mcu.h"
+#include "boards/swing.h"
 
 /**
  * Battery reading thread

@@ -24,8 +24,8 @@ from parrot_utils import ParrotUtils
 
 class Swing(ParrotUtils):
     uav_name = 'Swing'
-    address = '192.168.4.1'
-    version_file = None
+    address = '192.168.3.1'
+    version_file = '/version.txt'
     upload_path = '/data/edu/'
     prompt = '$ '
 

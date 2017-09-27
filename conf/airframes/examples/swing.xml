@@ -11,25 +11,40 @@
       <module name="fdm" type="jsbsim"/>
     </target>
 
-    <!--define name="USE_SONAR" value="TRUE"/-->
+    <define name="USE_SONAR" value="TRUE"/>
+    <define name="USE_BARO_BOARD" value="TRUE"/>
 
     <module name="radio_control" type="datalink"/>
     <module name="telemetry" type="transparent_udp"/>
     <module name="motor_mixing"/>
     <module name="actuators" type="swing"/>
     <module name="imu" type="swing"/>
-    <module name="gps" type="datalink"/>
+      
+    <!--module name="gps" type="datalink"--/> <!-- For Optitrack or comparable systems -->
+    <module name="gps"           type="ublox"/> <!-- via the microusb on backside connected via an UsB to serial cable -->
     <module name="stabilization" type="int_quat"/>
     <module name="ahrs"          type="int_cmpl_quat"/>
-    <module name="ins"/>
-    <module name="air_data"/>
+    <module name="ins"           type="extended"/>
   </firmware>
+    
+    
+  <modules main_freq="512">
+    <!-- module name="gps" type="ubx_ucenter"/ -->
+    <module name="send_imu_mag_current"/>
+    <module name="logger_file"/>
 
+    <!-- module name="video_thread"/ -->
+    <!-- module name="cv_opticflow">
+      <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
+    </module -->
+    <!--module name="opticflow_hover"/-->
+  </modules>
+   
   <commands>
     <axis name="PITCH"  failsafe_value="0"/>
     <axis name="ROLL"   failsafe_value="0"/>
     <axis name="YAW"    failsafe_value="0"/>
-    <axis name="THRUST" failsafe_value="0"/>
+    <axis name="THRUST" failsafe_value="2000"/>
   </commands>
 
   <servos>
@@ -69,31 +84,27 @@
   </section>
 
   <section name="IMU" prefix="IMU_">
-    <!-- Magneto calibration -->
-    <define name="MAG_X_NEUTRAL" value="18"/>
-    <define name="MAG_Y_NEUTRAL" value="157"/>
-    <define name="MAG_Z_NEUTRAL" value="49"/>
-    <define name="MAG_X_SENS" value="10.5007722373" integer="16"/>
-    <define name="MAG_Y_SENS" value="11.1147400462" integer="16"/>
-    <define name="MAG_Z_SENS" value="11.6479371722" integer="16"/>
-
-    <!-- Magneto current calibration -->
-    <define name="MAG_X_CURRENT_COEF" value="0.0"/>
-    <define name="MAG_Y_CURRENT_COEF" value="0.0"/>
-    <define name="MAG_Z_CURRENT_COEF" value="0.0"/>
+    <!-- Magneto calibration to perform for your own Swing drone-->
+    <define name="MAG_X_NEUTRAL" value="0"/>
+    <define name="MAG_Y_NEUTRAL" value="0"/>
+    <define name="MAG_Z_NEUTRAL" value="0"/>
+    <define name="MAG_X_SENS" value="11.0" integer="16"/>
+    <define name="MAG_Y_SENS" value="11.0" integer="16"/>
+    <define name="MAG_Z_SENS" value="11.0" integer="16"/>
 
     <define name="BODY_TO_IMU_PHI" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
+      
+     <!-- Magneto current calibration TODO remove after lab test, should be same for all Swing Aircraft-->
+    <define name="MAG_X_CURRENT_COEF" value="0.0"/>
+    <define name="MAG_Y_CURRENT_COEF" value="0.0"/>
+    <define name="MAG_Z_CURRENT_COEF" value="0.0"/>
   </section>
 
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- Toulouse -->
-    <!--define name="H_X" value="0.513081"/>
-    <define name="H_Y" value="-0.00242783"/>
-    <define name="H_Z" value="0.858336"/-->
     <!-- Delft -->
     <define name="H_X" value="0.3892503"/>
     <define name="H_Y" value="0.0017972"/>
@@ -101,7 +112,7 @@
   </section>
 
   <section name="INS" prefix="INS_">
-    <define name="SONAR_MAX_RANGE" value="2.2"/>
+    <define name="SONAR_MAX_RANGE" value="3.0"/>
     <define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>
   </section>
 
@@ -183,10 +194,7 @@
   </section>
 
   <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-    <!-- Good weather -->
-    <define name="MAX_BANK" value="20" unit="deg"/>
-    <!-- Bad weather -->
-    <!-- define name="MAX_BANK" value="32" unit="deg"/ -->
+    <define name="MAX_BANK" value="90" unit="deg"/>
     <define name="PGAIN" value="79"/>
     <define name="DGAIN" value="100"/>
     <define name="IGAIN" value="30"/>
@@ -203,6 +211,8 @@
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
     <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_DIRECT"/>
     <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_Z_HOLD"/>
+    <!-- define name="MODE_AUTO1" value="AP_MODE_MODULE"/>
+    <define name="MODE_AUTO2" value="AP_MODE_NAV"/-->
   </section>
 
   <section name="BAT">
