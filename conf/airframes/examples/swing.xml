@@ -12,7 +12,7 @@
     </target>
 
     <define name="USE_SONAR" value="TRUE"/>
-    <define name="USE_BARO_BOARD" value="TRUE"/>
+    <define name="USE_BARO" value="TRUE"/>
 
     <module name="radio_control" type="datalink"/>
     <module name="telemetry" type="transparent_udp"/>
@@ -29,10 +29,15 @@
     
     
   <modules main_freq="512">
-    <!-- module name="gps" type="ubx_ucenter"/ -->
+  <!--   <module name="air_data"/>
     <module name="send_imu_mag_current"/>
-    <module name="logger_file"/>
+    
+    <module name="gps" type="ubx_ucenter"/>
+    <module name="geo_mag"/>-->
 
+   <!--  <module name="logger_file">
+      <define name="FILE_LOGGER_PATH" value="/data/edu"/>
+    </module> -->
     <!-- module name="video_thread"/ -->
     <!-- module name="cv_opticflow">
       <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
@@ -96,7 +101,7 @@
     <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
       
-     <!-- Magneto current calibration TODO remove after lab test, should be same for all Swing Aircraft-->
+     <!-- TODO Magneto current calibration TODO remove after lab test, should be about same for all Swing Aircraft-->
     <define name="MAG_X_CURRENT_COEF" value="0.0"/>
     <define name="MAG_Y_CURRENT_COEF" value="0.0"/>
     <define name="MAG_Z_CURRENT_COEF" value="0.0"/>

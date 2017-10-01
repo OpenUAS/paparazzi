@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Paparazzi team
+ * Copyright (C) 2017 Gautier Hattenberger <gautier.hattenberger@enac.fr>
  *
  * This file is part of Paparazzi.
  *
@@ -14,83 +14,96 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Paparazzi; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * along with paparazzi; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 /**
  * @file boards/swing/baro_board.c
- * Paparazzi implementation for Parrot Minidrones Baro Sensor :.
+ * Paparazzi Swing Baro Sensor implementation.
+ * Sensor is LPS22HB (I2C) from ST but is accessed through sysfs interface
  */
 
 
-#include "baro_board.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <linux/input.h>
 #include "subsystems/sensors/baro.h"
 #include "subsystems/abi.h"
-#include "led.h"
+#include "baro_board.h"
 
-/** Option to use an extra median filter to smoothen barometric data
+static bool baro_swing_available;
+static int32_t baro_swing_raw;
+static pthread_mutex_t baro_swing_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/**
+ * Check baro thread
+ * TODO something better ?
  */
-#if USE_BARO_MEDIAN_FILTER
-#include "filters/median_filter.h"
-struct MedianFilterInt baro_median;
-#endif
+static void *baro_read(void *data __attribute__((unused)))
+{
+  struct input_event ev;
+  ssize_t n;
 
+  int fd_baro = open("/dev/input/baro_event", O_RDONLY);
+  printf("fd_baro value: %d\n", fd_baro);
+  if (fd_baro == -1) {
+    printf("Unable to open baro event to read pressure\n");
+    return NULL;
+  } else {
+	printf("Open baro event fd succes\n");
+  }
+
+  while (TRUE) {
+    /* Check new pressure */
+    n = read(fd_baro, &ev, sizeof(ev));
+    if (n == sizeof(ev) && ev.type == EV_ABS && ev.code == ABS_PRESSURE) {
+      pthread_mutex_lock(&baro_swing_mutex);
+      baro_swing_available = True;
+      baro_swing_raw = ev.value;
+
+      pthread_mutex_unlock(&baro_swing_mutex);
+    }
+
+    // Wait 100ms
+    usleep(10000); //100Hz
+  }
+
+  return NULL;
+}
 
 void baro_init(void)
 {
-  #if USE_BARO_MEDIAN_FILTER
-    init_median_filter_i(&baro_median, MEDIAN_DEFAULT_SIZE);
-  #endif
+  printf("[swing_board] Enter baro_init...\n");
+  baro_swing_available = False;
+  baro_swing_raw = 0;
 
-  #ifdef BARO_LED
-    LED_OFF(BARO_LED);
-  #endif
+  /* Start baro reading thread */
+  pthread_t baro_thread;
+  if (pthread_create(&baro_thread, NULL, baro_read, NULL) != NULL) {
+    printf("[swing_board] Could not create baro reading thread!\n");
+  }
+
 }
 
 void baro_periodic(void) {}
 
-/**
- * Apply temperature and sensor calibration to get pressure in Pa.
- * @param raw uncompensated raw pressure reading
- * @return compensated pressure in Pascal
- */
-static inline int32_t baro_apply_calibration(int32_t raw)
-{
-  int32_t press = raw; //FIXME
-  // Zero at sealevel
-  return press;
-}
-
-/**
- * Apply temperature calibration.
- * @param tmp_raw uncompensated raw temperature reading
- * @return compensated temperature in 0.1 deg Celcius
- */
-static inline int32_t baro_apply_calibration_temp(int32_t tmp_raw)
-{
-  return 0; //FIXME
-}
 
 void baro_event(void)
 {
- /* if (minidrone.baro_available) {
-    if (minidrone.baro_calibrated) {
-      // first read temperature because pressure calibration depends on temperature
-      float temp_deg = 0.1 * baro_apply_calibration_temp(navdata.measure.temperature_pressure);
-      AbiSendMsgTEMPERATURE(BARO_BOARD_SENDER_ID, temp_deg);
-      int32_t press_pascal = baro_apply_calibration(minidrone.measure.pressure);
-#if USE_BARO_MEDIAN_FILTER
-      press_pascal = update_median_filter_i(&baro_median, press_pascal);
-#endif
-      float pressure = (float)press_pascal;
-      AbiSendMsgBARO_ABS(BARO_BOARD_SENDER_ID, pressure);
-    }
-    minidrone.baro_available = false;
+  pthread_mutex_lock(&baro_swing_mutex);
+  if (baro_swing_available) {
+    // From datasheet: raw_pressure / 4096 -> pressure in hPa
+    // send data in Pa
+    float pressure = 100.f * ((float)baro_swing_raw) / 4096.f;
+    AbiSendMsgBARO_ABS(BARO_BOARD_SENDER_ID, pressure);
+    baro_swing_available = False;
   }
-  */
-#ifdef BARO_LED
-    RunOnceEvery(10, LED_TOGGLE(BARO_LED));
-#endif
+  pthread_mutex_unlock(&baro_swing_mutex);
 }
+

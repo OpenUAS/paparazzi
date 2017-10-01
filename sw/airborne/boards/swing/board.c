@@ -25,16 +25,26 @@
  *
  */
 
+// only for printing the baro type during compilation
+#ifndef BARO_BOARD
+#define BARO_BOARD BARO_SWING
+#endif
+
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <linux/input.h>
-#include "subsystems/electrical.h"
+
 #include "mcu.h"
 #include "boards/swing.h"
+#include "subsystems/electrical.h"
+#include "subsystems/sensors/baro.h"
+#include "subsystems/abi.h"
+
 
 /**
  * Battery reading thread
@@ -99,6 +109,78 @@ static void *button_read(void *data __attribute__((unused)))
   return NULL;
 }
 
+/**
+ * Baro reading thread
+ */
+static void *baro_read(void *data __attribute__((unused)))
+{
+  static int32_t baro_swing_raw;
+  struct input_event ev;
+  ssize_t n;
+
+  /* Open Baro event sysfs file */
+  int fd_baro = open("/dev/input/baro_event", O_RDONLY);
+  if (fd_baro == -1) {
+    printf("Unable to open baro_event to read baro state\n");
+    return NULL;
+  }
+
+  while (TRUE)
+  {
+    /* Check new pressure (read is blocking?) */
+    n = read(fd_baro, &ev, sizeof(ev));
+	if (n == sizeof(ev) && ev.type == EV_ABS && ev.code == ABS_PRESSURE) {
+	      baro_swing_raw = ev.value;
+	      //printf("Read Baro RAW: %d\n", baro_swing_raw);
+	      // From datasheet: raw_pressure / 4096 -> pressure in hPa
+	      // send data in Pa
+	      float pressure = 100.f * ((float)baro_swing_raw) / 4096.f;
+	      printf("Baro pressure: %f\n", pressure);
+	      AbiSendMsgBARO_ABS(BARO_BOARD_SENDER_ID, pressure);
+    }
+  }
+
+  return NULL;
+}
+
+/*
+ Sme thing maybe of help:
+https://github.com/Parrot-Developers/mambo-opensource/tree/master/sources/linux-2.6.36/linux-2.6.36/drivers/parrot/ultra_sound
+*/
+static void *sonar_read(void *data __attribute__((unused)))
+{
+  static int32_t sonar_swing_raw;
+  struct input_event ev;
+  ssize_t n;
+
+  /* Open sonar event sysfs file */
+  int fd_sonar = open("/dev/ultra_snd", O_RDONLY);
+  if (fd_sonar == -1) {
+    printf("Unable to read sonar state\n");
+    return NULL;
+  }
+
+  while (TRUE)
+  {
+    /* Check new sonar (read is blocking?) */
+    n = read(fd_sonar, &ev, sizeof(ev));
+    printf("Read n: 
+    printf("Read type, code, value: %d,%d,%d\n", ev.type, ev.code, ev.value);
+	if (n == sizeof(ev) && ev.type == 0 && ev.code == 0) {
+	      sonar_swing_raw = ev.value;
+	      printf("Read sonar RAW: %d\n", sonar_swing_raw);
+	      // send data in cm?
+	      float range = sonar_swing_raw/42; //fixme
+	      printf("Sonar range: %f\n", range);
+	     // AbiSendMsgBARO_ABS(SONAR_BOARD_SENDER_ID, range);
+    }
+  }
+
+  return NULL;
+}
+
+
+
 void board_init(void)
 {
   /*
@@ -111,7 +193,7 @@ void board_init(void)
   ret = system("pstop dragon-prog");
   usleep(50000); /* Give 50ms time to end on a busy system */
 
-  /* Start bat reading thread */
+  /* Start battery reading thread */
   pthread_t bat_thread;
   if (pthread_create(&bat_thread, NULL, bat_read, NULL) != 0) {
     printf("[swing_board] Could not create battery reading thread!\n");
@@ -123,9 +205,21 @@ void board_init(void)
     printf("[swing_board] Could not create button reading thread!\n");
   }
 
+  /* Start baro reading thread */
+  pthread_t baro_thread;
+  if (pthread_create(&baro_thread, NULL, baro_read, NULL) != 0) {
+    printf("[swing_board] Could not create baro reading thread!\n");
+  }
+
+  /* Start sonar reading thread */
+  pthread_t sonar_thread;
+  if (pthread_create(&sonar_thread, NULL, sonar_read, NULL) != 0) {
+    printf("[swing_board] Could not create sonar reading thread!\n");
+  }
 }
 
-void board_init2(void)
-{
-}
+void board_init2(void){/* Not used yet feel fee to inject you improved sourcecode here*/}
 
+void baro_init(void) {}
+void baro_periodic(void) {}
+void baro_event(void) {}
