@@ -1,24 +1,25 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 
-<airframe name="swing">
+<airframe name="Parrot_Swing">
 
   <firmware name="rotorcraft">
     <configure name="PREFIX" value="/opt/arm-2012.03/bin/arm-none-linux-gnueabi"/>
 
-    <target name="ap" board="swing"/>
+    <target name="ap" board="parrot_minidrone"/>
 
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
     </target>
 
+<!--  configure ACTUATORS_PARROT_MINIDRONE_DEBUG -->
     <define name="USE_SONAR" value="TRUE"/>
     <define name="USE_BARO" value="TRUE"/>
 
     <module name="radio_control" type="datalink"/>
     <module name="telemetry" type="transparent_udp"/>
     <module name="motor_mixing"/>
-    <module name="actuators" type="swing"/>
-    <module name="imu" type="swing"/>
+    <module name="actuators" type="parrot_minidrone"/>
+    <module name="imu" type="parrot_minidrone"/>
       
     <!--module name="gps" type="datalink"--/> <!-- For Optitrack or comparable systems -->
     <module name="gps"           type="ublox"/> <!-- via the microusb on backside connected via an UsB to serial cable -->
@@ -224,6 +225,6 @@
     <define name="CATASTROPHIC_BAT_LEVEL" value="3.1" unit="V"/>
     <define name="CRITIC_BAT_LEVEL" value="3.3" unit="V"/>
     <define name="LOW_BAT_LEVEL" value="3.5" unit="V"/>
-    <define name="MAX_BAT_LEVEL" value="4.1" unit="V"/>
+    <define name="MAX_BAT_LEVEL" value="4.2" unit="V"/>
   </section>
 </airframe>

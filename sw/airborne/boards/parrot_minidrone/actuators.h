@@ -21,26 +21,26 @@
  */
 
 /**
- * @file boards/swing/actuators.h
- * Actuator driver for the swing
+ * @file boards/parrot_minidrone/actuators.h
+ * Actuator driver for Parrot minidrones in all it's incarnations
  */
 
-#ifndef ACTUATORS_SWING_H_
-#define ACTUATORS_SWING_H_
+#ifndef ACTUATORS_PARROT_MINIDRONE_H_
+#define ACTUATORS_PARROT_MINIDRONE_H_
 
 #include <stdint.h>
 
-struct ActuatorsSwing {
+struct ActuatorsParrotMinidrone {
   uint16_t rpm_ref[4];  ///< Reference RPM
 };
 
-#define ActuatorsSwingSet(_i, _v) { actuators_swing.rpm_ref[_i] = _v; }
-#define ActuatorsSwingCommit() actuators_swing_commit();
-#define ActuatorsSwingInit() actuators_swing_init();
+#define ActuatorsParrotMinidroneSet(_i, _v) { actuators_parrot_minidrone.rpm_ref[_i] = _v; }
+#define ActuatorsParrotMinidroneCommit() actuators_parrot_minidrone_commit();
+#define ActuatorsParrotMinidroneInit() actuators_parrot_minidrone_init();
 
-extern struct ActuatorsSwing actuators_swing;
-extern void actuators_swing_commit(void);
-extern void actuators_swing_init(void);
+extern struct ActuatorsParrotMinidrone actuators_parrot_minidrone;
+extern void actuators_parrot_minidrone_commit(void);
+extern void actuators_parrot_minidrone_init(void);
 
-#endif /* ACTUATORS_SWING_H_ */
+#endif /* ACTUATORS_PARROT_MINIDRONE_H_ */
 

@@ -21,10 +21,10 @@
  *
  */
 
-#ifndef CONFIG_SWING
-#define CONFIG_SWING
+#ifndef CONFIG_PARROT_MINIDRONE
+#define CONFIG_PARROT_MINIDRONE
 
-#define BOARD_SWING
+#define BOARD_PARROT_MINIDRONE
 
 #include "peripherals/video_device.h"
 
@@ -32,10 +32,10 @@
 #define UART2_DEV /dev/ttyUSB0
 
 /* Default actuators driver */
-#define DEFAULT_ACTUATORS "boards/swing/actuators.h"
-#define ActuatorDefaultSet(_x,_y) ActuatorsSwingSet(_x,_y)
-#define ActuatorsDefaultInit() ActuatorsSwingInit()
-#define ActuatorsDefaultCommit() ActuatorsSwingCommit()
+#define DEFAULT_ACTUATORS "boards/parrot_minidrone/actuators.h"
+#define ActuatorDefaultSet(_x,_y) ActuatorsParrotMinidroneSet(_x,_y)
+#define ActuatorsDefaultInit() ActuatorsParrotMinidroneInit()
+#define ActuatorsDefaultCommit() ActuatorsParrotMinidroneCommit()
 
 /* Cameras */
 extern struct video_config_t bottom_camera;
@@ -60,5 +60,5 @@ extern struct video_config_t bottom_camera;
 #define SPI0_MAX_SPEED_HZ   320000
 #endif
 
-#endif /* CONFIG_SWING */
+#endif /* CONFIG_PARROT_MINIDRONE */
 

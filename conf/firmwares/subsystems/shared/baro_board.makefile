@@ -47,7 +47,7 @@ else ifeq ($(BOARD), disco)
   BARO_BOARD_SRCS += peripherals/ms5611_i2c.c
   BARO_BOARD_SRCS += boards/baro_board_ms5611_i2c.c
 
-# Swing baro
+# Parrot Minidrones baro
 # not as separate baro board...
 
 # Lisa/M baro

@@ -19,15 +19,15 @@
  */
 
 /**
- * @file boards/swing/board.c
+ * @file boards/parrot_minidrone/board.c
  *
- * Swing specific board initialization function.
+ * Parrot Minidrone board initialization functions.
  *
  */
 
-// only for printing the baro type during compilation
+/* NOTE: This define is used only for printing the baro type during compilation */
 #ifndef BARO_BOARD
-#define BARO_BOARD BARO_SWING
+#define BARO_BOARD BARO_PARROT_MINIDRONE
 #endif
 
 #include <stdlib.h>
@@ -40,7 +40,7 @@
 #include <linux/input.h>
 
 #include "mcu.h"
-#include "boards/swing.h"
+#include "boards/parrot_minidrone.h"
 #include "subsystems/electrical.h"
 #include "subsystems/sensors/baro.h"
 #include "subsystems/abi.h"
@@ -114,7 +114,7 @@ static void *button_read(void *data __attribute__((unused)))
  */
 static void *baro_read(void *data __attribute__((unused)))
 {
-  static int32_t baro_swing_raw;
+  static int32_t baro_parrot_minidrone_raw;
   struct input_event ev;
   ssize_t n;
 
@@ -130,11 +130,11 @@ static void *baro_read(void *data __attribute__((unused)))
     /* Check new pressure (read is blocking?) */
     n = read(fd_baro, &ev, sizeof(ev));
 	if (n == sizeof(ev) && ev.type == EV_ABS && ev.code == ABS_PRESSURE) {
-	      baro_swing_raw = ev.value;
-	      //printf("Read Baro RAW: %d\n", baro_swing_raw);
+	      baro_parrot_minidrone_raw = ev.value;
+	      //printf("Read Baro RAW: %d\n", baro_parrot_minidrone_raw);
 	      // From datasheet: raw_pressure / 4096 -> pressure in hPa
 	      // send data in Pa
-	      float pressure = 100.f * ((float)baro_swing_raw) / 4096.f;
+	      float pressure = 100.f * ((float)baro_parrot_minidrone_raw) / 4096.f;
 	      printf("Baro pressure: %f\n", pressure);
 	      AbiSendMsgBARO_ABS(BARO_BOARD_SENDER_ID, pressure);
     }
@@ -144,12 +144,13 @@ static void *baro_read(void *data __attribute__((unused)))
 }
 
 /*
- Sme thing maybe of help:
-https://github.com/Parrot-Developers/mambo-opensource/tree/master/sources/linux-2.6.36/linux-2.6.36/drivers/parrot/ultra_sound
+ Sonar reading thread
+ This  maybe of help getting it to work...
+ https://github.com/Parrot-Developers/mambo-opensource/tree/master/sources/linux-2.6.36/linux-2.6.36/drivers/parrot/ultra_sound
 */
 static void *sonar_read(void *data __attribute__((unused)))
 {
-  static int32_t sonar_swing_raw;
+  static int32_t sonar_parrot_minidrone_raw;
   struct input_event ev;
   ssize_t n;
 
@@ -164,21 +165,29 @@ static void *sonar_read(void *data __attribute__((unused)))
   {
     /* Check new sonar (read is blocking?) */
     n = read(fd_sonar, &ev, sizeof(ev));
-    printf("Read n: 
-    printf("Read type, code, value: %d,%d,%d\n", ev.type, ev.code, ev.value);
+    //printf("Read n: %d", n);
+    //printf("Read type, code, value: %d,%d,%d\n", ev.type, ev.code, ev.value);
 	if (n == sizeof(ev) && ev.type == 0 && ev.code == 0) {
-	      sonar_swing_raw = ev.value;
-	      printf("Read sonar RAW: %d\n", sonar_swing_raw);
+	      sonar_parrot_minidrone_raw = ev.value;
+	      printf("Read sonar RAW: %d\n", sonar_parrot_minidrone_raw);
 	      // send data in cm?
-	      float range = sonar_swing_raw/42; //fixme
+	      float range = sonar_parrot_minidrone_raw/42; //fixme
 	      printf("Sonar range: %f\n", range);
-	     // AbiSendMsgBARO_ABS(SONAR_BOARD_SENDER_ID, range);
+	     // AbiSendMsgBARO_ABS(SONAR_BOARD_SENDER_ID, distance);
     }
   }
 
   return NULL;
 }
 
+/**
+ * Bottom camera reading thread
+ */
+//static void *bottom_camera_read(void *data __attribute__((unused)))
+//{
+//  //TODO: No bottom camera implemeted yet, feel free to help out and create it...
+//  return NULL;
+//}
 
 
 void board_init(void)
@@ -196,26 +205,33 @@ void board_init(void)
   /* Start battery reading thread */
   pthread_t bat_thread;
   if (pthread_create(&bat_thread, NULL, bat_read, NULL) != 0) {
-    printf("[swing_board] Could not create battery reading thread!\n");
+    printf("[parrot_minidrone_board] Could not create battery reading thread!\n");
   }
 
   /* Start button reading thread */
   pthread_t button_thread;
   if (pthread_create(&button_thread, NULL, button_read, NULL) != 0) {
-    printf("[swing_board] Could not create button reading thread!\n");
+    printf("[parrot_minidrone_board] Could not create button reading thread!\n");
   }
 
   /* Start baro reading thread */
   pthread_t baro_thread;
   if (pthread_create(&baro_thread, NULL, baro_read, NULL) != 0) {
-    printf("[swing_board] Could not create baro reading thread!\n");
+    printf("[parrot_minidrone_board] Could not create baro reading thread!\n");
   }
 
   /* Start sonar reading thread */
   pthread_t sonar_thread;
-  if (pthread_create(&sonar_thread, NULL, sonar_read, NULL) != 0) {
-    printf("[swing_board] Could not create sonar reading thread!\n");
-  }
+  //if (pthread_create(&sonar_thread, NULL, sonar_read, NULL) != 0) {
+  //  printf("[parrot_minidrone_board] Could not create sonar reading thread!\n");
+  //}
+
+  /* Start bottom_camera reading thread */
+ // pthread_t bottom_camera_thread;
+ // if (pthread_create(&bottom_camera_thread, NULL, bottom_camera_read, NULL) != 0) {
+//    printf("[parrot_minidrone_board] Could not create bottom camera reading thread!\n");
+ // }
+  //IDEA: check ram and storage size left and give warning if below a certin treshhole
 }
 
 void board_init2(void){/* Not used yet feel fee to inject you improved sourcecode here*/}
