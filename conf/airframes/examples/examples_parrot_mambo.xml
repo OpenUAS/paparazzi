@@ -5,7 +5,13 @@
   <firmware name="rotorcraft">
     <configure name="PREFIX" value="/opt/arm-2012.03/bin/arm-none-linux-gnueabi"/>
 
-    <target name="ap" board="parrot_minidrone"/>
+    <target name="ap" board="parrot_minidrone">
+      <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>-->
+      <define name="BAT_CHECKER_DELAY" value="50"/>
+      <!-- amount of time it take for the bat to check -->
+      <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
+      <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
+    </target>
 
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
@@ -21,17 +27,27 @@
     <module name="actuators" type="parrot_minidrone"/>
     <module name="imu" type="parrot_minidrone"/>
       
-    <!--  <module name="gps" type="datalink"/>--> <!-- For Optitrack or comparable systems -->
-    <module name="gps"           type="ublox"/> <!-- via the microusb on backside connected via an UsB to serial cable -->
+    <module name="gps" type="datalink"/> <!-- For Optitrack or comparable systems -->
+
+     <!--    <module name="gps" type="ublox"> -->
+    <!--
+      <configure name="GPS_BAUD" value="B57600"/>
+      <configure name="GPS_PORT" value="UART2"/>
+      -->
+    <!--  </module>-->
+    <!-- via the microusb on backside connected via an UsB to serial cable -->
     <module name="stabilization" type="int_quat"/>
-    <module name="ahrs"          type="int_cmpl_quat"/>
+    <module name="ahrs"          type="int_cmpl_quat">
+      <configure name="USE_MAGNETOMETER" value="FALSE"/>
+      <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
+    </module>
     <module name="ins"           type="extended"/>
   </firmware>
     
     
   <modules main_freq="512">
-  <!--   <module name="air_data"/>
-    <module name="send_imu_mag_current"/>
+    <module name="air_data"/>
+   <!--  <module name="send_imu_mag_current"/>
     
     <module name="gps" type="ubx_ucenter"/>
     <module name="geo_mag"/>-->
@@ -111,10 +127,14 @@
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- Delft -->
-    <define name="H_X" value="0.3892503"/>
-    <define name="H_Y" value="0.0017972"/>
-    <define name="H_Z" value="0.9211303"/>
+    <!-- Local Magnetic field NL Testfield-->   
+     <define name="H_X" value="0.382478"/>
+     <define name="H_Y" value="0.00563406"/>
+     <define name="H_Z" value="0.923948"/>
+    <!-- Local Magnetic field DE Testfield 
+    <define name="H_X" value="0.403896"/>
+    <define name="H_Y" value="0.012277"/>
+    <define name="H_Z" value="0.914723"/>-->
   </section>
 
   <section name="INS" prefix="INS_">
@@ -122,6 +142,16 @@
     <define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>
   </section>
 
+  <section name="RC_SETPOINT" prefix="STABILIZATION_ATTITUDE_">
+    <!-- setpoint limits for attitude stabilization rc flight -->
+    <define name="SP_MAX_PHI" value="45" unit="deg"/>
+    <define name="SP_MAX_THETA" value="45" unit="deg"/>
+    <define name="SP_MAX_R" value="180" unit="deg/s"/>
+    <define name="DEADBAND_A" value="0"/>
+    <define name="DEADBAND_E" value="0"/>
+    <define name="DEADBAND_R" value="250"/>
+  </section>
+  
   <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
     <!-- setpoints -->
     <define name="SP_MAX_P" value="10000"/>
@@ -219,6 +249,7 @@
     <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_Z_HOLD"/>
     <!-- define name="MODE_AUTO1" value="AP_MODE_MODULE"/>
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/-->
+    <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
   </section>
 
   <section name="BAT">
@@ -227,4 +258,23 @@
     <define name="LOW_BAT_LEVEL" value="3.5" unit="V"/>
     <define name="MAX_BAT_LEVEL" value="4.2" unit="V"/>
   </section>
+  
+  <!-- ************************ GCS SPECIFICS ******************************** -->
+  <section name="GCS">
+    <define name="SPEECH_NAME" value="Mambo"/>
+    <define name="AC_ICON" value="quadrotor_x"/>
+    <define name="ALT_SHIFT_PLUS_PLUS" value="2"/>
+    <define name="ALT_SHIFT_PLUS" value="1"/> 
+    <define name="ALT_SHIFT_MINUS" value="-1"/>
+  </section>
+  
+  <section name="MISC">
+      <!--UNLOCKED_HOME_MODE if set to TRUE means that HOME mode does not get stuck.
+    If not set before when you would enter home mode you had to flip a bit via the GCS to get out. -->
+    <define name="UNLOCKED_HOME_MODE" value="TRUE"/>
+    <!-- RC_LOST_MODE means that if your RC Transmitter signal is not received anymore in the autopilot, e.g. you switch it off
+    or  fly a long range mission you define the wanted mode behaviour here.
+    If you do not define it, it defaults to flying to the flightplan HOME -->
+    <define name="RC_LOST_MODE" value="MODE_AUTO2"/>
+   </section>
 </airframe>

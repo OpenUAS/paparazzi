@@ -99,13 +99,13 @@ void imu_parrot_minidrone_event(void)
     /* ???default orientation of the MPU is upside down and in plane mode
      * ???turn it to have rotorcraft mode by default */
     RATES_ASSIGN(imu.gyro_unscaled,
-        -imu_parrot_minidrone.mpu.data_rates.rates.r,
+        imu_parrot_minidrone.mpu.data_rates.rates.p,
         -imu_parrot_minidrone.mpu.data_rates.rates.q,
-        -imu_parrot_minidrone.mpu.data_rates.rates.p);
+        -imu_parrot_minidrone.mpu.data_rates.rates.r);
     VECT3_ASSIGN(imu.accel_unscaled,
-        -imu_parrot_minidrone.mpu.data_accel.vect.z,
+        imu_parrot_minidrone.mpu.data_accel.vect.x,
         -imu_parrot_minidrone.mpu.data_accel.vect.y,
-        -imu_parrot_minidrone.mpu.data_accel.vect.x);
+        -imu_parrot_minidrone.mpu.data_accel.vect.z);
 
     imu_parrot_minidrone.mpu.data_available = false;
     imu_scale_gyro(&imu);
