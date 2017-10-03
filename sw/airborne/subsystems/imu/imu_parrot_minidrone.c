@@ -22,7 +22,7 @@
 
 /**
  * @file subsystems/imu/imu_parrot_minidrone.c
- * Driver for Parrot Minidrone accelerometer, gyroscope and magnetometer
+ * Driver for Parrot Minidrone accelerometer, gyroscope
  */
 
 #include "subsystems/imu.h"
@@ -40,8 +40,8 @@ PRINT_CONFIG_VAR(PARROT_MINIDRONE_MPU_I2C_DEV)
 /* Accelerometer: Bandwidth 44Hz, Delay 4.9ms
  * Gyroscope: Bandwidth 42Hz, Delay 4.8ms sampling 1kHz
  */
-#define SWING_LOWPASS_FILTER MPU60X0_DLPF_42HZ
-#define SWING_SMPLRT_DIV 9
+#define PARROT_MINIDRONE_LOWPASS_FILTER MPU60X0_DLPF_42HZ
+#define PARROT_MINIDRONE_SMPLRT_DIV 9
 PRINT_CONFIG_MSG("Gyro/Accel output rate is 100Hz at 1kHz internal sampling")
 #elif PERIODIC_FREQUENCY == 512
 /* Accelerometer: Bandwidth 260Hz, Delay 0ms
@@ -75,7 +75,7 @@ void imu_parrot_minidrone_init(void)
 }
 
 /**
- * Handle all the periodic tasks of the Navstik IMU components.
+ * Handle all the periodic tasks of the Parrot Minidrone IMU components.
  * Read the MPU60x0 every periodic call
  */
 void imu_parrot_minidrone_periodic(void)
@@ -85,14 +85,14 @@ void imu_parrot_minidrone_periodic(void)
 }
 
 /**
- * Handle all the events of the Navstik IMU components.
+ * Handle all the events of the Parrot IMU components.
  * When there is data available convert it to the correct axis and save it in the imu structure.
  */
 void imu_parrot_minidrone_event(void)
 {
   uint32_t now_ts = get_sys_time_usec();
 
-  /* MPU-60x0 event taks */
+  /* MPU-60x0 event tasks */
   mpu60x0_i2c_event(&imu_parrot_minidrone.mpu);
 
   if (imu_parrot_minidrone.mpu.data_available) {
@@ -112,21 +112,7 @@ void imu_parrot_minidrone_event(void)
     imu_scale_accel(&imu);
     AbiSendMsgIMU_GYRO_INT32(IMU_BOARD_ID, now_ts, &imu.gyro);
     AbiSendMsgIMU_ACCEL_INT32(IMU_BOARD_ID, now_ts, &imu.accel);
-
   }
 
-  /* HMC58XX event task */
- /*
-  hmc58xx_event(&imu_mpu_hmc.hmc);
-  if (imu_mpu_hmc.hmc.data_available) {
-    // FIXME: ??? mag by default rotated by 90deg around z axis relative to MPU
-    imu.mag_unscaled.x = IMU_HMC_X_SIGN * imu_mpu_hmc.hmc.data.value[IMU_HMC_CHAN_X];
-    imu.mag_unscaled.y = IMU_HMC_Y_SIGN * imu_mpu_hmc.hmc.data.value[IMU_HMC_CHAN_Y];
-    imu.mag_unscaled.z = IMU_HMC_Z_SIGN * imu_mpu_hmc.hmc.data.value[IMU_HMC_CHAN_Z];
-    imu_mpu_hmc.hmc.data_available = false;
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.mag);
-  }
-  */
 }
 
