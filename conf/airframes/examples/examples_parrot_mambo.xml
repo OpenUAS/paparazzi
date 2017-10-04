@@ -47,11 +47,11 @@
       <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
       
       
-      <define name="PARROT_MINIDRONE_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+     <!--  <define name="PARROT_MINIDRONE_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
       <define name="PARROT_MINIDRONE_SMPLRT_DIV" value="3"/>
       
       <define name="PARROT_MINIDRONE_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_1000"/>
-      <define name="PARROT_MINIDRONE_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>
+      <define name="PARROT_MINIDRONE_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>-->
     </target>
 
     <target name="nps" board="pc">
@@ -63,8 +63,9 @@
     <!-- debugging -->
     <!--  <define name="ACTUATORS_PARROT_MINIDRONE_DEBUG" value="TRUE"/>-->
     
-    <define name="USE_SONAR" value="FALSE"/>
-    <define name="USE_BARO" value="FALSE"/>
+    <define name="USE_SONAR" value="0"/>
+    <define name="USE_BARO" value="0"/>
+    <configure name="USE_MAGNETOMETER" value="0"/>
 
     <module name="radio_control" type="datalink"/>
     <module name="telemetry" type="transparent_udp"/>
@@ -83,17 +84,18 @@
     <!-- via the microusb on backside connected via an UsB to serial cable -->
     <module name="stabilization" type="int_quat"/>
     <module name="ahrs"          type="int_cmpl_quat">
-      <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- First autoflight set to false better make sure it works and is callibrated if set to TRUE -->
-     <!--   <configure name="AHRS_ALIGNER_LED" value="2"/>-->
-     	<define name="AHRS_USE_GPS_HEADING" value="FALSE"/><!-- Use GPS course to update heading for time being,if FALSE data from magneto only, testing, brrrr... -->
-     	<define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/> <!-- Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
-     	<define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
+        <!--  <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/>--> <!-- First autoflight set to false better make sure it works and is callibrated if set to TRUE -->
+        <!--  <configure name="AHRS_ALIGNER_LED" value="2"/>-->
+     	<!--  <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>--><!-- Use GPS course to update heading for time being,if FALSE data from magneto only, testing, brrrr... -->
+     	<!-- <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/>--> <!-- Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
+     	<!--  <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
      	<!--  <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="TRUE"/>--> <!-- apply a low pass filter on rotational velocity"-->
      	<!-- <define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="5.0"/>--> <!-- don't update gyro bias if heading deviation is above this threshold in degrees"-->
-     	<define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="0.0"/> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
+     	<!--  <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="0.0"/>--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
   <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
-     	<define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="3.0"/> <!-- Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. Set to 0 in case of vibrations -->
+     	<!-- <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="30.0"/>--> <!-- Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. Set to 0 in case of vibrations -->
     </module>
+   
     <module name="ins"           type="extended"/>
   </firmware>
     
@@ -165,8 +167,6 @@
     <set servo="BOTTOM_LEFT" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
   </command_laws>
 
-
-
   <section name="AIR_DATA" prefix="AIR_DATA_">
     <define name="CALC_AIRSPEED" value="FALSE"/>
     <define name="CALC_TAS_FACTOR" value="FALSE"/>
@@ -203,55 +203,61 @@
     <define name="H_X" value="0.403896"/>
     <define name="H_Y" value="0.012277"/>
     <define name="H_Z" value="0.914723"/>-->
+       <!-- Use GPS heading instead of magneto for in Optitrack flights this is possible even without XY movement -->
+    <define name="USE_GPS_HEADING" value="1"/>
+    <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="0"/>
   </section>
 
   <section name="INS" prefix="INS_">
     <define name="SONAR_MAX_RANGE" value="3.0"/>
     <define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>
+    <!-- Use GPS altitude measurments and set the R gain -->
+    <!--  for Optitrack flight -->
+    <define name="USE_GPS_ALT" value="1"/>
+    <define name="VFF_R_GPS" value="0.01"/>
   </section>
 
-  <section name="RC_SETPOINT" prefix="STABILIZATION_ATTITUDE_">
-    <!-- setpoint limits for attitude stabilization rc flight -->
+  <!-- setpoint limits for attitude stabilization rc flight -->
+  <!-- <section name="RC_SETPOINT" prefix="STABILIZATION_ATTITUDE_">
     <define name="SP_MAX_PHI" value="25" unit="deg"/>
     <define name="SP_MAX_THETA" value="25" unit="deg"/>
     <define name="SP_MAX_R" value="180" unit="deg/s"/>
     <define name="DEADBAND_A" value="0"/>
     <define name="DEADBAND_E" value="0"/>
     <define name="DEADBAND_R" value="150"/>
-  </section>
+  </section>-->
   
   
-  <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
+   <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
     <!-- setpoints -->
     <define name="SP_MAX_P" value="10000"/>
     <define name="SP_MAX_Q" value="10000"/>
     <define name="SP_MAX_R" value="10000"/>
-    <define name="DEADBAND_P" value="0"/>
-    <define name="DEADBAND_Q" value="0"/>
-    <define name="DEADBAND_R" value="100"/>
+    <define name="DEADBAND_P" value="20"/>
+    <define name="DEADBAND_Q" value="20"/>
+    <define name="DEADBAND_R" value="200"/>
     <define name="REF_TAU" value="4"/>
 
     <!-- feedback -->
     <define name="GAIN_P" value="400"/>
     <define name="GAIN_Q" value="400"/>
-    <define name="GAIN_R" value="250"/>
+    <define name="GAIN_R" value="350"/>
 
-    <define name="IGAIN_P" value="50"/>
-    <define name="IGAIN_Q" value="50"/>
-    <define name="IGAIN_R" value="30"/>
+    <define name="IGAIN_P" value="75"/>
+    <define name="IGAIN_Q" value="75"/>
+    <define name="IGAIN_R" value="50"/>
 
     <!-- feedforward -->
     <define name="DDGAIN_P" value="300"/>
     <define name="DDGAIN_Q" value="300"/>
     <define name="DDGAIN_R" value="300"/>
-    
   </section>
 
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
     <!-- setpoints -->
-    <define name="SP_MAX_PHI" value="25" unit="deg"/>
-    <define name="SP_MAX_THETA" value="25" unit="deg"/>
-    <define name="SP_MAX_R" value="90" unit="deg/s"/>
+    <define name="SP_MAX_PHI" value="45" unit="deg"/>
+    <define name="SP_MAX_THETA" value="45" unit="deg"/>
+    <define name="SP_MAX_R" value="300" unit="deg/s"/>
     <define name="DEADBAND_A" value="0"/>
     <define name="DEADBAND_E" value="0"/>
     <define name="DEADBAND_R" value="50"/>
@@ -273,16 +279,16 @@
     <define name="REF_MAX_RDOT" value="RadOfDeg(8000.)"/>
 
     <!-- feedback -->
-    <define name="PHI_PGAIN" value="850"/>
-    <define name="PHI_DGAIN" value="425"/>
+    <define name="PHI_PGAIN" value="650"/>
+    <define name="PHI_DGAIN" value="300"/>
     <define name="PHI_IGAIN" value="0"/>
 
-    <define name="THETA_PGAIN" value="850"/>
-    <define name="THETA_DGAIN" value="425"/>
+    <define name="THETA_PGAIN" value="650"/>
+    <define name="THETA_DGAIN" value="300"/>
     <define name="THETA_IGAIN" value="0"/>
 
-    <define name="PSI_PGAIN" value="1000"/>
-    <define name="PSI_DGAIN" value="700"/>
+    <define name="PSI_PGAIN" value="300"/>
+    <define name="PSI_DGAIN" value="250"/>
     <define name="PSI_IGAIN" value="0"/>
 
     <!-- feedforward -->
@@ -295,17 +301,16 @@
     <define name="HOVER_KP" value="283"/>
     <define name="HOVER_KD" value="82"/>
     <define name="HOVER_KI" value="13"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.6"/>
+    <define name="NOMINAL_HOVER_THROTTLE" value="0.655"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="TRUE"/>
-  </section>
+</section>
 
   <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-    <define name="MAX_BANK" value="20" unit="deg"/><!-- TODO: check -->
-    <define name="PGAIN" value="80"/>
+    <define name="MAX_BANK" value="20" unit="deg"/>
+    <define name="PGAIN" value="79"/>
     <define name="DGAIN" value="100"/>
-    <define name="IGAIN" value="10"/>
+    <define name="IGAIN" value="30"/>
   </section>
-
   <section name="SIMULATOR" prefix="NPS_">
     <define name="ACTUATOR_NAMES" value="nw_motor, ne_motor, se_motor, sw_motor" type="string[]"/>
     <define name="JSBSIM_MODEL" value="simple_x_quad_ccw" type="string"/>
@@ -313,18 +318,22 @@
   </section>
 
   <section name="AUTOPILOT">
-    <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/> <!--  AP_MODE_RC_DIRECT"/> -->
+   <!-- <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/>
+    <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/> 
     <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_Z_HOLD"/><!-- AP_MODE_ATTITUDE_Z_HOLD -->
-    <!--  With External GPS with Magneto module 
+    <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_Z_HOLD"/>-->
+    <!--  With External GPS with Magneto module -->
     <define name="MODE_STARTUP" value="AP_MODE_NAV"/>
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
     <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_DIRECT"/>
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/>
-    -->
+    
+    <!--  AP_MODE_RC_DIRECT"/> -->
+    <!-- AP_MODE_ATTITUDE_Z_HOLD -->
+    
     <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
+    <define name="ARRIVED_AT_WAYPOINT" value="0.15"/>
   </section>
 
   <section name="BAT">

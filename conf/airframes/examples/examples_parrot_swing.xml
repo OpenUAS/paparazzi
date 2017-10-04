@@ -42,8 +42,9 @@
     <!-- debugging -->
     <!--  <define name="ACTUATORS_PARROT_MINIDRONE_DEBUG" value="TRUE"/>--> 
     
-    <define name="USE_SONAR" value="FALSE"/>
-    <define name="USE_BARO" value="FALSE"/>
+    <define name="USE_SONAR" value="0"/>
+    <define name="USE_BARO" value="0"/>
+    <configure name="USE_MAGNETOMETER" value="0"/>
 
     <module name="radio_control" type="datalink"/>
     <module name="telemetry" type="transparent_udp"/>
@@ -154,11 +155,19 @@
     <define name="H_X" value="0.3892503"/>
     <define name="H_Y" value="0.0017972"/>
     <define name="H_Z" value="0.9211303"/>
+    
+    <!-- Use GPS heading instead of magneto for in Optitrack flights this is possible even without XY movement -->
+    <define name="USE_GPS_HEADING" value="1"/>
+    <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="0"/>
   </section>
 
   <section name="INS" prefix="INS_">
     <define name="SONAR_MAX_RANGE" value="3.0"/>
     <define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>
+    <!-- Use GPS altitude measurments and set the R gain -->
+    <!--  for Optitrack flight -->
+    <define name="USE_GPS_ALT" value="1"/>
+    <define name="VFF_R_GPS" value="0.01"/>
   </section>
 
    <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
@@ -268,10 +277,10 @@
   </section>
 
   <section name="AUTOPILOT">
-    <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/>
+    <define name="MODE_STARTUP" value="AP_MODE_NAV"/>
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/> <!--  AP_MODE_RC_DIRECT"/> -->
     <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_DIRECT"/><!-- AP_MODE_ATTITUDE_Z_HOLD -->
+    <define name="MODE_AUTO2" value="AP_MODE_NAV"/><!-- AP_MODE_ATTITUDE_Z_HOLD -->
     <!--  With External GPS with Magneto module 
     <define name="MODE_STARTUP" value="AP_MODE_NAV"/>
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
@@ -280,6 +289,7 @@
     -->
     <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
+    <define name="ARRIVED_AT_WAYPOINT" value="0.15"/>
   </section>
 
   <section name="BAT">
