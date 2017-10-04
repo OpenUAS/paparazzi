@@ -119,7 +119,7 @@
     <axis name="PITCH"  failsafe_value="0"/>
     <axis name="ROLL"   failsafe_value="0"/>
     <axis name="YAW"    failsafe_value="0"/>
-    <axis name="THRUST" failsafe_value="2000"/>
+    <axis name="THRUST" failsafe_value="1000"/>
   </commands>
 
   <servos>
