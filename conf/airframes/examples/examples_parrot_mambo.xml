@@ -102,19 +102,42 @@
     
   <modules main_freq="512">
     <module name="air_data"/>
-   <!--  <module name="send_imu_mag_current"/>
+   <!--  <module name="send_imu_mag_current"/>--> <!-- if using external mag -->
     
-    <module name="gps" type="ubx_ucenter"/>
-    <module name="geo_mag"/>-->
+   <!-- <module name="gps" type="ubx_ucenter"/>-->
+   <!-- <module name="geo_mag"/>-->
 
    <!--  <module name="logger_file">
       <define name="FILE_LOGGER_PATH" value="/data/edu"/>
     </module> -->
-    <!-- module name="video_thread"/ -->
-    <!-- module name="cv_opticflow">
+      
+    <module name="video_thread">
+      <define name="VVIDEO_FILTER_DEBAYER" value="0"/>
+      <define name="VIDEO_THREAD_MAX_CAMERAS" value="1"/>
+    </module>
+
+   <!--   <module name="cv_colorfilter">
+     <define name="COLORFILTER_CAMERA" value="bottom_camera"/>
+    </module>-->
+   <module name="video_rtp_stream">
+       <!--  <define name="VIEWVIDEO_DEVICE" value="/dev/video0"/>
+      <define name="VIEWVIDEO_SUBDEV" value="/dev/v4l-subdev0"/>-->
+      
+      <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
+      <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="4"/>
+      <define name="VIEWVIDEO_QUALITY_FACTOR" value="60"/>
+      <define name="VIEWVIDEO_FPS" value="30"/>
+      <define name="VIEWVIDEO_DEVICE_BUFFERS" value="1"/>
+      <define name="VIEWVIDEO_DEVICE_SIZE" value="320,240"/>
+
+      <!-- <define name="VIEWVIDEO_SHOT_PATH" value="/data/edu/images"/>-->
+    </module>
+    
+    <!--  <module name="cv_opticflow">
       <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
-    </module -->
+    </module>-->
     <!--module name="opticflow_hover"/-->
+
   </modules>
    
   <commands>

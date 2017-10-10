@@ -26,7 +26,6 @@
 // Own header
 #include "modules/computer_vision/video_thread.h"
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -96,7 +95,11 @@ static void *video_thread_function(void *data)
   // create the images
   if (vid->filters & VIDEO_FILTER_DEBAYER) {
     // fixme: don't hardcode size, works for bebop front camera for now
-#define IMG_FLT_SIZE 272
+    #ifdef BOARD_BEBOP
+    #define IMG_FLT_SIZE 272
+    #else
+    #define IMG_FLT_SIZE 20
+    #endif
     image_create(&img_color, IMG_FLT_SIZE, IMG_FLT_SIZE, IMAGE_YUV422);
   }
 
@@ -183,6 +186,8 @@ static bool initialize_camera(struct video_config_t *camera)
   if (camera->thread.dev == NULL) {
     printf("[video_thread] Could not initialize the %s V4L2 device.\n", camera->dev_name);
     return false;
+  } else {
+	printf("[video_thread] Yes, initialized the %s V4L2 device.\n", camera->dev_name);
   }
 
   // Initialize OK

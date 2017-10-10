@@ -40,10 +40,138 @@
 #include <linux/input.h>
 
 #include "mcu.h"
+
+#ifndef V4L2_BUF_FLAG_ERROR
+#define V4L2_BUF_FLAG_ERROR	0x0040
+#endif
+
+// not used atm but thingy below #include <linux/videodev2.h>
+#include "modules/computer_vision/lib/v4l/v4l2.h"
+#include "peripherals/video_device.h"
+
 #include "boards/parrot_minidrone.h"
 #include "subsystems/electrical.h"
 #include "subsystems/sensors/baro.h"
 #include "subsystems/abi.h"
+
+static struct {
+	const char *name;
+	unsigned int fourcc;
+} pixel_formats[] = {
+	{ "RGB332", V4L2_PIX_FMT_RGB332 },
+	{ "RGB555", V4L2_PIX_FMT_RGB555 },
+	{ "RGB565", V4L2_PIX_FMT_RGB565 },
+	{ "RGB555X", V4L2_PIX_FMT_RGB555X },
+	{ "RGB565X", V4L2_PIX_FMT_RGB565X },
+	{ "BGR24", V4L2_PIX_FMT_BGR24 },
+	{ "RGB24", V4L2_PIX_FMT_RGB24 },
+	{ "BGR32", V4L2_PIX_FMT_BGR32 },
+	{ "RGB32", V4L2_PIX_FMT_RGB32 },
+	{ "Y8", V4L2_PIX_FMT_GREY },
+	{ "Y10", V4L2_PIX_FMT_Y10 },
+	{ "Y12", V4L2_PIX_FMT_Y12 },
+	{ "Y16", V4L2_PIX_FMT_Y16 },
+	{ "YUYV", V4L2_PIX_FMT_YUYV },
+	{ "UYVY", V4L2_PIX_FMT_UYVY },
+	{ "SBGGR8", V4L2_PIX_FMT_SBGGR8 },
+	{ "SGBRG8", V4L2_PIX_FMT_SGBRG8 },
+	{ "SGRBG8", V4L2_PIX_FMT_SGRBG8 },
+	{ "SRGGB8", V4L2_PIX_FMT_SRGGB8 },
+	{ "SGRBG10_DPCM8", V4L2_PIX_FMT_SGRBG10DPCM8 },
+	{ "SBGGR10", V4L2_PIX_FMT_SBGGR10 },
+	{ "SGBRG10", V4L2_PIX_FMT_SGBRG10 },
+	{ "SGRBG10", V4L2_PIX_FMT_SGRBG10 },
+	{ "SRGGB10", V4L2_PIX_FMT_SRGGB10 },
+	{ "SBGGR12", V4L2_PIX_FMT_SBGGR12 },
+	{ "SGBRG12", V4L2_PIX_FMT_SGBRG12 },
+	{ "SGRBG12", V4L2_PIX_FMT_SGRBG12 },
+	{ "SRGGB12", V4L2_PIX_FMT_SRGGB12 },
+	{ "DV", V4L2_PIX_FMT_DV },
+	{ "MJPEG", V4L2_PIX_FMT_MJPEG },
+	{ "MPEG", V4L2_PIX_FMT_MPEG },
+};
+
+static const char *v4l2_format_name(unsigned int fourcc)
+{
+	static char name[5];
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(pixel_formats); ++i) {
+		if (pixel_formats[i].fourcc == fourcc)
+			return pixel_formats[i].name;
+	}
+
+	for (i = 0; i < 4; ++i) {
+		name[i] = fourcc & 0xff;
+		fourcc >>= 8;
+	}
+
+	name[4] = '\0';
+	return name;
+}
+
+static unsigned int v4l2_format_code(const char *name)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(pixel_formats); ++i) {
+		if (strcasecmp(pixel_formats[i].name, name) == 0)
+			return pixel_formats[i].fourcc;
+	}
+
+	return 0;
+}
+
+//TODO use /dev/vertical_camera
+
+//Bottom and front are Same for now
+struct video_config_t front_camera = {
+  .output_size = {
+    .w = 320,
+    .h = 240
+  },
+  .sensor_size = {
+    .w = 640,
+    .h = 480
+  },
+  .crop = {
+    .x = 0,
+    .y = 0,
+    .w = 320,
+    .h = 240
+  },
+  .dev_name = "/dev/video0",
+  .subdev_name = NULL,
+  .format = V4L2_PIX_FMT_YUYV,
+  .buf_cnt = 2,
+  .filters = 0,
+  .cv_listener=NULL,
+  .fps = 0
+};
+
+struct video_config_t bottom_camera = {
+  .output_size = {
+    .w = 320,
+    .h = 240
+  },
+  .sensor_size = {
+    .w = 640,
+    .h = 480
+  },
+  .crop = {
+    .x = 0,
+    .y = 0,
+    .w = 320,
+    .h = 240
+  },
+  .dev_name = "/dev/video0",
+  .subdev_name = NULL,
+  .format = V4L2_PIX_FMT_YUYV,
+  .buf_cnt = 2,
+  .filters = 0,
+  .cv_listener=NULL,
+  .fps = 0
+};
 
 
 /**
@@ -135,7 +263,7 @@ static void *baro_read(void *data __attribute__((unused)))
 	      // From datasheet: raw_pressure / 4096 -> pressure in hPa
 	      // send data in Pa
 	      float pressure = 100.f * ((float)baro_parrot_minidrone_raw) / 4096.f;
-	      printf("Baro pressure: %f\n", pressure);
+	      //printf("Baro pressure: %f\n", pressure);
 	      AbiSendMsgBARO_ABS(BARO_BOARD_SENDER_ID, pressure);
     }
   }
