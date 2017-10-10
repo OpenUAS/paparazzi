@@ -98,7 +98,7 @@ static void *video_thread_function(void *data)
     #ifdef BOARD_BEBOP
     #define IMG_FLT_SIZE 272
     #else
-    #define IMG_FLT_SIZE 20
+    #define IMG_FLT_SIZE 100
     #endif
     image_create(&img_color, IMG_FLT_SIZE, IMG_FLT_SIZE, IMAGE_YUV422);
   }

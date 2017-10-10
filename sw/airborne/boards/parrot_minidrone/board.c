@@ -127,8 +127,8 @@ static unsigned int v4l2_format_code(const char *name)
 //Bottom and front are Same for now
 struct video_config_t front_camera = {
   .output_size = {
-    .w = 320,
-    .h = 240
+    .w = 640,
+    .h = 480
   },
   .sensor_size = {
     .w = 640,
@@ -137,13 +137,13 @@ struct video_config_t front_camera = {
   .crop = {
     .x = 0,
     .y = 0,
-    .w = 320,
-    .h = 240
+    .w = 640,
+    .h = 480
   },
   .dev_name = "/dev/video0",
   .subdev_name = NULL,
   .format = V4L2_PIX_FMT_YUYV,
-  .buf_cnt = 2,
+  .buf_cnt = 60,
   .filters = 0,
   .cv_listener=NULL,
   .fps = 0
@@ -151,8 +151,8 @@ struct video_config_t front_camera = {
 
 struct video_config_t bottom_camera = {
   .output_size = {
-    .w = 320,
-    .h = 240
+    .w = 640,
+    .h = 480
   },
   .sensor_size = {
     .w = 640,
@@ -161,13 +161,13 @@ struct video_config_t bottom_camera = {
   .crop = {
     .x = 0,
     .y = 0,
-    .w = 320,
-    .h = 240
+    .w = 640,
+    .h = 480
   },
   .dev_name = "/dev/video0",
   .subdev_name = NULL,
   .format = V4L2_PIX_FMT_YUYV,
-  .buf_cnt = 2,
+  .buf_cnt = 60,
   .filters = 0,
   .cv_listener=NULL,
   .fps = 0
@@ -329,6 +329,8 @@ void board_init(void)
   ret = system("pstop delosd");
   ret = system("pstop dragon-prog");
   usleep(50000); /* Give 50ms time to end on a busy system */
+
+  //TODO set busybox "ulimit -s 512" so we do not get out of memeory for threads
 
   /* Start battery reading thread */
   pthread_t bat_thread;

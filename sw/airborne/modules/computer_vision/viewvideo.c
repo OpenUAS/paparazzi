@@ -121,6 +121,7 @@ static struct image_t *viewvideo_function(struct UdpSocket *socket, struct image
 
   // Create the JPEG encoded image
   struct image_t img_jpeg;
+  //FIXME while Debugging memory issue
   image_create(&img_jpeg, img_small.w, img_small.h, IMAGE_JPEG);
 
 #if VIEWVIDEO_USE_NETCAT
