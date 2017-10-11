@@ -326,13 +326,15 @@ void board_init(void)
    *
    */
   int ret __attribute__((unused));
+
   ret = system("pstop delosd");
   ret = system("pstop dragon-prog");
+  //Set busybox "ulimit -s 512" (or to determine best value ATM so we do not get out of memory for video or other threads
+  ret = system("ulimit -s 512");//FIXME: Does not work with runnig Process
   usleep(50000); /* Give 50ms time to end on a busy system */
 
-  //TODO set busybox "ulimit -s 512" so we do not get out of memeory for threads
 
-  /* Start battery reading thread */
+  /* Start battery reading thread (To a module?*/
   pthread_t bat_thread;
   if (pthread_create(&bat_thread, NULL, bat_read, NULL) != 0) {
     printf("[parrot_minidrone_board] Could not create battery reading thread!\n");
@@ -344,7 +346,7 @@ void board_init(void)
     printf("[parrot_minidrone_board] Could not create button reading thread!\n");
   }
 
-  /* Start baro reading thread */
+  /* Start baro reading thread */ //TODO make it optional, a module?
   pthread_t baro_thread;
   if (pthread_create(&baro_thread, NULL, baro_read, NULL) != 0) {
     printf("[parrot_minidrone_board] Could not create baro reading thread!\n");
@@ -356,12 +358,13 @@ void board_init(void)
   //  printf("[parrot_minidrone_board] Could not create sonar reading thread!\n");
   //}
 
+  //TODO: remove will be handeled by module?
   /* Start bottom_camera reading thread */
  // pthread_t bottom_camera_thread;
  // if (pthread_create(&bottom_camera_thread, NULL, bottom_camera_read, NULL) != 0) {
 //    printf("[parrot_minidrone_board] Could not create bottom camera reading thread!\n");
  // }
-  //IDEA: check ram and storage size left and give warning if below a certin treshhole
+  //IDEA: check ram and storage size left and give warning if below a certin treshhold
 }
 
 void board_init2(void){/* Not used yet feel fee to inject you improved sourcecode here*/}

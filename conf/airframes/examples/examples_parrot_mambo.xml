@@ -112,33 +112,47 @@
     </module> -->
       
     <module name="video_thread">
-      <define name="VVIDEO_FILTER_DEBAYER" value="0"/>
-      <define name="VIDEO_THREAD_MAX_CAMERAS" value="1"/>
-      <define name="VIDEO_THREAD_NICE_LEVEL" value="2"/>
-      <define name="SYS_TIME_THREAD_PRIO" value="6"/>
+      <!-- <define name="VIDEO_FILTER_DEBAYER" value="0"/>-->
+      <define name="VIDEO_THREAD_MAX_CAMERAS" value="2"/>
+      <!-- <define name="VIDEO_THREAD_NICE_LEVEL" value="0"/>-->
+      <!-- <define name="SYS_TIME_THREAD_PRIO" value="2"/>-->
     </module>
 
    <!--   <module name="cv_colorfilter">
      <define name="COLORFILTER_CAMERA" value="bottom_camera"/>
     </module>-->
+    
    <module name="video_rtp_stream">
        <!--  <define name="VIEWVIDEO_DEVICE" value="/dev/video0"/>
       <define name="VIEWVIDEO_SUBDEV" value="/dev/v4l-subdev0"/>-->
       
+      <!--  <define name="VIEWVIDEO_NICE_LEVEL" value="0"/>-->
       <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
       <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="4"/>
-      <define name="VIEWVIDEO_QUALITY_FACTOR" value="60"/>
-      <!--  <define name="VIEWVIDEO_FPS" value="30"/>-->
-      <define name="VIEWVIDEO_DEVICE_BUFFERS" value="1"/>
+      <define name="VIEWVIDEO_QUALITY_FACTOR" value="40"/>
+      <define name="VIEWVIDEO_DEVICE_BUFFERS" value="2"/>
       <!-- <define name="VIEWVIDEO_DEVICE_SIZE" value="320,240"/>-->
 
-      <!-- <define name="VIEWVIDEO_SHOT_PATH" value="/data/edu/images"/>-->
+      <configure name="VIEWVIDEO_HOST" value="192.168.3.2" />
+      <configure name="VIEWVIDEO_BROADCAST" value="TRUE" />
+      
+      <define name="VIEWVIDEO_FPS" value="10" />
+      
+      <define name="VIEWVIDEO_STREAM_VIDEO" value="TRUE" />
+      
+      <define name="VIEWVIDEO_SHOT_PATH" value="/data/edu/images"/>
+      <define name="VIEWVIDEO_VIDEO_FILE" value="DoTheMambo" />
+      <define name="VIEWVIDEO_WRITE_VIDEO" value="TRUE" />
+      
     </module>
     
-    <!--  <module name="cv_opticflow">
+    <!--  
+    <module name="pose_history">
+    </module>
+    <module name="cv_opticflow">
       <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
-    </module>-->
-    <!--module name="opticflow_hover"/-->
+    </module>
+    <module name="opticflow_hover"/-->
 
   </modules>
    
@@ -362,7 +376,8 @@
   </section>
 
   <section name="BAT">
-    <define name="MILLIAMP_AT_FULL_THROTTLE" value="2000"/> <!-- TODO: Measure -->
+    <define name="MILLIAMP_AT_IDLE_THROTTLE" value="200"/> <!-- TODO: Measure -->
+    <define name="MILLIAMP_AT_FULL_THROTTLE" value="4000"/> <!-- TODO: Measure -->
     <define name="CATASTROPHIC_BAT_LEVEL" value="3.1" unit="V"/>
     <define name="CRITIC_BAT_LEVEL" value="3.3" unit="V"/>
     <define name="LOW_BAT_LEVEL" value="3.5" unit="V"/>
