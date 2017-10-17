@@ -202,7 +202,7 @@ static void *bat_read(void *data __attribute__((unused)))
 
     // Wait 100ms
     // reading is done at 10Hz like the electrical_periodic from rotorcraft main program
-    //usleep(100000);
+    usleep(100000);
   }
 
   return NULL;
@@ -335,25 +335,25 @@ void board_init(void)
 
 
   /* Start battery reading thread (To a module?*/
-  pthread_t bat_thread;
-  if (pthread_create(&bat_thread, NULL, bat_read, NULL) != 0) {
-    printf("[parrot_minidrone_board] Could not create battery reading thread!\n");
-  }
+  //pthread_t bat_thread;
+  //if (pthread_create(&bat_thread, NULL, bat_read, NULL) != 0) {
+  //  printf("[parrot_minidrone_board] Could not create battery reading thread!\n");
+  //}
 
   /* Start button reading thread */
-  pthread_t button_thread;
-  if (pthread_create(&button_thread, NULL, button_read, NULL) != 0) {
-    printf("[parrot_minidrone_board] Could not create button reading thread!\n");
-  }
+  //pthread_t button_thread;
+  //if (pthread_create(&button_thread, NULL, button_read, NULL) != 0) {
+  //  printf("[parrot_minidrone_board] Could not create button reading thread!\n");
+  //}
 
   /* Start baro reading thread */ //TODO make it optional, a module?
-  pthread_t baro_thread;
-  if (pthread_create(&baro_thread, NULL, baro_read, NULL) != 0) {
-    printf("[parrot_minidrone_board] Could not create baro reading thread!\n");
-  }
+  //pthread_t baro_thread;
+  //if (pthread_create(&baro_thread, NULL, baro_read, NULL) != 0) {
+  //  printf("[parrot_minidrone_board] Could not create baro reading thread!\n");
+  //}
 
   /* Start sonar reading thread */
-  pthread_t sonar_thread;
+  //pthread_t sonar_thread;
   //if (pthread_create(&sonar_thread, NULL, sonar_read, NULL) != 0) {
   //  printf("[parrot_minidrone_board] Could not create sonar reading thread!\n");
   //}

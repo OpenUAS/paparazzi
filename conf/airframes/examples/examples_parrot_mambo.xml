@@ -113,8 +113,8 @@
       
     <module name="video_thread">
       <!-- <define name="VIDEO_FILTER_DEBAYER" value="0"/>-->
-      <define name="VIDEO_THREAD_MAX_CAMERAS" value="2"/>
-      <!-- <define name="VIDEO_THREAD_NICE_LEVEL" value="0"/>-->
+      <define name="VIDEO_THREAD_MAX_CAMERAS" value="1"/>
+      <!--  <define name="VIDEO_THREAD_NICE_LEVEL" value="5"/>-->
       <!-- <define name="SYS_TIME_THREAD_PRIO" value="2"/>-->
     </module>
 
@@ -122,33 +122,47 @@
      <define name="COLORFILTER_CAMERA" value="bottom_camera"/>
     </module>-->
     
-   <module name="video_rtp_stream">
+   <!--  <module name="video_rtp_stream">
        <!--  <define name="VIEWVIDEO_DEVICE" value="/dev/video0"/>
       <define name="VIEWVIDEO_SUBDEV" value="/dev/v4l-subdev0"/>-->
       
       <!--  <define name="VIEWVIDEO_NICE_LEVEL" value="0"/>-->
-      <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
+      
+      <!--  <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
       <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="4"/>
       <define name="VIEWVIDEO_QUALITY_FACTOR" value="40"/>
-      <define name="VIEWVIDEO_DEVICE_BUFFERS" value="2"/>
+      <define name="VIEWVIDEO_DEVICE_BUFFERS" value="1"/>-->
+      
+      
       <!-- <define name="VIEWVIDEO_DEVICE_SIZE" value="320,240"/>-->
 
-      <configure name="VIEWVIDEO_HOST" value="192.168.3.2" />
-      <configure name="VIEWVIDEO_BROADCAST" value="TRUE" />
+      <!--  <configure name="VIEWVIDEO_HOST" value="192.168.3.2" />
+      <configure name="VIEWVIDEO_BROADCAST" value="FALSE" />
       
-      <define name="VIEWVIDEO_FPS" value="10" />
-      
-      <define name="VIEWVIDEO_STREAM_VIDEO" value="TRUE" />
-      
-      <define name="VIEWVIDEO_SHOT_PATH" value="/data/edu/images"/>
+      <define name="VIEWVIDEO_FPS" value="1" />
+
+      <define name="VIEWVIDEO_STREAM_VIDEO" value="FALSE" />
+      <define name="VIEWVIDEO_SHOT_PATH" value="/data/edu/paparazzi"/>
       <define name="VIEWVIDEO_VIDEO_FILE" value="DoTheMambo" />
-      <define name="VIEWVIDEO_WRITE_VIDEO" value="TRUE" />
-      
+      <define name="VIEWVIDEO_WRITE_VIDEO" value="FALSE" />
+    </module>-->
+    
+    <!--<module name="video_usb_logger"/>
+      <define name="LOG_ON_USB" value="TRUE"/>-->
+      <!-- if one wants to log on e.g. USB stick stuffed into your Parrot Bebop, not possible with Parrot Minidrones -->
+      <!-- <define name="VIDEO_USB_LOGGER_PATH" value="/data/video/usb0/myphotologs"/>
+    </module>-->
+    
+    <module name="video_capture">
+      <define name="VIDEO_CAPTURE_CAMERA" value="bottom_camera"/>
+      <define name="VIDEO_CAPTURE_PATH" value="/data/edu/paparazzi"/>
+      <define name="VIDEO_CAPTURE_JPEG_QUALITY" value="45"/>
     </module>
     
     <!--  
     <module name="pose_history">
     </module>
+    
     <module name="cv_opticflow">
       <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
     </module>

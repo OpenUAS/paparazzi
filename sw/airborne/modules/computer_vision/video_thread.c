@@ -118,7 +118,7 @@ static void *video_thread_function(void *data)
 
   // be nice to the more important stuff
   set_nice_level(VIDEO_THREAD_NICE_LEVEL);
-  fprintf(stdout, "[%s] Set nice level to %i.\n", print_tag, VIDEO_THREAD_NICE_LEVEL);
+  fprintf(stdout, "[%s] V Set nice level to %i.\n", print_tag, VIDEO_THREAD_NICE_LEVEL);
 
   // Initialize timing
   struct timespec time_now;
@@ -163,6 +163,7 @@ static void *video_thread_function(void *data)
 
     // Free the image
     v4l2_image_free(vid->thread.dev, &img);
+    //fprintf(stderr, "Image freed\n");
   }
 
   image_free(&img_color);
