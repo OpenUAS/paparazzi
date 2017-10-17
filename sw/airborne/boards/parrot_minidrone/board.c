@@ -202,7 +202,7 @@ static void *bat_read(void *data __attribute__((unused)))
 
     // Wait 100ms
     // reading is done at 10Hz like the electrical_periodic from rotorcraft main program
-    usleep(100000);
+    //usleep(100000);
   }
 
   return NULL;
