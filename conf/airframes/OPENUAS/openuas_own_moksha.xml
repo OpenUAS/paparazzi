@@ -1,45 +1,46 @@
-<!-- Modified Multiplex Xeno (http://www.multiplex-rc.de/)
-     TWOG1  (http://paparazziuav.org/wiki/index.php/)
-     With modified power routing by a cut PCB trace
-
-     DEVICES:
-     * CHIMU on SPI
-     * XBee XSC 868/900Mhz
-     * uBlox LEA5H and Sarantel helix GPS antenna flat in wing
-     * Eagletree Airspeed sensor via I2C
-     * Eagletree Height (Baro) sensor via I2C
-     * Current sensor on analog port
-     * RPM sensor for brushless measurments on ESC
-     * Tilted Infrared sensor for X,Y,Z still on board for fun to compare with CHIIMU values, not for attitude in AP mode
-     * DSMX receiver with CPPM out OR615X
-
-     * SOON: Magnetometer, ESP8263WiFi telemetry
-
-BUILDLINE
-make -C $PAPARAZZI_HOME -f Makefile.ac AIRCRAFT=Moksha ap.compile
-
-     NOTES:
-     To ins_chimu_spi.c modified a line to this one below, since somehow roll and pitch setting where not getting through correctly:
-
-       EstimatorSetAtt(CHIMU_DATA.m_attitude.euler.phi+ins_roll_neutral, CHIMU_DATA.m_attitude.euler.psi, CHIMU_DATA.m_attitude.euler.theta+ins_pitch_neutral);
-
-     To test the "hatch" function we use bright lights, easy to spot from the
-     ground, e.g for a droptest without dropping a thing...
-     Ofcourse, also the log will show where a payload would have been released
-     but lights are much more fun, and good for instant human feedback without the payload retrieval walk.
-
-     NOTES:
-     + Using Total Energy control as control loop
-     + Make sure v5.5x master or higher of PPRZ sourcecode is used
-     + Used mac06a.xml airframe as starting point for payload release settings
-
-    Modules to activate:
-     + Current sensor on battery wires going to motor
-     + geo_mag module fixedwing
-
-* -->
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 <airframe name="Moksha">
+  <description>
+    Modified Multiplex Xeno (http://www.multiplex-rc.de/)
+    TWOG1  (http://paparazziuav.org/wiki/index.php/)
+    With modified power routing by a cut PCB trace
+
+    DEVICES:
+    * CHIMU on SPI
+    * XBee XSC 868/900Mhz
+    * uBlox LEA5H and Sarantel helix GPS antenna flat in wing
+    * Eagletree Airspeed sensor via I2C
+    * Eagletree Height (Baro) sensor via I2C
+    * Current sensor on analog port
+    * RPM sensor for brushless measurments on ESC
+    * Tilted Infrared sensor for X,Y,Z still on board for fun to compare with CHIIMU values, not for attitude in AP mode
+    * OpenRXSR receiver set to CPPM out
+
+
+    BUILDLINE
+    make -C $PAPARAZZI_HOME -f Makefile.ac AIRCRAFT=Moksha ap.compile
+
+    NOTES:
+    To ins_chimu_spi.c modified a line to this one below, since somehow roll and pitch setting where not getting through correctly:
+
+    EstimatorSetAtt(CHIMU_DATA.m_attitude.euler.phi+ins_roll_neutral, CHIMU_DATA.m_attitude.euler.psi, CHIMU_DATA.m_attitude.euler.theta+ins_pitch_neutral);
+
+    To test the "hatch" function we use bright lights, easy to spot from the
+    ground, e.g for a droptest without dropping a thing...
+    Ofcourse, also the log will show where a payload would have been released
+    but lights are much more fun, and good for instant human feedback without the payload retrieval walk.
+
+    NOTES:
+    + Using Total Energy control as control loop
+    + Make sure v5.14 or master of PPRZ sourcecode is used
+    + Used mac06a.xml airframe as starting point for payload release settings
+
+    WIP:
+    + Current sensor on battery wires going to motor
+    + geo_mag module fixedwing
+
+</description>
+
 <!-- ******************************* FIRMWARE ****************************** -->
   <firmware name="fixedwing">
     <target name="ap" board="twog_1.0">
@@ -193,8 +194,8 @@ make -C $PAPARAZZI_HOME -f Makefile.ac AIRCRAFT=Moksha ap.compile
     <axis name="CLICKSHUTTER"    failsafe_value="-9599"/>
     <axis name="ACTIVELIGHTS"    failsafe_value="0"/>
     <!--
-    <axis name="GAIN1"		failsafe_value="0"/>
-    <axis name="CALIB"		failsafe_value="0"/>
+    <axis name="GAIN1"          failsafe_value="0"/>
+    <axis name="CALIB"          failsafe_value="0"/>
     -->
   </commands>
 

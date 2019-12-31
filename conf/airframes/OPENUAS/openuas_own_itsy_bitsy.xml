@@ -1,10 +1,12 @@
-<!-- this is a LadyBird quadrotor frame equiped with Lisa/S 1.0 -->
-<!-- The LadyBird frame comes with four brushed motors in an X configuration. -->
+<!DOCTYPE airframe SYSTEM "../airframe.dtd">
+<airframe name="itsybitsy">
+  <description>
+  this is a LadyBird quadrotor frame equiped with Lisa/S 1.0
+  The LadyBird frame comes with four brushed motors in an X configuration.
 
-<!--
-     The motor and rotor configuration is the following:
+    The motor and rotor configuration is the following:
 
-	   Front
+           Front
              ^
              |
 
@@ -17,24 +19,80 @@
            |___|
           /     \
         CCW      CW
-     Motor2(SW)  Motor1(SE)
+    Motor2(SW)  Motor1(SE)
 
     The Lisa/S is rotated by 13deg CCW against the frame.
--->
 
-<!--
-     Applicable configuration:
+
+
+    Applicable configuration:
      airframe="airframes/examples/ladybird_lisa_s.xml"
      radio="radios/cockpitSX.xml"
      telemetry="telemetry/default_rotorcraft.xml"
      flight_plan="flight_plans/rotorcraft_basic.xml"
      settings="settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml"
--->
-<!DOCTYPE airframe SYSTEM "../airframe.dtd">
+  </description>
 
-<airframe name="itsybitsy">
+  <firmware name="rotorcraft">
+    <target name="ap" board="lisa_s_1.0">
+      <module name="radio_control" type="superbitrf_rc"> <!-- type="ppm" -->
+        <!-- To store the binding parameters for the superbit radio in your
+             airframe file uncomment the following three lines and set the
+             correct values based on the output of the superbitrf telemetry
+             messages. -->
+        <!--define name="RADIO_TRANSMITTER_ID" value="1335259868"/--> <!-- MX22 module no1 -->
+        <!--define name="RADIO_TRANSMITTER_CHAN" value="9"/-->
+        <!--define name="RADIO_TRANSMITTER_PROTOCOL" value="0x01"/--><!--DSM_DSM2_2-->
+        <define name="RADIO_MODE" value="RADIO_FLAP"/>
+        <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>
+      </module>
+      <define name="AUTOPILOT_DISABLE_AHRS_KILL"/>
+      <configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/>
+      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
+    </target>
 
-<!-- The no= value is the phisycal connector on the autopilot board -->
+    <target name="nps" board="pc">
+      <module name="fdm" type="jsbsim"/>
+      <module name="radio_control" type="ppm"/>
+    </target>
+
+    <module name="motor_mixing"/>
+    <module name="actuators" type="pwm">
+      <!-- This airframe is using the servo PWM outputs directly to drive mosfets, which in turn directly drive brushed motors.
+           With the following settings we will be driving the motors with a 36KHz signal that should be well above anyone's hearing range.
+           If we went with the 500Hz that woul be the default we would be hearing a very annoying high pitched sound coming from the motors.
+      -->
+      <!-- Setting the PWM timer base frequency to 36MHz -->
+      <define name="PWM_BASE_FREQ" value="36000000"/>
+      <!-- Setting the PWM interval to 36KHz -->
+      <define name="SERVO_HZ" value="36000"/>
+      <define name="USE_SERVOS_1AND2"/>
+    </module>
+
+    <module name="telemetry" type="superbitrf"/>
+    <!-- Comment the previous line and uncomment the following one if you need
+         to use the debug serial interface for telemetry. -->
+    <!--module name="telemetry" type="transparent"/-->
+    <module name="imu" type="lisa_s_v1.0">
+      <define name="LISA_S_UPSIDE_DOWN"/> <!-- Upside down is a relative term. :) -->
+    </module>
+    <module name="gps" type="ublox"/>
+    <module name="stabilization" type="int_quat"/>
+    <module name="ahrs" type="int_cmpl_quat"/>
+    <!--  <configure name="USE_MAGNETOMETER" value="TRUE"/>
+      <define name="AHRS_USE_GPS_HEADING" value="FALSE"/>-->
+    <module name="ins"/>
+  </firmware>
+
+   <modules main_freq="512">
+   <module name="gps" type="ubx_ucenter"/>
+   <module name="geo_mag"/>
+   <module name="air_data"/>
+   <!-- below temporary until tsted then remove it-->
+   <module name="send_imu_mag_current"/>
+ </modules>
+
+  <!-- The no= value is the phisycal connector on the autopilot board -->
   <servos driver="Pwm">
     <servo name="NE" no="0" min="0" neutral="50" max="1000"/>
     <servo name="SE" no="1" min="0" neutral="50" max="1000"/>
@@ -111,7 +169,6 @@
 
 
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
-
     <!-- setpoints -->
     <define name="SP_MAX_PHI" value="45." unit="deg"/>
     <define name="SP_MAX_THETA" value="45." unit="deg"/>
@@ -188,62 +245,5 @@
    <define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>
  </section>
 
- <modules main_freq="512">
-   <module name="gps" type="ubx_ucenter"/>
-   <module name="geo_mag"/>
-   <module name="air_data"/>
-   <!-- below temporary until tsted then remove it-->
-   <module name="send_imu_mag_current"/>
- </modules>
 
-  <firmware name="rotorcraft">
-    <target name="ap" board="lisa_s_1.0">
-      <module name="radio_control" type="superbitrf_rc"> <!-- type="ppm" -->
-	<!-- To store the binding parameters for the superbit radio in your
-             airframe file uncomment the following three lines and set the
-             correct values based on the output of the superbitrf telemetry
-             messages. -->
-        <!--define name="RADIO_TRANSMITTER_ID" value="1335259868"/--> <!-- MX22 module no1 -->
-        <!--define name="RADIO_TRANSMITTER_CHAN" value="9"/-->
-        <!--define name="RADIO_TRANSMITTER_PROTOCOL" value="0x01"/--><!--DSM_DSM2_2-->
-        <define name="RADIO_MODE" value="RADIO_FLAP"/>
-        <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>
-      </module>
-      <define name="AUTOPILOT_DISABLE_AHRS_KILL"/>
-      <configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/>
-      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
-    </target>
-
-    <target name="nps" board="pc">
-      <module name="fdm" type="jsbsim"/>
-      <module name="radio_control" type="ppm"/>
-    </target>
-
-    <module name="motor_mixing"/>
-    <module name="actuators" type="pwm">
-      <!-- This airframe is using the servo PWM outputs directly to drive mosfets, which in turn directly drive brushed motors.
-           With the following settings we will be driving the motors with a 36KHz signal that should be well above anyone's hearing range.
-           If we went with the 500Hz that woul be the default we would be hearing a very annoying high pitched sound coming from the motors.
-      -->
-      <!-- Setting the PWM timer base frequency to 36MHz -->
-      <define name="PWM_BASE_FREQ" value="36000000"/>
-      <!-- Setting the PWM interval to 36KHz -->
-      <define name="SERVO_HZ" value="36000"/>
-      <define name="USE_SERVOS_1AND2"/>
-    </module>
-
-    <module name="telemetry" type="superbitrf"/>
-    <!-- Comment the previous line and uncomment the following one if you need
-         to use the debug serial interface for telemetry. -->
-    <!--module name="telemetry" type="transparent"/-->
-    <module name="imu" type="lisa_s_v1.0">
-      <define name="LISA_S_UPSIDE_DOWN"/> <!-- Upside down is a relative term. :) -->
-    </module>
-    <module name="gps" type="ublox"/>
-    <module name="stabilization" type="int_quat"/>
-    <module name="ahrs" type="int_cmpl_quat"/>
-    <!--  <configure name="USE_MAGNETOMETER" value="TRUE"/>
-      <define name="AHRS_USE_GPS_HEADING" value="FALSE"/>-->
-    <module name="ins"/>
-  </firmware>
 </airframe>

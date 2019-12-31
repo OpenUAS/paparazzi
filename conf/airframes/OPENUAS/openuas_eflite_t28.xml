@@ -1,18 +1,18 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
-
-<!--
+<airframe name="Eflite_T28">
+<description>
 + Pixracer http://arsovtech.com/?page_id=1590
 * in Fixedwing (http://www.openuas.org/)
-+ Airframe to test the PX4 Pixracer v1 firmware while developing...
-  E-Flite T28 Trojan fully equiped with Retractable gear and flap
-     + Autopilot:   PX4FMU 4.0 aka Pixracer v1.0
-     + Actuators:   Regular digital servos
-     + GPS:         Ublox M8N GNSS
-     + RCRX:        DSMX R110 Receiver
-     + AIRSPEED:    Eagletree via I2C
-     + TELEMETRY:   Si10xx Chip based with custom firmware
-     + CURRENT:     A standard V/I sensor on the analog ports
-     + RANGER:      MAXBOTICS LV1 Ultrasonic sensor analog on RSSI pin
++ Airframe with the PX4 Pixracer v1 AP hardware
+    + Model: E-Flite T28 Trojan fully equiped with Retractable gear and flap
+    + Autopilot:   PX4FMU 4.0 aka Pixracer v1.0
+    + Actuators:   Regular digital servos
+    + GPS:         Ublox M8N GNSS
+    + RCRX:        OpenRXSR Receiver
+    + AIRSPEED:    Eagletree via I2C
+    + TELEMETRY:   Si10xx Chip based with custom firmware
+    + CURRENT:     A standard V/I sensor on the analog ports
+    + RANGER:      MAXBOTICS LV1 Ultrasonic sensor analog on RSSI pin
 
 NOTES:
      + Using Enahanced Total Energy control as control loop in Final AC
@@ -22,24 +22,18 @@ NOTES:
        Simple, USB cable in, upload.. voila PPRZ aircraft on a Pixracer...
      + A GNSS device with ANOTHER magneto on it is used, external...
        on the board Replaced HMC8853 with HMC8953 to test benefit from temperature compensated values
-     + On I2C we have airspeed sensor and external magneto via a I2C splitboard, I2C yuck... but pragmatic atm ;)
-     + NO buzzer (yet..)
-     + SD SRTM via onboard storage not implemented (yet..)
-     + NO Sleep mode on (yet..)
+     + On I2C we have airspeed sensor and external magneto via a I2C split
 
      If testing "Classic" (as in not ETECS..) make sure to disable the settings/estimation/ac_char
      Disable <define name="USE_AIRSPEED" value="FALSE"/> at first no airspeed tests
      Use also flightplan Versatile if no airspeed sensor is ues and use
      flightplan versatile_airspeed only with enabled airspeed sensor
--->
+<description>
 
 <airframe name="Eflite_T28">
-
   <firmware name="fixedwing">
-
     <!-- ********************** For in the real flying hardware ********************-->
     <target name="ap" board="px4fmu_4.0">
-
       <configure name="CPU_LED" value="1"/>
       <!--  TODO: After first flights try to find optimum value -->
       <!-- PERIODIC_FREQUENCY should be least equal or greater than AHRS_PROPAGATE_FREQUENCY -->
@@ -65,27 +59,14 @@ NOTES:
         <define name="IMU_MPU9250_Z_SIGN" value="-1"/> -->
       </module>
 
-      <!--  <module name="sonar_adc">
-        <configure name="ADC_SONAR" value="ADC_1"/> now used for internal V
-        <define name="USE_SONAR" value="FALSE"/>
-        <define name="SENSOR_SYNC_SEND_SONAR"For debugging flight/>
-      </module>-->
-
-      <module name="radio_control" type="spektrum">
-        <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="9"/> -->
-
+      <module name="radio_control" type="sbus">
+        <!--<configure name="SBUS_PORT" value="UART5"/>--> <!-- Default use UART2  on FMU4 -->
+        <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="15"/> -->
         <!-- Mode set one a three way switch -->
-       <!--  Per defaulr already GEAR if not defined  <define name="RADIO_MODE" value="RADIO_GEAR"/> --><!-- yes, already done by default if not redefined to something else-->
-        <define name="RADIO_GEAR" value="RADIO_AUX1"/>
-        <define name="RADIO_FLAP" value="RADIO_AUX2"/>
-        <!-- <define name="SPEKTRUM_HAS_SOFT_BIND_PIN" value="1"/> -->
-        <!-- <define name="RADIO_CONTROL_SPEKTRUM_NO_SIGN" value="1"/> -->
-        <!-- <define name="RADIO_TRANSMITTER_ID" value="-883171243"/> -->   <!-- TX2 : 0xCB5BE055 -883171243 -->
-              <!-- If you want to reverse a channel change the sign of the channel you want to reverse -->
-        <!-- <define name="RADIO_CONTROL_SPEKTRUM_SIGNS" value="\{1,-1,-1,-1,1,-1,1,1,1,1,1,1\}"/> -->
+        <!--  Per defaulr already GEAR if not defined  <define name="RADIO_MODE" value="RADIO_GEAR"/> --><!-- yes, already done by default if not redefined to something else-->
+        <define name="RADIO_GEAR" value="RADIO_AUX2"/>
+        <define name="RADIO_FLAP" value="RADIO_AUX3"/>
        </module>
-
-       <!-- <module name="spektrum_soft_bind"/> TODO: Not working yet -->
 
        <!-- Not of use in sim so here-->
        <!--   module name="tune_airspeed"/> --><!--  TODO: enable -->
@@ -102,7 +83,7 @@ NOTES:
       </module>
       <!--  module name="telemetry"     type="transparent"/>-->
       <module name="imu" type="aspirin_v2.2"/>
-        <module name="baro_sim"/>
+      <module name="baro_sim"/>
 
       <!-- For various parameter info here  https://wiki.paparazziuav.org/wiki/Subsystem/ahrs -->
       <module name="ahrs" type="int_cmpl_quat">
@@ -145,7 +126,7 @@ NOTES:
     <!-- temp fix for geomag, normally only used for rotorcraft -->
     <define name="SENSOR_SYNC_SEND"/>
 
-    <configure name="USE_BARO_BOARD" value="TRUE"/> <!-- TODO -->
+    <configure name="USE_BARO_BOARD" value="TRUE"/>
     <!-- amount of time it take for the bat to trigger check -->
     <!-- to avoid bat low spike detection when strong pullup withch draws short sudden power-->
     <define name="BAT_CHECKER_DELAY" value="60" unit="s/10"/> <!-- in tenth of seconds-->
@@ -153,12 +134,9 @@ NOTES:
     <!-- Only one main batter so CATASTROPHIC_BATTERY kill should be somewhat delayed -->
     <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="220" unit="s/10"/> <!-- in tenth of seconds for engine kill -->
 
-    <!-- Not working ATM <module name="spektrum_soft_bind"/> -->
-
     <define name="AHRS_TRIGGERED_ATTITUDE_LOOP"/>
     <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
     <define name="USE_MAGNETOMETER_ONGROUND" value="TRUE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
-
 
     <configure name="USE_MAGNETOMETER" value="FALSE"/> <!-- First autoflight set to false better make sure it works and is callibrated if set to TRUE -->
 
@@ -171,9 +149,9 @@ NOTES:
         <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
         <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="TRUE"/> <!-- apply a low pass filter on rotational velocity"-->
         <define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="5.0"/> <!-- don't update gyro bias if heading deviation is above this threshold in degrees"-->
-        <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="1.0"/> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
+        <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="4.0"/> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
   <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
-        <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="10.0"/> <!-- Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. Set to 0 in case of vibrations -->
+        <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. Set to 0 in case of vibrations -->
 
         <!-- <define name="AHRS_ICQ_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use -->
         <define name="AHRS_ICQ_MAG_ID" value="MAG_HMC58XX_SENDER_ID"/> <!-- ABI sender id of magnetometer to use, this case the external HMC on GPS board -->
@@ -181,9 +159,7 @@ NOTES:
     </module>
 
     <module name="ins" type="alt_float"/>
-
       <!-- For easier on desk testing transparent_usb, else transparent -->
-    <!--  <module name="telemetry" type="transparent_usb"/>--> <!-- FIXME: gives compile error -->
     <module name="telemetry" type="transparent">
        <configure name="MODEM_PORT" value="UART2"/> <!--  Telem1 on pixracer -->
        <configure name="MODEM_BAUD" value="B57600"/>
@@ -197,77 +173,6 @@ NOTES:
     </module>
   </firmware>
 
-  <!-- Handy to toy with toying around with settings on a uBlox or a modem e.g via AT commands serial device -->
-  <!--  <firmware name="setup">
-    <target name="GPS tunnel" board="px4fmu_4.0">
-         USE UART? for GPS
-    </target>
-    <target name="Datamodem tunnel" board="px4fmu_4.0">
-        USE UART? for Si1000 based modem
-    </target>
-  </firmware> -->
-
-  <!--  To test various things for the new board -->
-
-  <firmware name="test_progs">
-  <!--
-    <target name="test_module" board="px4fmu_4.0">
-      <module name="usb_serial_stm32_example1"/>
-    </target>
-   <target name="test_sys_time_timer"      board="px4fmu_4.0">
-     <configure name="SYS_TIME_LED" value="none"/>
-     <configure name="LED_DEFINES" value="-DLED_RED=1"/>
-   </target>
-   <target name="test_sys_time_usleep"     board="px4fmu_4.0">
-     <configure name="SYS_TIME_LED" value="none"/>
-     <configure name="LED_DEFINES" value="-DLED_GREEN=2"/>
-   </target>
-   <target name="test_telemetry"           board="px4fmu_4.0">
-      <configure name="SYS_TIME_LED" value="none"/>
-      <define name="UART_TX_LED" value="3"/>
-   </target>
-   <target name="test_imu"                 board="px4fmu_4.0">
-      <module name="imu" type="mpu9250_spi">
-        <configure name="IMU_MPU9250_SPI_DEV" value="spi1"/>
-        <configure name="IMU_MPU9250_SPI_SLAVE_IDX" value="SPI_SLAVE2"/>
-      </module>
-      <configure name="PERIODIC_FREQUENCY" value="120"/>
-    </target>
-    <target name="test_actuators_pwm_sin"   board="px4fmu_4.0">
-    </target>
-
-   <target name="test_baro_board"          board="px4fmu_4.0">
-      <configure name="BARO_LED" value="2"/>
-   </target>
-   -->
-   <target name="test_adc"                 board="px4fmu_4.0"/>
-   <!--
-   <target name="test_uart"                board="px4fmu_4.0">
-      <define name="USE_UART1"/>
-      <define name="UART1_BAUD" value="B57600"/>
-      <define name="USE_UART2"/>
-      <define name="UART2_BAUD" value="B57600"/>
-      <define name="USE_UART3"/>
-      <define name="UART3_BAUD" value="B57600"/>
-      <define name="USE_UART4"/>
-      <define name="UART4_BAUD" value="B57600"/>
-      <define name="USE_UART7"/>
-      <define name="UART7_BAUD" value="B57600"/>
-      <define name="USE_UART8"/> % FRSky
-      <define name="UART8_BAUD" value="B115200"/>
-   </target>
-      -->
-   <!-- FIXME <target name="test_can"                 board="px4fmu_4.0"/> -->
-   <!-- Since it is not implemented yet, idea is to just write and read a block and check data -->
-   <!-- FIXME <target name="test_sdcard"                   board="px4fmu_4.0"/>-->
-   <!-- <target name="test_icm20608g"           board="px4fmu_4.0"/> --><!-- TODO -->
-   <!-- <target name="test_hcm5983"             board="px4fmu_4.0"/> --><!-- TODO -->
-   <!--       <target name="test_actuators_pwm"       board="px4fmu_4.0">-->
-      <!--  <define name="SERVO_HZ" value="40"/> -->
-   <!-- </target>-->
-
-  </firmware>
-
 <!-- ************************* MODULES ************************* -->
   <modules>
    <module name="auto1_commands"/><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
@@ -275,7 +180,7 @@ NOTES:
     <module name="baro_ms5611_spi" >
       <configure name="MS5611_SPI_DEV" value="spi1"/>
       <configure name="MS5611_SLAVE_IDX" value="SPI_SLAVE3"/>
-      <define name="SENSOR_SYNC_SEND"/>
+      <!--<define name="SENSOR_SYNC_SEND"/>-->
     </module>
 
     <module name="send_imu_mag_current"/> <!-- disable after one time callibration -->
@@ -285,25 +190,28 @@ NOTES:
       <define name="CALC_TAS_FACTOR" value="FALSE" />
       <define name="CALC_AMSL_BARO" value="TRUE" />
    </module>
+
    <module name="geo_mag"/>
-    <!--<module name="gps" type="ubx_ucenter"/> -->
-    <!-- This GPS is a REAL ublox M8N, so setting can be saved, no need for ubx_ucenter one has can set it oneself since we have all kinds of nift Galilleio setting we rather keep that -->
 
-    <module name="airspeed_ets">
-      <define name="AIRSPEED_ETS_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights -->
-      <configure name="AIRSPEED_ETS_I2C_DEV" value="i2c1"/>
-    </module>
+  <!--<module name="gps" type="ubx_ucenter"/> -->
+  <!-- This GPS is a REAL ublox M8N, so setting can be saved, no need for ubx_ucenter one has can set it oneself since we have all kinds of nift Galilleio setting we rather keep that -->
 
-    <!-- The Pixravcer has a built in SD card slot connected over SPI bus to the MCU -->
- <!-- TODO: fixme
-    <module name="logger_sd_spi_direct.xml">
-      <configure name="SDLOGGER_DIRECT_SPI" value="spi2"/>
-      <configure name="SDLOGGER_DIRECT_SPI_SLAVE" value="SPI_SLAVE4"/>
-      <configure name="SDLOGGER_DIRECT_CONTROL_SWITCH" value="RADIO_AUX3"/>
-      <configure name="LOGGER_LED" value="3"/>
-    </module>
+  <module name="airspeed_ets">
+    <define name="AIRSPEED_ETS_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights -->
+    <configure name="AIRSPEED_ETS_I2C_DEV" value="i2c1"/>
+  </module>
 
-   - - - As in telemetry file to add stil...
+  <!-- The Pixravcer has a built in SD card slot connected over SPI bus to the MCU -->
+  <!-- TODO: fixme
+  <module name="logger_sd_spi_direct.xml">
+    <configure name="SDLOGGER_DIRECT_SPI" value="spi2"/>
+    <configure name="SDLOGGER_DIRECT_SPI_SLAVE" value="SPI_SLAVE4"/>
+    <configure name="SDLOGGER_DIRECT_CONTROL_SWITCH" value="RADIO_AUX3"/>
+    <configure name="LOGGER_LED" value="3"/>
+  </module>
+  -->
+
+   <!-- - - As in telemetry file to add stil...
     <process name="Logger">
     <mode name="default">
       <message name="FBW_STATUS"          period="1.2"/>
@@ -319,24 +227,16 @@ NOTES:
   </process>
   -->
 
-   <!--  <module name="current_sensor">
-        <define name="USE_ADC_3"/>
-        <configure name="ADC_CURRENT_SENSOR" value="ADC_3"/>-->
-        <!--  <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.3"/>--><!-- TODO determine -->
-   <!--  </module>-->
+  <module name="current_sensor">
+    <define name="USE_ADC_3"/>
+    <configure name="ADC_CURRENT_SENSOR" value="ADC_3"/>-->
+    <!--  <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.3"/>--><!-- TODO determine -->
+  </module>
 
-   <!--  <module name="adc_generic">
-     <configure name="ADC_CHANNEL_GENERIC1" value="ADC_2"/>
-     <configure name="ADC_CHANNEL_GENERIC2" value="ADC_3"/>
-   </module> -->
-
-   <!-- <module name="adc_generic">-->
-   <!-- Sonar -->
-   <!--   <configure name="ADC_CHANNEL_GENERIC1" value="ADC_1"/>-->  <!-- Misuse the RSSI pin? -->
-      <!--<configure name="ADC_SONAR" value="ADC_1"/>-->
-   <!-- RPM measuring sensor -->
-   <!-- <configure name="ADC_CHANNEL_GENERIC2" value="ADC_?"/>
-   </module>-->
+    <module name="adc_generic">
+      <configure name="ADC_CHANNEL_GENERIC1" value="ADC_2"/>
+      <configure name="ADC_CHANNEL_GENERIC2" value="ADC_3"/>
+    </module>
 
     <module name="nav" type="line"/>
     <module name="nav" type="line_border"/>
@@ -346,7 +246,6 @@ NOTES:
     <module name="nav" type="smooth"/>
     <module name="nav" type="vertical_raster"/>
     <module name="nav" type="flower"/>
-    <!-- <module name="nav" type="bungee_takeoff"/> -->
     <!-- module name="nav" type="catapult"/> --><!-- TODO Switch it on later after first flights -->
 
     <module name="mag" type="hmc58xx">
@@ -379,7 +278,7 @@ NOTES:
 
   <section name="ServoPositions">
     <!--  Just name a few,  value can be used in e.g. flightplan -->
-    <define name="LANINGGEAR_EXTEND" value="-MAX_PPRZ" />
+    <define name="LANDINGGEAR_EXTEND" value="-MAX_PPRZ" />
     <define name="LANDINGGEAR_RETRACT" value="MAX_PPRZ" />
     <define name="FLAP_FULL" value="-MAX_PPRZ" />
     <define name="FLAP_HALF" value="-MAX_PPRZ/2" />
@@ -389,6 +288,7 @@ NOTES:
     <define name="BEACON_OFF" value="-MAX_PPRZ" />
   </section>
 
+  <!-- Different for every airframe
   <servos>
     <servo name="S_THROTTLE" no="0" min="1100" neutral="1130" max="1900"/>
     <servo name="S_AILERON" no="1" min="1100" neutral="1500" max="1900"/>
@@ -467,7 +367,7 @@ NOTES:
     <define name="PITCH_TRIM" value="0.0"/>
   </section>
 
-  <!-- Strategy for failsave is slow wide circles and loosing height in a controlled fashion -->
+  <!-- Strategy for failsave is wide circles and loosing height in a controlled fashion -->
   <section name="FAILSAFE" prefix="FAILSAFE_">
     <define name="DEFAULT_THROTTLE" value="0.20" unit="%"/>
     <define name="DEFAULT_GEAR" value="1100"/>
@@ -538,7 +438,7 @@ NOTES:
   </section>
 
   <!-- ************************* GAINS ************************* -->
-
+<!-- TODO split to gains_$AC_ID.xml -->
   <!-- ************************* H ************************* -->
   <section name="HORIZONTAL CONTROL" prefix="H_CTL_">
      <!-- TODO: Tune value -->
@@ -558,9 +458,9 @@ NOTES:
     https://github.com/paparazzi/paparazzi/blob/master/sw/airborne/modules/nav.c#L132
     -->
     <define name="COURSE_PRE_BANK_CORRECTION" value="0.95"/>
-    <define name="ROLL_MAX_SETPOINT" value="35" unit="deg"/><!--  Determine best val without scaring the sh*t out of us-->
-    <define name="PITCH_MAX_SETPOINT" value="30" unit="deg"/><!--  Determine best val without scaring the sh*t out of us-->
-    <define name="PITCH_MIN_SETPOINT" value="-30" unit="deg"/><!--  Determine best val without scaring the sh*t out of us-->
+    <define name="ROLL_MAX_SETPOINT" value="35" unit="deg"/>
+    <define name="PITCH_MAX_SETPOINT" value="30" unit="deg"/>
+    <define name="PITCH_MIN_SETPOINT" value="-30" unit="deg"/>
     <define name="PITCH_PGAIN" value="10000"/>
     <define name="PITCH_DGAIN" value="3.5"/>
     <define name="ELEVATOR_OF_ROLL" value="1600" unit="PPRZ_MAX"/>
@@ -568,7 +468,6 @@ NOTES:
     <define name="ROLL_ATTITUDE_GAIN" value="6000"/>
     <define name="ROLL_RATE_GAIN" value="200."/>
   </section>
-
 
   <!--  We have value of Classic as well as ETECH, this since airframe is frst flown Classic the ETECS, make tunng a bit easier
    It is NOT (yet?) switchable on the fly in flight -->
@@ -656,23 +555,11 @@ NOTES:
 
   <!-- ************************* BAT ************************* -->
   <section name="BAT">
-    <!--<define name="MilliAmpereOfAdc(adc)" value="((adc) - 505) * 124.0f"/>--><!-- TODO -->
-    <!--  hint TODO Fix <define name="MilliAmpereOfAdc(adc)" value="((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)" />-->
-    <!-- 100Amp = 2Volt -> 2482,42 tick/100Amp"(0.0402832*adc)" -->
-    <!-- A simple powerblock module from CN -->
-    <!--  <define name="VoltageOfAdc(adc)" value="11.8"/>--> <!-- Quick send data test -->
-   <!--  <define name="VoltageOfAdc(adc)" value="24 - (0.004043478f * adc)"/>-->
-     <!--    <define name="VOLTAGE_ADC_SCALE" value="0.004511719f"/> --> <!--  war 0.018 0.008 R1 (Bat - ADC input) = 22k, R2 (ADC input - GND) = 2.2K -->
-   <!--  <define name="VOLTAGE_OFFSET" value="0" unit="V"/>
-    <define name="VoltageOfAdc(adc)" value="((float)adc * VOLTAGE_ADC_SCALE + VOLTAGE_OFFSET)"/>
-   <define name="DefaultVoltageOfAdc(adc)" value="(0.00384*adc)"/>-->
-    <!--  <define name="VoltageOfAdc(adc)" value="((float)adc * 0.0001f )"/>-->
-    <define name="MILLIAMP_AT_FULL_THROTTLE" value="30000"/>  <!-- TODO unknown value, measure, now used as avarage value if no current sensor is attatched-->
+    <define name="MILLIAMP_AT_FULL_THROTTLE" value="30000"/>
     <define name="MAX_BAT_LEVEL" value="12.6" unit="V"/><!-- 3S lipo 3x4.2 = 12.6 -->
     <define name="LOW_BAT_LEVEL" value="10.8" unit="V"/>
     <define name="CRITIC_BAT_LEVEL" value="10.4" unit="V"/>
     <define name="CATASTROPHIC_BAT_LEVEL" value="9.3" unit="V"/>
-    <define name="MIN_BAT_LEVEL" value="9.0" unit="V"/><!-- Get rid if this one .. -->
   </section>
 
   <!-- ************************* MISC ************************* -->
@@ -710,7 +597,7 @@ NOTES:
     <!-- RC_LOST_MODE means that if your RC Transmitter signal is not received anymore in the autopilot, e.g. you switch it off
     or  fly a long range mission you define the wanted mode behaviour here.
     If you do not define it, it defaults to flying to the flightplan HOME -->
-    <define name="RC_LOST_MODE" value="AP_MODE_AUTO1"/> <!-- set it to AP_MODE_AUTO2 after initial GPS and AIRSPEED ref test flight -->
+    <define name="RC_LOST_MODE" value="AP_MODE_AUTO2"/>
 
     <!-- TODO SET some modem values with multipoint also the $AC_ID -->
     <!--  Here XBEE init will be misused to set SiK Si10xx based modems as the Hope and RFdesign -->
@@ -744,7 +631,7 @@ NOTES:
     <define name="ALT_SHIFT_MINUS" value="-10"/>  <!-- TODO: change for more testflight convinience -->
   </section>
 
-  <!-- ************************ SIMU ******************************** -->
+  <!-- ************************ SIMU ******************************* -->
   <section name="SIMU">
     <define name="WEIGHT" value ="1."/>
     <define name="YAW_RESPONSE_FACTOR" value =".9"/>   <!--default 1.-->
@@ -752,4 +639,28 @@ NOTES:
     <define name="ROLL_RESPONSE_FACTOR" value ="15."/> <!--default 15-->
   </section>
 
+  <!-- ********************SIM JSB NPS ***************************** -->
+  <section name="SIMULATOR" prefix="NPS_">
+     <define name="JSBSIM_LAUNCHSPEED" value="10"/>
+     <!--<define name="JSBSIM_MODEL" value="OPENUAS/simple_fixedwing" type="string"/>-->
+     <define name="SENSORS_PARAMS" value="nps_sensors_params_invariant.h" type="string"/>
+      <!-- (axis numbering starts at zero) -->
+      <define name="JS_AXIS_THROTTLE" value="0"/>
+      <define name="JS_AXIS_THROTTLE_REVERSED" value="1"/>
+
+      <define name="JS_AXIS_ROLL" value="1"/>
+
+      <define name="JS_AXIS_PITCH" value="2"/>
+      <define name="JS_AXIS_PITCH_REVERSED" value="1"/>
+
+      <define name="JS_AXIS_YAW" value="3"/>
+      <define name="JS_AXIS_YAW_REVERSED" value="1"/>
+
+      <define name="JS_AXIS_FLAPS" value="7"/>
+      <define name="JS_AXIS_MODE" value="5"/>
+
+      <define name="JSBSIM_ROLL_TRIM" value="0.008"/>
+      <define name="JSBSIM_PITCH_TRIM" value="0.0375"/>
+      <define name="JSBSIM_YAW_TRIM" value="0.001"/>
+  </section>
 </airframe>
