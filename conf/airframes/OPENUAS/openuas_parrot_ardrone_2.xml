@@ -1,48 +1,70 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
-<airframe name="ARDrone2">
+<airframe name="ARdrone2">
   <description>
   A slightly modified Parrot AR.Drone 2.0 (http://www.openuas.org/aircraft/)
-  A good airframe to validate all onboard functionally...
-  Parrot AR.Drone 2.0
-    + Autopilot:   Default
-    + IMU:         Default
-    + Motors:      Default Motors
-    + Actuators:   Default ESC
-    + GPS:         Added uBlox LEA5H and Sarantel helix GPS antenna
-    + CURRENT:     Default build in V/A sensing
-    + AGL ranging: Default sonar
++ Airframe to validate all onboard functionally...
+   Parrot AR.Drone 2.0
+     + Autopilot:   Default Parrot Bebop 2 board
+     + Actuators:   Default Motors
+     + GPS:         Default uBlox M8N GNSS
+     + TELEMETRY:   Default WiFi
+     + CURRENT:     Default Build in V/A sensing
+     + RC RX:       Joystick on GCS then via Wifi (for now...)
 
-  NOTES:
-    + Plz calibrate your magnetometer, Yes, you too ;), unit UKF auto works...
-    + And callibrate your Accelometer also...
-    + Original brass ballbearings replaced with real ball bearings for all shafts
-    + Frontcamera movable by servo on debug port - optional
-    + OpenRX RXSR on debug port - optional
-    + Flies on INDI control
+ NOTES:
+     + IF you want to fly then:
+     ++ Calibrate your magnetometer... Yes, you too...
+     ++ Yeah.. and calibrate your Accelometer also...
 
-    + To testfly this airframe yourself you need to:
-    ++ point to your own calibrations xml, search for 'calibration' in this document
+     + Uses PAPARAZZI "standard" radio channel settings
+     + One could make a flightplan mimicing exact default behaviour of Parrot App
+     + Tested with Firmware v4.7.1, update to this Bebop 2 firmware version if not done already
+     + Can use INDI full for control
+     + Flash the PPRZ firmware via WiFi or USB
+     + Regular Telemetry is possible via USB to FTDI serial to Modem, added kernel drivers see:
+        https://wiki.paparazziuav.org/wiki/Howto.crosscompile_for_parrot_drones
+        https://wiki.paparazziuav.org/wiki/Use_the_USB_port_on_Parrot_Drones
+     + Bottom camera can used just for some mapping, not high resolution but still fun...
+     + PPRZLink v2 advised for tcas fun
+     + Theoretically an RC receiver can be added with e.g. SBus RX out via FTDI to USB
+     + There are no other modification, also not on the vibration absorbers. Oh yeah, it is black ;)
+     + To testfly this airframe yourself you need to:
+     ++ point to your own calibrations xml, search for 'calibration' in this document
+     ++ Make sure your drone runs firmware 4.7.1
 
-  WIP:
-    + Not all gains are tuned to optimum, feel free to enhance and a PR...
-    + Range sensor needs to be put to good use
-    + SD SRTM via onboard storage not implemented (yet..)
+ WIP:
+     + Not all gains are tuned to optimum, feel free to enhance and a PR...
+     + The front cam is not yet fully supported with internal code
+     + Sonar needs to be put to good use
+     + SD SRTM via onboard storage not implemented (yet..)
+     + likely more, but we forgot...
+
+ Launching
+     + 1)Set TX to AUTO2 (or even switch off your TX is you dare)
+       2) wait until props spins after a second or so
+       3) There it goes...
+
+  Setting1:
+  + All setting a so this object is ment to fly inide a "virtual" box of 10m x 10m with RTK to the max of its envelope with no wind
+   The values are tuned so that the flight speed is limited and the drone does not over-shoot the waypoints as it would in outdoor settings.
+  Setting2:
+  + All setting a so this object is ment to fly outside to the max of its envelope unde various wind conditions
   </description>
+
   <firmware name="rotorcraft">
+
+    <!-- ************************* MODULES ************************* -->
+    <!-- Warning: unit conversion does not work in this section of airframe,
+    so use the native units, or you'll have big trouble... -->
     <target name="ap" board="ardrone2">
+      <configure name="PREFIX" value="/opt/arm-2012.03/bin/arm-none-linux-gnueabi"/>
+      <!-- Towards less aligner issues -->
       <!--
       <define name="AHRS_ALIGNER_SAMPLES_NB" value="600"/>
       <define name="LOW_NOISE_THRESHOLD" value="30000"/>
       <define name="LOW_NOISE_TIME" value="10"/>
       -->
 
-      <define name="AUTOPILOT_DISABLE_AHRS_KILL"/>
-
-      <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>-->
-      <define name="BAT_CHECKER_DELAY" value="50"/>
-      <!-- amount of time it take for the bat to check -->
-      <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
-      <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
     </target>
 
     <target name="nps" board="pc">
@@ -52,9 +74,8 @@
       <module name="stabilization" type="indi">
         <define name="INDI_RPM_FEEDBACK" value="FALSE"/>
       </module>
-      <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->
-      <define name="STABILIZATION_INDI_G2_R" value="0.0"/><!-- for jsbsim (rotor inertia is not modelled) -->
-      <!-- <define name="STABILIZATION_INDI_G2_R" value="0.20"/> --><!-- If one wants to use Gazebo sim -->
+        <define name="STABILIZATION_INDI_G2_R" value="0.0"/><!-- for jsbsim (rotor inertia is not modelled) -->
+        <!-- <define name="STABILIZATION_INDI_G2_R" value="0.20"/> --><!-- If one wants to use Gazebo sim -->
       <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->
     </target>
 
@@ -81,86 +102,129 @@
 
     <define name="AHRS_USE_SONAR" value="TRUE"/>
     <define name="SENSOR_SYNC_SEND_SONAR"/><!-- Enable if you want it debug sonar device, eg raw values -->
+    <module name="bat_voltage_ardrone2"/>
+     <!-- By adding new kernel drivers to the airframe it is very well possible to use all kinds of external devices. -->
 
-    <configure name="USE_MAGNETOMETER" value="TRUE"/> <!-- Make sure is callibrated, and to set false.. Hmm better have your Visionbased solution working ;) -->
+    <!-- E.g. a serial modem via FTDI cable on Micro USB 2, testflights performed, all works well -->
+    <!-- Possible if one connect other serial devices they present them as ttyACMx devices, if so try UART5 or UART6 -->
+    <!-- For this to work out kernel drivers ( xyz.ko ) must be installed on the Airframe -->
 
-    <!-- Subsystem section -->
-    <module name="telemetry" type="transparent_udp"/>
+    <!-- One can also use type="xbee_api" if Digi Xbee modem is connected-->
+    <!-- <module name="telemetry" type="transparent"
+      <configure name="MODEM_PORT" value="UART2"/>
+      <configure name="MODEM_BAUD" value="B57600"/>
+    </module>-->
+
+    <!-- <module name="extra_pprz_dl"/>--> <!-- e.g. for WiFi *AND* a LongRangeModem -->
+
     <module name="radio_control" type="datalink"/>
+
+    <!-- Or.... -->
+    <!-- SBUS out is AETR by default, our transmitter sends TAER as per standard so correct in radio file -->
+      <!--<module name="radio_control" type="sbus"> --><!-- The output type of RX, over the air it can can be all kinds e.g. DSMX, FRSky-->
+      <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/> --> <!-- Set the OpenRXSR receiver to maximum channel output of 8 9ms -->
+      <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="12"/>--> <!-- An Orange R620X Has maximum sbus channel output of 12 -->
+    <!--</module>-->
+
+    <module name="gps" type="ublox"/> <!-- for Optitrace systems use type="datalink" -->
+    <!-- This GPS is a real ublox M8N, so setting can be saved, no need
+    for ubx_ucenter one has can set it oneself since we have all kinds
+    of nifty Galilleio setting begin 2020 we rather keep that, but for now...
+    lazyness, so used ;) -->
+    <module name="gps" type="ubx_ucenter"/>
+    <!--<module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
+
     <module name="motor_mixing"/>
+    <module name="telemetry" type="transparent_udp"/>
     <module name="actuators" type="ardrone2"/>
     <module name="imu" type="ardrone2"/>
-    <module name="gps" type="ublox"/>
 
-    <!-- A default NMEA GPS could theoretically be used never tested oneself, not sure if it works -->
-    <!--<module name="gps" type="nmea"/>-->
 
-     <!-- For testing original orange Parrot GPS dongel make sure that you user sirftool to sert it up and then enable this-->
-     <!-- <module name="gps" type="sirf">-->
+    <module name="ahrs" type="int_cmpl_quat"/>
 
-      <!--<configure name="UART2_DEV" value="UART2"/>-->
-      <!--<configure name="GPS_PORT" value="UART2_DEV"/>-->
-    <!--   <configure name="GPS_BAUD" value="B57600"/>-->
-    <!-- </module> -->
 
-    <module name="stabilization" type="indi"/><!-- Full INDI with prio -->
-     <!--<define name="INDI_RPM_FEEDBACK" value="TRUE"/>-->
-    </module>
-    <!--<module name="stabilization" type="indi_simple"/>-->
-
+    <module name="ins" type="extended"/>
+    <!--<module name="ahrs" type="int_cmpl_quat"/>-->
     <module name="ahrs" type="float_cmpl_quat">
       <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
       <!--<configure name="USE_MAGNETOMETER" value="TRUE"/>--><!-- if using INS EKF2 this forced already-->
       <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/>
-      <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/>
+      <define name="AHRS_MAG_UPDATE_ALL_AXES" value="TRUE"/>
       <!-- <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/>-->
       <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0" unit="m/s"/>
-      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="5.0"/>
+      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.1f"/>
     </module>
 
-    <module name="ins" type="ekf2"/>
-  </firmware>
+    <!--<module name="stabilization" type="int_quat"/>-->
+    <module name="stabilization" type="indi_simple"/>
+    <!-- for later if simple works
+    <module name="stabilization" type="indi">
+      <define name="INDI_RPM_FEEDBACK" value="TRUE"/>
+    </module>-->
+    <!--<module name="guidance" type="indi"/>--><!-- for later if classic works-->
 
-  <modules main_freq="512">
-    <module name="bat_voltage_ardrone2"/>
-    <module name="gps" type="ubx_ucenter"/>
-    <module name="send_imu_mag_current"/>
-    <module name="air_data"/>
-     <!-- ************************* PHOTOGRAMMETRY ****************************** -->
-     <!-- <module name="photogrammetry_calculator"/> -->
-    <!--<module name="video_rtp_stream">
-      <define name="VIEWVIDEO_QUALITY_FACTOR" value="75"/>
-      <define name="VIEWVIDEO_FPS" value="4"/>
-      <define name="VIEWVIDEO_SHOT_PATH" value="/data/video/usb0/myphotos"/>
-    </module>-->
-    <!--<module name="video_usb_logger"/>
-      <define name="LOG_ON_USB" value="TRUE"/>
-      <define name="VIDEO_USB_LOGGER_PATH" value="/data/video/usb0/myphotologs"/>
-    </module>-->
+    <!-- Also used if QNH needed -->
+    <module name="air_data">
+     <define name="CALC_AIRSPEED" value="FALSE"/>
+     <define name="CALC_TAS_FACTOR" value="FALSE"/>
+     <define name="CALC_AMSL_BARO" value="TRUE"/>
+    </module>
+
+    <module name="geo_mag"/>
+
+    <module name="send_imu_mag_current"/> <!-- enable if airframe has added electronic or other devices, recalibrate and stuffcalibration in this airframefile-->
+
+    <module name="nav" type="survey_rectangle_rotorcraft">
+      <define name="RECTANGLE_SURVEY_DEFAULT_SWEEP" value="10"/>
+    </module>
+    <module name="nav" type="survey_poly_rotorcraft">
+      <define name="POLYSURVEY_DEFAULT_DISTANCE" value="10"/><!-- in M -->
+    </module>
+
     <module name="logger_file">
-      <!--<define name="FILE_LOGGER_PATH" value=""/>-->
+      <define name="FILE_LOGGER_PATH" value="/data/video"/>
     </module>
+
+    <module name="video_thread"/>
+
+    <module name="pose_history"/>
+    <module name="cv_opticflow">
+      <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
+      <!-- ARDrone2 FPS improvements -->
+      <define name="OPTICFLOW_PYRAMID_LEVEL" value="0"/>
+      <define name="OPTICFLOW_FEATURE_MANAGEMENT" value="1"/>
+    </module>
+
+    <module name="opticflow_hover"/>
 
     <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
     <module name="agl_dist">
         <!-- Make sure something like this is defined <define name="USE_SONAR"/>-->
     </module>
 
-    <!-- Have some fun with the camera -->
-    <module name="cv_colorfilter">
-      <define name="COLORFILTER_CAMERA" value="front_camera"/>
+    <module name="video_capture">
+      <define name="VIDEO_CAPTURE_CAMERA" value="bottom_camera"/>
+      <define name="VIDEO_CAPTURE_PATH" value="/data/video/media/ouas"/>
     </module>
-
-    <module name="orange_avoider" />
 
     <module name="video_rtp_stream">
-      <define name="VIEWVIDEO_CAMERA" value="front_camera"/>
-      <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="4"/>
-      <define name="VIEWVIDEO_QUALITY_FACTOR" value="60"/>
+      <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
+      <!-- <define name="VIEWVIDEO_CAMERA2" value="bottom_camera"/> -->
+      <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="1"/>
+      <define name="VIEWVIDEO_QUALITY_FACTOR" value="80"/>
     </module>
-  </modules>
 
-      <module name="digital_cam_video">
+    <!--
+    <module name="cv_blob_locator">
+      <define name="BLOB_LOCATOR_CAMERA" value="bottom_camera"/>
+    </module>
+    -->
+
+    <!-- Embed State data in your Photo file, e.g. Position of photo when taken  -->
+    <module name="video_exif">
+    </module>
+
+    <module name="digital_cam_video">
       <define name="DC_AUTOSHOOT_DISTANCE_INTERVAL" value="5.0"/> <!-- unit="s"/> -->
     </module>
 
@@ -171,14 +235,19 @@
     <module name="tcas">
     </module>
 -->
-  <module name="sys_mon"/><!-- for MCU load debugging -->
 
+    <module name="sys_mon"/><!-- for MCU load debugging -->
+  </firmware>
 
-  <!-- ************************ AUTO RC COMMANDS ***************************** -->
-  <auto_rc_commands>
-    <!-- To still be able to trigger cam in MODENAV-->
-    <!-- <set command="SHOOT" value="@AUX1"/> -->
-  </auto_rc_commands>
+<!-- ********************** RC COMMANDS ************************** -->
+<!-- If RC is connected to USB -->
+<!--  <rc_commands>
+    <set command="THRUST" value="@THROTTLE"/>
+    <set command="ROLL" value="@ROLL"/>
+    <set command="PITCH" value="@PITCH"/>
+    <set command="YAW" value="@YAW"/>
+  </rc_commands>-->
+
 <!-- ************************ COMMANDS ***************************** -->
   <commands>
     <axis name="PITCH" failsafe_value="0"/>
@@ -211,12 +280,21 @@
     <set servo="BOTTOM_LEFT" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
   </command_laws>
 
+  <section name="AIR_DATA" prefix="AIR_DATA_">
+    <define name="CALC_AIRSPEED" value="FALSE"/>
+    <define name="CALC_TAS_FACTOR" value="FALSE"/>
+    <define name="CALC_AMSL_BARO" value="TRUE"/>
+  </section>
+
 <!-- ************************* IMU ************************* -->
   <section name="IMU" prefix="IMU_">
-    <!-- Accelero -->
-    <define name="ACCEL_X_NEUTRAL" value="2048"/>
-    <define name="ACCEL_Y_NEUTRAL" value="2048"/>
-    <define name="ACCEL_Z_NEUTRAL" value="2048"/>
+    <!-- Accelerometer calibrated for THIS, for your airframe RECALIBRATE -->
+    <define name="ACCEL_X_NEUTRAL" value="45"/>
+    <define name="ACCEL_Y_NEUTRAL" value="3"/>
+    <define name="ACCEL_Z_NEUTRAL" value="123"/>
+    <define name="ACCEL_X_SENS" value="2.43271539166" integer="16"/>
+    <define name="ACCEL_Y_SENS" value="2.44118861813" integer="16"/>
+    <define name="ACCEL_Z_SENS" value="2.41672180127" integer="16"/>
 
 <!--
 Calibrating the Magnetometer
@@ -265,9 +343,6 @@ The most crucial part for the magnetometer calibration:
 
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
-
-  <!-- local magnetic field -->
-  <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
     <!-- values used if no GPS fix, on 3D fix is update by geo_mag module -->
     <!-- <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="0"/>--> <!-- only for Optitrack -->
@@ -285,7 +360,7 @@ The most crucial part for the magnetometer calibration:
   </section>
 
 
-  <!-- *************************** SONAR DEVICE ***************************** -->
+<!-- *************************** SONAR DEVICE ***************************** -->
   <section name="SONAR" prefix="SONAR_">
     <define name="SCALE" value="0.016775" integer="16"/>
     <define name="OFFSET" value="0.03" unit="m"/><!-- The landing gear height to tarmac, well ~0 m with this flyingwing -->
@@ -301,7 +376,7 @@ The most crucial part for the magnetometer calibration:
     <define name="FILTER" value="0.15"/> <!--Low pass filter time constant-->
   </section>
 
-  <!-- ************************ MAG_CALIB_UKF ************************ -->
+<!-- ************************ MAG_CALIB_UKF ************************ -->
 <!-- HOTSTART TRUE for faster convergence flights to flight -->
 <!-- <define name="HOTSTART_SAVE_FILE" value="/data/ftp/internal_000/mag_ukf_calib.txt"/>-->
   <section name="MAG_CALIB_UKF" prefix="MAG_CALIB_UKF_">
@@ -313,7 +388,6 @@ The most crucial part for the magnetometer calibration:
     <define name="INITIAL_STATE" value="0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0" type="float[]"/>
     <define name="VERBOSE" value="FALSE"/><!-- Disable after testing -->
   </section>
-
 
   <section name="INS" prefix="INS_">
     <!-- For those super precice target landings... well better swap the M8N GNSS for a M8P or M9P -->
@@ -328,9 +402,13 @@ The most crucial part for the magnetometer calibration:
     <define name="SONAR_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
     <define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>
 
-    <define name="USE_GPS_ALT" value="1"/>
-    <define name="USE_GPS_ALT_SPEED" value="1"/>
-    <define name="VFF_R_GPS" value="0.01"/>
+    <define name="USE_GPS_ALT" value="TRUE"/>
+    <define name="USE_GPS_ALT_SPEED" value="FALSE"/>
+    <define name="VFF_R_GPS" value="0.1"/>
+
+    <!-- trust more the baro over the gps alt -->
+    <define name="INV_NXZ" value="0.3"/>
+    <define name="INV_NH" value="2.0"/>
   </section>
 
   <section name="RC_SETPOINT" prefix="STABILIZATION_ATTITUDE_">
@@ -368,6 +446,11 @@ The most crucial part for the magnetometer calibration:
     <define name="G1_R" value="0.0032"/>
     <define name="G2_R" value="0.16"/>
 
+    <!-- For the ArDrone MAYBE we need to filter the roll rate due to the dampers -->
+    <define name="FILTER_ROLL_RATE" value="FALSE"/>
+    <define name="FILTER_PITCH_RATE" value="FALSE"/>
+    <define name="FILTER_YAW_RATE" value="FALSE"/>
+
     <!-- reference acceleration for attitude control -->
     <define name="REF_ERR_P" value="380.0"/>
     <define name="REF_ERR_Q" value="380.0"/>
@@ -386,8 +469,8 @@ The most crucial part for the magnetometer calibration:
     <define name="ACT_DYN_R" value="0.06"/>
 
     <!-- Adaptive Learning Rate -->
-    <define name="USE_ADAPTIVE" value="FALSE"/>
-    <define name="ADAPTIVE_MU" value="0.0001"/>
+    <define name="USE_ADAPTIVE" value="FALSE"/> <!-- make true if all works -->
+    <define name="ADAPTIVE_MU" value="0.0001"/> <!-- tune better -->
   </section>
 
   <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
@@ -395,17 +478,16 @@ The most crucial part for the magnetometer calibration:
     <define name="HOVER_KD" value="82"/>
     <define name="HOVER_KI" value="13"/>
     <define name="NOMINAL_HOVER_THROTTLE" value="0.655"/>
-    <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
+    <define name="ADAPT_THROTTLE_ENABLED" value="TRUE"/>
   </section>
 
   <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-    <!-- Good weather -->
-    <define name="MAX_BANK" value="20" unit="deg"/>
-    <!-- Bad weather -->
-    <!-- define name="MAX_BANK" value="32" unit="deg"/ -->
+    <define name="MAX_BANK" value="22" unit="deg"/><!-- TODO: determine -->
+    <define name="REF_MAX_SPEED" value="2.5" unit="m/s"/>
     <define name="PGAIN" value="79"/>
     <define name="DGAIN" value="100"/>
     <define name="IGAIN" value="30"/>
+    <define name="REF_ZETA" value="1.0"/> <!-- 1.0 or more for no waypoint overshooting -->
   </section>
 
   <section name="MISC">
@@ -419,8 +501,8 @@ The most crucial part for the magnetometer calibration:
     <!-- RC_LOST_MODE means that if your RC Transmitter signal is not received anymore in the autopilot, e.g. you switch it off
     or  fly a long range mission you define the wanted mode behaviour here.
     If you do not define it, it defaults to flying to the flightplan HOME -->
-    <define name="AP_MODE_AUTO2" value="MODE_AUTO2"/>
-    <define name="RC_LOST_MODE" value="AP_MODE_AUTO2"/>
+    <!--<define name="RC_LOST_MODE" value="AP_MODE_AUTO2"/>-->
+ <!--<define name="AP_MODE_AUTO2" value="MODE_AUTO2"/>-->
 
     <!-- TODO: SET some modem values with multipoint also the $AC_ID -->
     <!--  Here XBEE init will be misused to set SiK Si10xx based modems as the Hope and RFdesign -->
@@ -441,35 +523,35 @@ The most crucial part for the magnetometer calibration:
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
   </section>
 
-  <!-- **************************** BAT ****************************** -->
+<!-- **************************** BAT ****************************** -->
   <section name="BAT">
     <define name="MAX_BAT_CAPACITY" value="1200" unit="mAh"/> <!-- Original Parrot battery -->
-    <define name="MILLIAMP_AT_FULL_THROTTLE" value="8700" unit="mA"/>
-    <define name="MILLIAMP_AT_IDLE_THROTTLE" value="400" unit="mA"/>
+    <!-- <define name="MAX_BAT_CAPACITY" value="4150" unit="mAh"/>--> <!-- 3rd party battery -->
+    <define name="MILLIAMP_AT_FULL_THROTTLE" value="8700" unit="mA"/>  <!-- At 11.7 10.6 A at 12.2v 11.0A rounded then to 11000 to be at safe side-->
+    <define name="MILLIAMP_AT_IDLE_THROTTLE" value="400" unit="mA"/> <!-- 500mA, with additional RC receiver ~600mA -->
     <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.0"/>
     <define name="MAX_BAT_LEVEL" value="12.6" unit="V"/> <!-- 3S lipo 3x4.2 = 12.6 -->
     <define name="LOW_BAT_LEVEL" value="10.4" unit="V"/>
-    <define name="CRITIC_BAT_LEVEL" value="9.6" unit="V"/>
+    <define name="CRITIC_BAT_LEVEL" value="9.8" unit="V"/>
     <define name="CATASTROPHIC_BAT_LEVEL" value="9.3" unit="V"/> <!-- TODO: test when AP board switches off -->
     <define name="MIN_BAT_LEVEL" value="9.0" unit="V"/>
   </section>
 
-
-  <!-- ********************** GCS SPECIFICS ************************** -->
+<!-- ********************** GCS SPECIFICS ************************** -->
   <section name="GCS">
-    <define name="SPEECH_NAME" value="A R drone Two"/>
+    <define name="SPEECH_NAME"         value="A R drone Two"/>
     <define name="ALT_SHIFT_PLUS_PLUS" value="5"/>
     <define name="ALT_SHIFT_PLUS"      value="1"/>
     <define name="ALT_SHIFT_MINUS"     value="-1"/>
     <define name="AC_ICON"             value="quadrotor_x"/>
   </section>
-  </section>
 
-  <!-- ************************ NPSSIM ******************************* -->
+<!-- ************************ NPSSIM ******************************* -->
   <section name="SIMULATOR" prefix="NPS_">
     <define name="ACTUATOR_NAMES" value="nw_motor, ne_motor, se_motor, sw_motor" type="string[]"/>
     <define name="JSBSIM_MODEL" value="simple_ardrone2" type="string"/>
     <define name="JSBSIM_INIT" value="reset00" type="string"/>
+    <define name="WEIGHT" value="0.4"/>
     <define name="SENSORS_PARAMS" value="nps_sensors_params_ardrone2.h" type="string"/>
   </section>
 

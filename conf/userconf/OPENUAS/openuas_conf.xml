@@ -1,13 +1,13 @@
 <conf>
   <aircraft
    name="ARDrone_2"
-   ac_id="240"
-   airframe="airframes/OPENUAS/openuas_parrot_bebop_2.xml"
+   ac_id="238"
+   airframe="airframes/OPENUAS/openuas_parrot_ardrone_2.xml"
    radio="radios/dummy.xml"
    telemetry="telemetry/default_rotorcraft.xml"
    flight_plan="flight_plans/rotorcraft_survey.xml"
    settings="settings/rotorcraft_basic.xml"
-   settings_modules="modules/digital_cam_video.xml modules/video_rtp_stream.xml modules/video_capture.xml modules/bebop_cam.xml modules/nav_survey_poly_rotorcraft.xml modules/nav_survey_rectangle_rotorcraft.xml modules/geo_mag.xml modules/air_data.xml modules/stabilization_indi_simple.xml modules/ahrs_float_cmpl_quat.xml modules/imu_common.xml modules/gps_ubx_ucenter.xml modules/gps.xml modules/stabilization_indi.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml"
+   settings_modules="modules/digital_cam_video.xml modules/video_rtp_stream.xml modules/video_capture.xml modules/opticflow_hover.xml modules/cv_opticflow.xml modules/nav_survey_poly_rotorcraft.xml modules/nav_survey_rectangle_rotorcraft.xml modules/geo_mag.xml modules/air_data.xml modules/stabilization_indi_simple.xml modules/ahrs_float_cmpl_quat.xml modules/ins_extended.xml modules/ahrs_int_cmpl_quat.xml modules/imu_common.xml modules/gps_ubx_ucenter.xml modules/gps.xml modules/stabilization_indi.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml"
    gui_color="#ffffb25313ae"
   />
   <aircraft
@@ -90,8 +90,8 @@
   />
   <aircraft
    name="EFlite_T28"
-   ac_id="208"
-   airframe="airframes/OPENUAS/openuas_parrot_disco.xml"
+   ac_id="216"
+   airframe="airframes/OPENUAS/openuas_eflite_t28.xml"
    radio="radios/OPENUAS/openuas_sbus_out.xml"
    telemetry="telemetry/OPENUAS/openuas_fixedwing_imu.xml"
    flight_plan="flight_plans/OPENUAS/openuas_versatile_unified.xml"
@@ -113,7 +113,7 @@
   />
   <aircraft
    name="Iris_Plus"
-   ac_id="208"
+   ac_id="235"
    airframe="airframes/OPENUAS/openuas_parrot_disco.xml"
    radio="radios/OPENUAS/openuas_sbus_out.xml"
    telemetry="telemetry/OPENUAS/openuas_fixedwing_imu.xml"
@@ -125,7 +125,7 @@
   />
   <aircraft
    name="Itsy_Bitsy"
-   ac_id="208"
+   ac_id="253"
    airframe="airframes/OPENUAS/openuas_parrot_disco.xml"
    radio="radios/OPENUAS/openuas_sbus_out.xml"
    telemetry="telemetry/OPENUAS/openuas_fixedwing_imu.xml"
