@@ -24,9 +24,9 @@
  * Image helper functions, like resizing, color filter, converters...
  */
 
-#include "image.h"
 #include <stdlib.h>
 #include <string.h>
+#include "image.h"
 #include "lucas_kanade.h"
 
 #ifndef CACHE_LINE_LENGTH
@@ -58,8 +58,14 @@ void image_create(struct image_t *img, uint16_t width, uint16_t height, enum ima
     img->buf_size = sizeof(uint8_t) * width * height;
   }
 
-  // aligned memory slightly speeds up any later copies
+  // aligned_alloc used since aligned memory could slightly speed up any later copies
+  // However for compiling for the ARdrone2 a newer compiler can not be used the target for libc would be incompatible
+  // there is no (simple?) fix for this. So if the code should run onboard ARDRone2, use the older method
+  #ifndef USE_MEMALIGN
   img->buf = aligned_alloc(CACHE_LINE_LENGTH, img->buf_size + (CACHE_LINE_LENGTH - img->buf_size % CACHE_LINE_LENGTH) % CACHE_LINE_LENGTH);
+  #else
+  img->buf = memalign(CACHE_LINE_LENGTH, img->buf_size + (CACHE_LINE_LENGTH - img->buf_size % CACHE_LINE_LENGTH) % CACHE_LINE_LENGTH);
+  #endif
 }
 
 /**

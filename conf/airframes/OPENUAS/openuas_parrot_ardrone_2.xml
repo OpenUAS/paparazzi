@@ -1,12 +1,11 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 <airframe name="ARdrone2">
   <description>
-  A slightly modified Parrot AR.Drone 2.0 (http://www.openuas.org/aircraft/)
-+ Airframe to validate all onboard functionally...
-   Parrot AR.Drone 2.0
-     + Autopilot:   Default Parrot Bebop 2 board
-     + Actuators:   Default Motors
-     + GPS:         Default uBlox M8N GNSS
+   Parrot AR.Drone 2.0 with added UBlox GPS, and Airframe to validate all onboard functionally...
+
+     + Autopilot:   Default board
+     + Actuators:   Default motors
+     + GPS:         Added uBlox M6N GNSS
      + TELEMETRY:   Default WiFi
      + CURRENT:     Default Build in V/A sensing
      + RC RX:       Joystick on GCS then via Wifi (for now...)
@@ -18,35 +17,27 @@
 
      + Uses PAPARAZZI "standard" radio channel settings
      + One could make a flightplan mimicing exact default behaviour of Parrot App
-     + Tested with Firmware v4.7.1, update to this Bebop 2 firmware version if not done already
+     + Tested with Firmware v2.4.8, update to this firmware version if not done already
      + Can use INDI full for control
      + Flash the PPRZ firmware via WiFi or USB
-     + Regular Telemetry is possible via USB to FTDI serial to Modem, added kernel drivers see:
-        https://wiki.paparazziuav.org/wiki/Howto.crosscompile_for_parrot_drones
-        https://wiki.paparazziuav.org/wiki/Use_the_USB_port_on_Parrot_Drones
      + Bottom camera can used just for some mapping, not high resolution but still fun...
      + PPRZLink v2 advised for tcas fun
-     + Theoretically an RC receiver can be added with e.g. SBus RX out via FTDI to USB
-     + There are no other modification, also not on the vibration absorbers. Oh yeah, it is black ;)
      + To testfly this airframe yourself you need to:
      ++ point to your own calibrations xml, search for 'calibration' in this document
      ++ Make sure your drone runs firmware 4.7.1
 
  WIP:
      + Not all gains are tuned to optimum, feel free to enhance and a PR...
-     + The front cam is not yet fully supported with internal code
-     + Sonar needs to be put to good use
-     + SD SRTM via onboard storage not implemented (yet..)
-     + likely more, but we forgot...
 
  Launching
-     + 1)Set TX to AUTO2 (or even switch off your TX is you dare)
+     + 1) Set TX to AUTO2 (or even switch off your TX is you dare)
        2) wait until props spins after a second or so
-       3) There it goes...
+       3) There it goes... performing your mission, you better made sure to have a good flightplan
 
   Setting1:
   + All setting a so this object is ment to fly inide a "virtual" box of 10m x 10m with RTK to the max of its envelope with no wind
    The values are tuned so that the flight speed is limited and the drone does not over-shoot the waypoints as it would in outdoor settings.
+
   Setting2:
   + All setting a so this object is ment to fly outside to the max of its envelope unde various wind conditions
   </description>
@@ -57,7 +48,10 @@
     <!-- Warning: unit conversion does not work in this section of airframe,
     so use the native units, or you'll have big trouble... -->
     <target name="ap" board="ardrone2">
+
+      <!-- If your compile resides somewhere else, change this line an point to where it is -->
       <configure name="PREFIX" value="/opt/arm-2012.03/bin/arm-none-linux-gnueabi"/>
+      <define name="USE_MEMALIGN"/>
       <!-- Towards less aligner issues -->
       <!--
       <define name="AHRS_ALIGNER_SAMPLES_NB" value="600"/>
@@ -70,13 +64,6 @@
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
       <module name="udp"/>
-      <!-- INDI RPM feedback not implemented in sim, will it be YOU who adds this? TIA! -->
-      <module name="stabilization" type="indi">
-        <define name="INDI_RPM_FEEDBACK" value="FALSE"/>
-      </module>
-        <define name="STABILIZATION_INDI_G2_R" value="0.0"/><!-- for jsbsim (rotor inertia is not modelled) -->
-        <!-- <define name="STABILIZATION_INDI_G2_R" value="0.20"/> --><!-- If one wants to use Gazebo sim -->
-      <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->
     </target>
 
     <define name="WIND_INFO"/>
@@ -86,7 +73,6 @@
 
     <!-- amount of time it take for the bat to trigger check -->
     <!-- to avoid bat low spike detection when strong pullup withch draws short sudden power-->
-    <!-- TODO: specificaly test for Disco see if needed or which value -->
     <define name="BAT_CHECKER_DELAY" value="60"/><!-- unit="s/10", thus tenth of seconds per default use ELECTRICAL_PERIODIC_FREQ if you for some reason want it differently-->
     <!-- Only one main battery so CATASTROPHIC_BATTERY kill should be somewhat delayed -->
     <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="410"/> <!-- unit="s/10, thus  tenth of seconds for engine kill or in ELECTRICAL_PERIODIC_FREQ-->
@@ -103,7 +89,9 @@
     <define name="AHRS_USE_SONAR" value="TRUE"/>
     <define name="SENSOR_SYNC_SEND_SONAR"/><!-- Enable if you want it debug sonar device, eg raw values -->
     <module name="bat_voltage_ardrone2"/>
-     <!-- By adding new kernel drivers to the airframe it is very well possible to use all kinds of external devices. -->
+
+    <!-- By adding new kernel drivers to the airframe it is very well possible to use all kinds of external devices.
+    But we doubt if it is worth it after 2020 there will be so much better cheap alternative drones...-->
 
     <!-- E.g. a serial modem via FTDI cable on Micro USB 2, testflights performed, all works well -->
     <!-- Possible if one connect other serial devices they present them as ttyACMx devices, if so try UART5 or UART6 -->
@@ -115,7 +103,7 @@
       <configure name="MODEM_BAUD" value="B57600"/>
     </module>-->
 
-    <!-- <module name="extra_pprz_dl"/>--> <!-- e.g. for WiFi *AND* a LongRangeModem -->
+    <!-- <module name="extra_pprz_dl"/>--> <!-- e.g. for WiFi *AND* a Modem -->
 
     <module name="radio_control" type="datalink"/>
 
@@ -127,7 +115,7 @@
     <!--</module>-->
 
     <module name="gps" type="ublox"/> <!-- for Optitrace systems use type="datalink" -->
-    <!-- This GPS is a real ublox M8N, so setting can be saved, no need
+    <!-- This GPS is a real ublox, so setting can be saved, no need
     for ubx_ucenter one has can set it oneself since we have all kinds
     of nifty Galilleio setting begin 2020 we rather keep that, but for now...
     lazyness, so used ;) -->
@@ -139,15 +127,11 @@
     <module name="actuators" type="ardrone2"/>
     <module name="imu" type="ardrone2"/>
 
-
-    <module name="ahrs" type="int_cmpl_quat"/>
-
-
     <module name="ins" type="extended"/>
     <!--<module name="ahrs" type="int_cmpl_quat"/>-->
     <module name="ahrs" type="float_cmpl_quat">
       <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
-      <!--<configure name="USE_MAGNETOMETER" value="TRUE"/>--><!-- if using INS EKF2 this forced already-->
+      <configure name="USE_MAGNETOMETER" value="TRUE"/><!-- if using INS EKF2 this forced already-->
       <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/>
       <define name="AHRS_MAG_UPDATE_ALL_AXES" value="TRUE"/>
       <!-- <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/>-->
@@ -188,6 +172,7 @@
     <module name="video_thread"/>
 
     <module name="pose_history"/>
+
     <module name="cv_opticflow">
       <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
       <!-- ARDrone2 FPS improvements -->
@@ -197,19 +182,19 @@
 
     <module name="opticflow_hover"/>
 
-    <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
+    <!-- can be used in flightplan e.g. during takeoff/landing or some terain hugging -->
     <module name="agl_dist">
         <!-- Make sure something like this is defined <define name="USE_SONAR"/>-->
     </module>
 
     <module name="video_capture">
       <define name="VIDEO_CAPTURE_CAMERA" value="bottom_camera"/>
-      <define name="VIDEO_CAPTURE_PATH" value="/data/video/media/ouas"/>
+      <define name="VIDEO_CAPTURE_PATH" value="/data/video/media"/>
     </module>
 
     <module name="video_rtp_stream">
       <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
-      <!-- <define name="VIEWVIDEO_CAMERA2" value="bottom_camera"/> -->
+      <!-- <define name="VIEWVIDEO_CAMERA2" value="front_camera"/> -->
       <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="1"/>
       <define name="VIEWVIDEO_QUALITY_FACTOR" value="80"/>
     </module>
@@ -240,13 +225,12 @@
   </firmware>
 
 <!-- ********************** RC COMMANDS ************************** -->
-<!-- If RC is connected to USB -->
-<!--  <rc_commands>
+   <rc_commands>
     <set command="THRUST" value="@THROTTLE"/>
     <set command="ROLL" value="@ROLL"/>
     <set command="PITCH" value="@PITCH"/>
     <set command="YAW" value="@YAW"/>
-  </rc_commands>-->
+  </rc_commands>
 
 <!-- ************************ COMMANDS ***************************** -->
   <commands>
@@ -368,7 +352,7 @@ The most crucial part for the magnetometer calibration:
     <define name="MIN_RANGE" value="0.18" unit="m"/>
   </section>
 
-  <!-- *************************** AGL **************************** -->
+<!-- *************************** AGL **************************** -->
   <section name="AGL" prefix="AGL_DIST_SONAR_">
     <define name="ID" value="ABI_BROADCAST"/>
     <define name="MAX_RANGE" value="1.5" unit="m"/>
@@ -390,7 +374,7 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="INS" prefix="INS_">
-    <!-- For those super precice target landings... well better swap the M8N GNSS for a M8P or M9P -->
+    <!-- If you dont use RTK GPS it really does not matter so much on ARdrone2 ;) -->
     <define name="BODY_TO_GPS_X" value="0.08" unit="m"/>
     <define name="BODY_TO_GPS_Y" value="0.0" unit="m"/>
     <define name="BODY_TO_GPS_Z" value="0.07" unit="m"/>
