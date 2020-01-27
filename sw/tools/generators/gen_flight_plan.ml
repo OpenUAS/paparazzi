@@ -99,7 +99,7 @@ let check_altitude_srtm = fun a x wgs84 ->
       fprintf stderr "MAJOR NOTICE: below SRTM ground altitude (%.0f<%.0f) in %s\n" a srtm_alt (Xml.to_string x)
     end
   with Srtm.Tile_not_found e ->
-    fprintf stderr "No SRTM data found to check altitude.\n"
+    fprintf stderr "NOTICE: No SRTM data found to check ground altitude.\n"
 
 let check_altitude = fun a x ->
   if a < !ground_alt +. !security_height then begin
@@ -1095,9 +1095,9 @@ let () =
               exit 1;
             end
           else if geofence_max_alt < (float_of_string alt) then
-            fprintf stderr "\nWarning: Geofence max altitude below default waypoint alt (%.0f < %.0f)\n" geofence_max_alt (float_of_string alt);
+            fprintf stderr "\nCAUTION: Geofence max altitude below default waypoint alt (%.0f < %.0f)\n" geofence_max_alt (float_of_string alt);
           Xml2h.define "GEOFENCE_MAX_ALTITUDE" (sof geofence_max_alt);
-          fprintf stderr "\nWarning: Geofence max altitude set to %.0f\n" geofence_max_alt;
+          fprintf stderr "\nCAUTION: Geofence max altitude set to %.0f\n" geofence_max_alt;
         with
           _ -> ()
       end;

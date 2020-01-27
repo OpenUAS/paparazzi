@@ -60,7 +60,7 @@
 #endif
 
 #if STABILIZATION_INDI_USE_ADAPTIVE
-#warning "Use caution with adaptive indi. See the wiki for more info"
+#pragma message("CAUTION: Be careful using adaptive INDI. See the wiki for more information on how to properly use it.")
 #endif
 
 #ifndef STABILIZATION_INDI_MAX_R
