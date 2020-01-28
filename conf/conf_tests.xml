@@ -56,7 +56,7 @@
   />
   <aircraft
    name="Iris"
-   ac_id="5"
+   ac_id="50"
    airframe="airframes/AGGIEAIR/aggieair_iris_indi.xml"
    radio="radios/AGGIEAIR/aggieair_FrSky3dr.xml"
    telemetry="telemetry/AGGIEAIR/aggieair_iris.xml"
