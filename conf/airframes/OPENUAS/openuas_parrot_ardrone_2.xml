@@ -135,7 +135,7 @@
       <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/>
       <define name="AHRS_MAG_UPDATE_ALL_AXES" value="TRUE"/>
       <!-- <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/>-->
-      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0" unit="m/s"/>
+      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/><!-- unit="m/s"-->
       <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.1f"/>
     </module>
 
@@ -346,8 +346,6 @@ The most crucial part for the magnetometer calibration:
 
 <!-- *************************** SONAR DEVICE ***************************** -->
   <section name="SONAR" prefix="SONAR_">
-    <define name="SCALE" value="0.016775" integer="16"/>
-    <define name="OFFSET" value="0.03" unit="m"/><!-- The landing gear height to tarmac, well ~0 m with this flyingwing -->
     <define name="MAX_RANGE" value="1.7" unit="m"/>
     <define name="MIN_RANGE" value="0.18" unit="m"/>
   </section>

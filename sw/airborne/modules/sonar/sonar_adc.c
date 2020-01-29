@@ -20,32 +20,17 @@
  *
  */
 
-#include "modules/sonar/sonar_adc.h"
 #include "generated/airframe.h"
+#include "mcu_periph/uart.h"
+#include "pprzlink/messages.h"
+#include "subsystems/datalink/downlink.h"
+
 #include "mcu_periph/adc.h"
 #include "subsystems/abi.h"
 #ifdef SITL
 #include "state.h"
 #endif
-
-#include "mcu_periph/uart.h"
-#include "pprzlink/messages.h"
-#include "subsystems/datalink/downlink.h"
-
-/** Sonar offset.
- *  Offset value in ADC
- *  equals to the ADC value so that height is zero
- */
-#ifndef SONAR_OFFSET
-#define SONAR_OFFSET 0
-#endif
-
-/** Sonar scale.
- *  Sensor sensitivity in m/adc (float)
- */
-#ifndef SONAR_SCALE
-#define SONAR_SCALE 0.0166
-#endif
+#include "modules/sonar/sonar_adc.h"
 
 struct SonarAdc sonar_adc;
 

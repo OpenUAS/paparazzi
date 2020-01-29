@@ -28,13 +28,27 @@
  * containing info about all sensors at a rate of 200Hz.
  */
 
-
-
 #ifndef NAVDATA_H_
 #define NAVDATA_H_
 
 #include "std.h"
 #include <unistd.h>
+
+/** Sonar offset.
+ *  Offset value in ADC
+ *  equals to the ADC value so that height is zero
+ */
+#ifdef SONAR_OFFSET
+#else
+#define SONAR_OFFSET 880
+#endif
+
+/** Sonar scale.
+ *  Sensor sensitivity in m/adc (float)
+ */
+#ifndef SONAR_SCALE
+#define SONAR_SCALE 0.00047f
+#endif
 
 /**
  * Main navdata structure from the navdata board

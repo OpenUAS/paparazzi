@@ -29,6 +29,21 @@
 
 #include "std.h"
 
+/** Sonar offset.
+ *  Offset value in ADC
+ *  equals to the ADC value so that height is zero
+ */
+#ifndef SONAR_OFFSET
+#define SONAR_OFFSET 0
+#endif
+
+/** Sonar scale.
+ *  Sensor sensitivity in m/adc (float)
+ */
+#ifndef SONAR_SCALE
+#define SONAR_SCALE 0.0166
+#endif
+
 struct SonarAdc {
   uint16_t meas;          ///< Raw ADC value
   uint16_t offset;        ///< Sonar offset in ADC units

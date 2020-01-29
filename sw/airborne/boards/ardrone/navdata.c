@@ -41,12 +41,13 @@
 #include <assert.h>
 #include <pthread.h>
 
-#include "std.h"
-#include "navdata.h"
+//#include "std.h"
 #include "subsystems/ins.h"
 #include "subsystems/ahrs.h"
 #include "subsystems/abi.h"
 #include "mcu_periph/gpio.h"
+
+#include "navdata.h"
 
 /* Internal used functions */
 static void *navdata_read(void *data __attribute__((unused)));
@@ -71,20 +72,7 @@ static pthread_cond_t  navdata_cond  = PTHREAD_COND_INITIALIZER;
 #define NAVDATA_FILTER_ID 2
 #endif
 
-/** Sonar offset.
- *  Offset value in ADC
- *  equals to the ADC value so that height is zero
- */
-#ifndef SONAR_OFFSET
-#define SONAR_OFFSET 880
-#endif
 
-/** Sonar scale.
- *  Sensor sensitivity in m/adc (float)
- */
-#ifndef SONAR_SCALE
-#define SONAR_SCALE 0.00047
-#endif
 
 /**
  * Write to fd even while being interrupted
