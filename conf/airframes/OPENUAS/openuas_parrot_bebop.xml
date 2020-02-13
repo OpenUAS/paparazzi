@@ -1,24 +1,22 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
-<airframe name="Bebop2">
+<airframe name="Bebop">
   <description>
-  Parrot Bebop 2 Quadcopter (https://www.openuas.org/airframes/)
+  Parrot Bebop Quadcopter (https://www.openuas.org/airframes/)
 + Airframe to validate all onboard functionally...
-  Parrot Bebop 2
-     + Autopilot:   Default Parrot Bebop 2 board
+  Parrot Bebop
+     + Autopilot:   Default Parrot Bebop board
      + Actuators:   Default Motors
-     + GPS:         Default uBlox M8N GNSS
+     + GPS:         Default Furuno
      + TELEMETRY:   Default WiFi
      + CURRENT:     Default Build in V/A sensing
-     + RC RX:       Joystick on GCS then via Wifi (for now...)
+     + RC RX:       Joystick on USB of a GCS forward via Wifi (for now...)
 
  NOTES:
-     + IF you want to fly then:
-     ++ Calibrate your magnetometer... Yes, you too...
-     ++ Yeah.. and calibrate your Accelometer also...
-
+     + Hey, calibrate your magneto! Yes, you too ;), unit UKF auto works...
+     + Yeah.. and your Accelometer also... EKF2 will like you if you use it :)
      + Uses PAPARAZZI "standard" radio channel settings
      + One could make a flightplan mimicing exact default behaviour of Parrot App
-     + Tested with Firmware v4.7.1, update to this Bebop 2 firmware version if not done already
+     + Tested with Firmware v4.0.6, update to this Bebop firmware version if not done already
      + Can use INDI full for control
      + Flash the PPRZ firmware via WiFi or USB
      + Regular Telemetry is possible via USB to FTDI serial to Modem, added kernel drivers see:
@@ -30,7 +28,7 @@
      + There are no other modification, also not on the vibration absorbers. Oh yeah, it is black ;)
      + To testfly this airframe yourself you need to:
      ++ point to your own calibrations xml, search for 'calibration' in this document
-     ++ Make sure your drone runs firmware 4.7.1
+     ++ Make sure your drone runs firmware 4.0.6
 
  WIP:
      + Not all gains are tuned to optimum, feel free to enhance and a PR...
@@ -146,6 +144,8 @@
       <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0" unit="m/s"/>
       <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.1f"/>
     </module>
+
+    <module name="stabilization" type="rate_indi"/>
     <module name="stabilization" type="indi_simple"/>
     <!-- for later if simple works
     <module name="stabilization" type="indi">
@@ -165,7 +165,7 @@
     <module name="send_imu_mag_current"/> <!-- enable if airframe has added electronic or other devices, recalibrate and stuffcalibration in this airframefile-->
 
     <module name="nav" type="survey_rectangle_rotorcraft">
-      <define name="RECTANGLE_SURVEY_DEFAULT_SWEEP" value="10"/>
+      <define name="RECTANGLE_SURVEY_DEFAULT_SWEEP" value="10"/><!-- in deg -->
     </module>
     <module name="nav" type="survey_poly_rotorcraft">
       <define name="POLYSURVEY_DEFAULT_DISTANCE" value="10"/><!-- in M -->
@@ -222,7 +222,6 @@
   </firmware>
 
 <!-- ********************** RC COMMANDS ************************** -->
-<!-- If RC is connected to USB -->
 <!--  <rc_commands>
     <set command="THRUST" value="@THROTTLE"/>
     <set command="ROLL" value="@ROLL"/>
@@ -261,6 +260,13 @@
     <set servo="TOP_RIGHT" value="motor_mixing.commands[MOTOR_FRONT_RIGHT]"/>
     <set servo="BOTTOM_RIGHT" value="motor_mixing.commands[MOTOR_BACK_RIGHT]"/>
     <set servo="BOTTOM_LEFT" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
+
+<!--
+    <set servo="TOP_LEFT"     value="autopilot_get_motors_on() ? actuators_pprz[0] : -MAX_PPRZ"/>
+    <set servo="TOP_RIGHT"    value="autopilot_get_motors_on() ? actuators_pprz[1] : -MAX_PPRZ"/>
+    <set servo="BOTTOM_RIGHT" value="autopilot_get_motors_on() ? actuators_pprz[2] : -MAX_PPRZ"/>
+    <set servo="BOTTOM_LEFT"  value="autopilot_get_motors_on() ? actuators_pprz[3] : -MAX_PPRZ"/>
+-->
   </command_laws>
 
   <section name="BEBOP_FRONT_CAMERA" prefix="MT9F002_">
@@ -422,8 +428,10 @@ The most crucial part for the magnetometer calibration:
     <define name="DEADBAND_R" value="50"/>
   </section>
 
+  <!-- only for classic control enable attitude reference generation model
   <section name="ATTITUDE_REFERENCE" prefix="STABILIZATION_ATTITUDE_">
     <!-- attitude reference generation model -->
+<!--
     <define name="REF_OMEGA_P" value="450" unit="deg/s"/>
     <define name="REF_ZETA_P" value="0.9"/>
     <define name="REF_MAX_P" value="600." unit="deg/s"/>
@@ -438,53 +446,72 @@ The most crucial part for the magnetometer calibration:
     <define name="REF_ZETA_R" value="0.9"/>
     <define name="REF_MAX_R" value="600." unit="deg/s"/>
     <define name="REF_MAX_RDOT" value="RadOfDeg(8000.)"/>
-  </section>
+  </section>-->
 
   <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
     <!-- control effectiveness -->
+
+<!-- This or
+    <define name="G1_ROLL" value="{20 , -20, -20 , 20 }"/>
+    <define name="G1_PITCH" value="{14 , 14, -14 , -14 }"/>
+    <define name="G1_YAW" value="{-1, 1, -1, 1}"/>
+    <define name="G1_THRUST" value="{-0.4, -0.4, -0.4, -0.4}"/>-->
+    <!--  ** Counter torque effect of spinning up a rotor ** -->
+    <!--<define name="G2" value="{-61.2093, 65.3670, -65.7419, 65.4516}"/>
+-->
+
     <define name="G1_P" value="0.05"/>
     <define name="G1_Q" value="0.025"/>
     <define name="G1_R" value="0.0022"/>
     <define name="G2_R" value="0.20"/>
 
-    <!-- For the bebop2 we need to filter the roll rate due to the dampers -->
+    <!-- ? Maby with a High capacity battery for the bebop1 we also need to filter the roll rate due to the dampers -->
     <define name="FILTER_ROLL_RATE" value="TRUE"/>
     <define name="FILTER_PITCH_RATE" value="FALSE"/>
     <define name="FILTER_YAW_RATE" value="FALSE"/>
 
-    <!-- Here it is assumed that your removed the damping from your bebop2!
+    <!-- Here it is assumed that your removed the damping from your bebop!
          The dampers damp, but also cause oscillation. By making them fix, the bebop2 will fly much better on INDI -->
     <!--<define name="FILTER_ROLL_RATE" value="FALSE"/>
     <define name="FILTER_PITCH_RATE" value="FALSE"/>
     <define name="FILTER_YAW_RATE" value="FALSE"/>-->
 
     <!-- reference acceleration for attitude control -->
-    <define name="REF_ERR_P" value="170.0"/>
+    <define name="REF_ERR_P" value="600.0"/>
     <define name="REF_ERR_Q" value="600.0"/>
     <define name="REF_ERR_R" value="600.0"/>
-    <define name="REF_RATE_P" value="14.3"/>
+    <define name="REF_RATE_P" value="28.0"/>
     <define name="REF_RATE_Q" value="28.0"/>
     <define name="REF_RATE_R" value="28.0"/>
 
+    <define name="ESTIMATION_FILT_CUTOFF" value="4.0"/>
+    <define name="FILT_CUTOFF" value="5.0"/>
+
     <!-- second order filter parameters -->
-    <define name="FILT_CUTOFF" value="3.2"/>
-    <define name="FILT_CUTOFF_R" value="3.2"/>
+    <!-- NOT USED <define name="FILT_CUTOFF" value="4.0"/>
+    <define name="FILT_CUTOFF_R" value="4.0"/> -->
 
     <!-- first order actuator dynamics -->
     <define name="ACT_DYN_P" value="0.06"/>
     <define name="ACT_DYN_Q" value="0.06"/>
     <define name="ACT_DYN_R" value="0.06"/>
+<!-- Or this?
+    <define name="ACT_DYN" value="{0.1, 0.1, 0.1, 0.1}"/>
+-->
 
     <!-- Adaptive Learning Rate -->
     <define name="USE_ADAPTIVE" value="FALSE"/> <!-- make true if all works -->
     <define name="ADAPTIVE_MU" value="0.0001"/> <!-- tune better -->
+
+    <!--Priority for each axis (roll, pitch, yaw and thrust)-->
+    <define name="WLS_PRIORITIES" value="{1000, 1000, 1, 100}"/>
   </section>
 
   <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
-    <define name="HOVER_KP" value="350"/>
-    <define name="HOVER_KD" value="85"/>
+    <define name="HOVER_KP" value="283"/>
+    <define name="HOVER_KD" value="82"/>
     <define name="HOVER_KI" value="20"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.53"/>
+    <define name="NOMINAL_HOVER_THROTTLE" value="0.60"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="TRUE"/>
   </section>
 
@@ -508,6 +535,7 @@ The most crucial part for the magnetometer calibration:
     <!-- RC_LOST_MODE means that if your RC Transmitter signal is not received anymore in the autopilot, e.g. you switch it off
     or  fly a long range mission you define the wanted mode behaviour here.
     If you do not define it, it defaults to flying to the flightplan HOME -->
+    <!--<define name="AP_MODE_AUTO2" value="MODE_AUTO2"/>-->
     <!--<define name="RC_LOST_MODE" value="AP_MODE_AUTO2"/>-->
 
     <!-- TODO: SET some modem values with multipoint also the $AC_ID -->
@@ -517,8 +545,8 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="NAVIGATION" prefix="NAV_">
-    <define name="CLIMB_VSPEED" value="2.5"/>
-    <define name="DESCEND_VSPEED" value="-1.0"/>
+    <define name="CLIMB_VSPEED" value="2.7" unit="m/s"/>
+    <define name="DESCEND_VSPEED" value="-1.5" unit="m/s"/>
   </section>
 
   <section name="AUTOPILOT">
@@ -545,6 +573,7 @@ The most crucial part for the magnetometer calibration:
 
 <!-- ********************** GCS SPECIFICS ************************** -->
   <section name="GCS">
+    <!--<define name="SPEECH_NAME" value="Bebop"/>Not for multiple-->
     <define name="ALT_SHIFT_PLUS_PLUS" value="5"/>
     <define name="ALT_SHIFT_PLUS"      value="1"/>
     <define name="ALT_SHIFT_MINUS"     value="-1"/>
@@ -557,6 +586,7 @@ The most crucial part for the magnetometer calibration:
     <define name="JSBSIM_MODEL" value="simple_x_quad_ccw" type="string"/>
     <define name="WEIGHT" value="0.4"/>
     <define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>
+    <define name="NO_MOTOR_MIXING" value="TRUE"/>
   </section>
 
 </airframe>
