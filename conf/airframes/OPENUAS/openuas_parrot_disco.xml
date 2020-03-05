@@ -341,13 +341,9 @@
     <module name="nav" type="flower"/>
 
     <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
-    <!--<module name="agl_dist">
-    </module>-->
-        <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
     <module name="agl_dist">
         <define name="USE_SONAR"/>
     </module>
-
 
     <!-- Propellor spinup of Disco is to slow with direct handlaunch, "catapult" module not all to usable -->
     <!-- <module name="nav" type="catapult"/>-->

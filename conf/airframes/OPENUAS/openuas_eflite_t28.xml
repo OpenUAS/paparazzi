@@ -1,8 +1,7 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
+
 <airframe name="Eflite_T28">
 <description>
-+ Pixracer http://arsovtech.com/?page_id=1590
-* in Fixedwing (http://www.openuas.org/)
 + Airframe with the PX4 Pixracer v1 AP hardware
     + Model: E-Flite T28 Trojan fully equiped with Retractable gear and flap
     + Autopilot:   PX4FMU 4.0 aka Pixracer v1.0
@@ -28,12 +27,13 @@ NOTES:
      Disable <define name="USE_AIRSPEED" value="FALSE"/> at first no airspeed tests
      Use also flightplan Versatile if no airspeed sensor is ues and use
      flightplan versatile_airspeed only with enabled airspeed sensor
-<description>
+</description>
 
-<airframe name="Eflite_T28">
   <firmware name="fixedwing">
+
     <!-- ********************** For in the real flying hardware ********************-->
     <target name="ap" board="px4fmu_4.0">
+
       <configure name="CPU_LED" value="1"/>
       <!--  TODO: After first flights try to find optimum value -->
       <!-- PERIODIC_FREQUENCY should be least equal or greater than AHRS_PROPAGATE_FREQUENCY -->
@@ -58,6 +58,12 @@ NOTES:
         <define name="IMU_MPU9250_Y_SIGN" value="-1"/>
         <define name="IMU_MPU9250_Z_SIGN" value="-1"/> -->
       </module>
+
+      <!--  <module name="sonar_adc">
+        <configure name="ADC_SONAR" value="ADC_1"/> now used for internal V
+        <define name="USE_SONAR" value="FALSE"/>
+        <define name="SENSOR_SYNC_SEND_SONAR"For debugging flight/>
+      </module>-->
 
       <module name="radio_control" type="sbus">
         <!--<configure name="SBUS_PORT" value="UART5"/>--> <!-- Default use UART2  on FMU4 -->
@@ -129,10 +135,10 @@ NOTES:
     <configure name="USE_BARO_BOARD" value="TRUE"/>
     <!-- amount of time it take for the bat to trigger check -->
     <!-- to avoid bat low spike detection when strong pullup withch draws short sudden power-->
-    <define name="BAT_CHECKER_DELAY" value="60" unit="s/10"/> <!-- in tenth of seconds-->
+    <define name="BAT_CHECKER_DELAY" value="60"/> <!-- in tenth of seconds-->
 
     <!-- Only one main batter so CATASTROPHIC_BATTERY kill should be somewhat delayed -->
-    <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="220" unit="s/10"/> <!-- in tenth of seconds for engine kill -->
+    <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="220"/> <!-- in tenth of seconds for engine kill -->
 
     <define name="AHRS_TRIGGERED_ATTITUDE_LOOP"/>
     <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
@@ -159,7 +165,9 @@ NOTES:
     </module>
 
     <module name="ins" type="alt_float"/>
+
       <!-- For easier on desk testing transparent_usb, else transparent -->
+    <!--  <module name="telemetry" type="transparent_usb"/>-->
     <module name="telemetry" type="transparent">
        <configure name="MODEM_PORT" value="UART2"/> <!--  Telem1 on pixracer -->
        <configure name="MODEM_BAUD" value="B57600"/>
@@ -180,7 +188,7 @@ NOTES:
     <module name="baro_ms5611_spi" >
       <configure name="MS5611_SPI_DEV" value="spi1"/>
       <configure name="MS5611_SLAVE_IDX" value="SPI_SLAVE3"/>
-      <!--<define name="SENSOR_SYNC_SEND"/>-->
+      <define name="SENSOR_SYNC_SEND"/>
     </module>
 
     <module name="send_imu_mag_current"/> <!-- disable after one time callibration -->
@@ -192,9 +200,8 @@ NOTES:
    </module>
 
    <module name="geo_mag"/>
-
-  <!--<module name="gps" type="ubx_ucenter"/> -->
-  <!-- This GPS is a REAL ublox M8N, so setting can be saved, no need for ubx_ucenter one has can set it oneself since we have all kinds of nift Galilleio setting we rather keep that -->
+    <!--<module name="gps" type="ubx_ucenter"/> -->
+    <!-- This GPS is a REAL ublox M8N, so setting can be saved, no need for ubx_ucenter one has can set it oneself since we have all kinds of nift Galilleio setting we rather keep that -->
 
   <module name="airspeed_ets">
     <define name="AIRSPEED_ETS_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights -->
@@ -211,7 +218,7 @@ NOTES:
   </module>
   -->
 
-   <!-- - - As in telemetry file to add stil...
+   <!--  As in telemetry file to add still...
     <process name="Logger">
     <mode name="default">
       <message name="FBW_STATUS"          period="1.2"/>
@@ -229,14 +236,22 @@ NOTES:
 
   <module name="current_sensor">
     <define name="USE_ADC_3"/>
-    <configure name="ADC_CURRENT_SENSOR" value="ADC_3"/>-->
+    <configure name="ADC_CURRENT_SENSOR" value="ADC_3"/>
     <!--  <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.3"/>--><!-- TODO determine -->
   </module>
 
-    <module name="adc_generic">
-      <configure name="ADC_CHANNEL_GENERIC1" value="ADC_2"/>
-      <configure name="ADC_CHANNEL_GENERIC2" value="ADC_3"/>
-    </module>
+   <module name="adc_generic">
+     <configure name="ADC_CHANNEL_GENERIC1" value="ADC_2"/>
+     <configure name="ADC_CHANNEL_GENERIC2" value="ADC_3"/>
+   </module>
+
+   <!-- <module name="adc_generic">-->
+   <!-- Sonar -->
+   <!--   <configure name="ADC_CHANNEL_GENERIC1" value="ADC_1"/>-->  <!-- Misuse the RSSI pin? -->
+      <!--<configure name="ADC_SONAR" value="ADC_1"/>-->
+   <!-- RPM measuring sensor -->
+   <!-- <configure name="ADC_CHANNEL_GENERIC2" value="ADC_x"/>
+   </module>-->
 
     <module name="nav" type="line"/>
     <module name="nav" type="line_border"/>
@@ -288,7 +303,7 @@ NOTES:
     <define name="BEACON_OFF" value="-MAX_PPRZ" />
   </section>
 
-  <!-- Different for every airframe
+  <!-- Different for every airframe -->
   <servos>
     <servo name="S_THROTTLE" no="0" min="1100" neutral="1130" max="1900"/>
     <servo name="S_AILERON" no="1" min="1100" neutral="1500" max="1900"/>
