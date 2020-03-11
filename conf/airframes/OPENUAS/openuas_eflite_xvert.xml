@@ -33,8 +33,8 @@
     <!--<define name="PPRZ_TRIG_INT_USE_FLOAT"/>-->
     <define name="PPRZ_TRIG_CONST" value="const"/>
     <define name="THD_WORKING_AREA_MAIN" value="1024"/>
-    <define name="UART_THREAD_STACK_SIZE" value="240"/>
-    <define name="I2C_THREAD_STACK_SIZE" value="240"/>
+    <define name="UART_THREAD_STACK_SIZE" value="190"/>
+    <define name="I2C_THREAD_STACK_SIZE" value="190"/>
 
     <configure name="USE_MAGNETOMETER" value="TRUE"/>
 
@@ -42,10 +42,10 @@
       <define name="MODEM_BAUD" value="B57600"/>
     </module>
 
-    <module name="guidance"      type="hybrid"/>
+    <module name="guidance" type="hybrid"/>
     <module name="motor_mixing"/>
-    <module name="sys_mon"/>
-    <module name="gps" type="ubx_ucenter"/>
+    <!--<module name="sys_mon"/>-->
+    <!--<module name="gps" type="ubx_ucenter"/>-->
     <module name="send_imu_mag_current"/>
     <module name="air_data"/>
 

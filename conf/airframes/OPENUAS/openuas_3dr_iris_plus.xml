@@ -4,13 +4,13 @@
   3DR Iris Plus Quadcopter (https://www.openuas.org/airframes/)
 + Airframe to validate all onboard functionally...
   3DR Iris Plus
-     + Autopilot:   Default 3dr Pixhawk 2.4.x
+     + Autopilot:   Default 3DR Pixhawk 2.4.x
      + IMU:         Default L3GD20 +  LSM303D + MPU6000 + external HMC58XX
      + Motors:      Default Motors
-     + Actuators:   ESC
-     + GPS:         Default uBlox M8N GNSS
-     + TELEMETRY:   Si10xx based 868 modem
-     + CURRENT:     Default Build in V/A sensing
+     + Actuators:   Default ESCs
+     + Position:    Default uBlox M8N GNSS and PX4FLOW via I2C
+     + Telemetry:   Si10xx based 868 modem
+     + Current:     Default Build in V/A sensing
      + RC RX:       OpenRXSR on SBus port
      + AGL ranging: TFMini the IIC(I2C) version
 
@@ -26,7 +26,7 @@
  WIP:
      + Not all gains are tuned to optimum, feel free to enhance and a PR...
      + Range sensor needs to be put to good use
-     + SD SRTM via onboard storage not implemented (yet..)
+     + Optic Flow sensor needs to be put to good use
 
   </description>
 
@@ -99,8 +99,8 @@
       <module name="sys_mon"/>
 
       <module name="adc_generic">
-        <define name="ADC_CHANNEL_GENERIC1"value="ADC_1"/>
-        <define name="ADC_CHANNEL_GENERIC2"value="ADC_2"/>
+        <define name="ADC_CHANNEL_GENERIC1" value="ADC_1"/>
+        <define name="ADC_CHANNEL_GENERIC2" value="ADC_2"/>
       </module>
 
     </target>
@@ -144,7 +144,7 @@
       <define name="RC_LOST_IN_AUTO_FBW_MODE" value="FBW_MODE_AUTO" />
       <define name="AP_LOST_FBW_MODE" value="FBW_MODE_FAILSAFE" />
       <!-- Switch to Failsafe AP loss -->
-      <define name="INTERMCU_LOST_CNT" value="100" />
+      <define name="INTERMCU_LOST_CNT" value="200" />
 
       <module name="intermcu" type="uart">
         <configure name="INTERMCU_PORT" value="UART2" />
@@ -152,7 +152,7 @@
       </module>
 
 
-      <module name="px4_gimbal"/><!-- or connected to AP not FBW?-->
+      <module name="px4_gimbal"/><!-- or connected to AP not FBW if one wants-->
     </target>
 
 <!-- ********************NPS Simulator ********************** -->
@@ -193,8 +193,13 @@
 
   <modules main_freq="512">
 
-    <module name="px4_flash">
-      <configure name="PX4IO_UART" value="uart6"/>
+    <module name="px4_flash"/>
+
+    <!-- Optical flow sensor -->
+    <module name="px4flow_i2c">
+      <configure name="USE_PX4FLOW_AGL" value="FALSE"/> <!-- Do not send AGL measurements to state -->
+      <configure name="PX4FLOW_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
+      <configure name="PX4FLOW_NOISE_STDDEV" value="10.0"/> <!-- TODO: tune Standard deviation of the optical flow measurements-->
     </module>
 
     <module name="mag" type="hmc58xx">
@@ -211,6 +216,7 @@
 
     <module name="motor_mixing" />
 
+    <!--<module name="stabilization" type="float_euler"/>-->
     <module name="stabilization" type="indi_simple"/>
       <!-- for later if simple works we then need to add RPM feedback... a big effort :(
       <module name="stabilization" type="indi">
@@ -258,8 +264,8 @@
     <module name="agl_dist">
       <define name="AGL_DIST_ID" value="AGL_LIDAR_TFMINI_ID"/>
       <define name="AGL_DIST_MAX_RANGE" value="5.0"/>
-      <define name="AGL_DIST_MIN_RANGE" value="0.35"/>
-      <define name="AGL_DIST_FILTER" value="0.1"/>
+      <define name="AGL_DIST_MIN_RANGE" value="0.35"/><!-- 0.1 in newer firmware -->
+      <define name="AGL_DIST_FILTER" value="0.12"/>
     </module>
 
     <!--<module name="digital_cam">-->
@@ -409,7 +415,6 @@ The most crucial part for the magnetometer calibration:
     <!-- <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/>-->
     <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="3.0" unit="m/s"/>
     <define name="GRAVITY_HEURISTIC_FACTOR" value="0.0f"/>
-
   </section>
 
   <section name="AIR_DATA" prefix="AIR_DATA_">
@@ -546,7 +551,7 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="MISC">
-    <define name="ARRIVED_AT_WAYPOINT" value="5.0" unit="m"/> <!-- To set how far away you find OK that drone thnks the waypoint is reached -->
+    <define name="ARRIVED_AT_WAYPOINT" value="5.0" unit="m"/> <!-- To set how far away you find OK that AP assumes the waypoint is reached -->
     <define name="KILL_MODE_DISTANCE" value="MAX_DIST_FROM_HOME*1.1+HOME_RADIUS" unit="m"/>  <!--  improve value by default turn radius calc -->
     <define name="DEFAULT_CIRCLE_RADIUS" value="10." unit="m"/><!-- for if you want to.... circle ;) -->
     <define name="CARROT" value="4." unit="s"/>
@@ -556,7 +561,7 @@ The most crucial part for the magnetometer calibration:
     <!-- RC_LOST_MODE means that if your RC Transmitter signal is not received anymore in the autopilot, e.g. you switch it off
     or  fly a long range mission you define the wanted mode behaviour here.
     If you do not define it, it defaults to flying to the flightplan HOME -->
-    <define name="RC_LOST_MODE" value="AP_MODE_NAV"/> <!nav-->
+    <define name="RC_LOST_MODE" value="AP_MODE_NAV"/>
 
     <!-- TODO: SET some modem values with multipoint also the $AC_ID -->
     <!--  Here XBEE init will be misused to set SiK Si10xx based modems as the Hope and RFdesign -->
@@ -629,10 +634,10 @@ The most crucial part for the magnetometer calibration:
     -->
 
     <!-- Flight bounds Parameters when photoscanning
-    depents on your missions goals or restriction rules at eg competitions -->
+    depents on your missions goals or restriction at e.g. competitions -->
     <define name="HEIGHT_MIN" value="50." unit="m"/>
     <define name="HEIGHT_MAX" value="120." unit="m"/>
-    <define name="RADIUS_MIN" value="70." unit="m"/>
+    <define name="RADIUS_MIN" value="20." unit="m"/>
   </section>
 
 <!-- ********************** GCS SPECIFICS ************************** -->

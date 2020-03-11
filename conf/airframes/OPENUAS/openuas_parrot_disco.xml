@@ -83,6 +83,8 @@
 
     <target name="ap" board="disco">
 
+      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
+
       <!-- Towards better kind of aligner initial conditions -->
       <!--
       <define name="AHRS_ALIGNER_SAMPLES_NB" value="600"/>
@@ -119,8 +121,7 @@
       <configure name="TELEMETRY_FREQUENCY" value="60"/> <!--  unit="Hz" -->
       <configure name="MODULES_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
-      <module name="imu" type="disco">
-      </module>
+      <module name="imu" type="disco"/>
 
       <module name="sonar_bebop"><!-- already in IMU as autoload but we need to set a few things-->
         <define name="SONAR_BEBOP_FILTER_NARROW_OBSTACLES" value="FALSE"/><!-- activate later if all works and test GLS autoland with it -->
