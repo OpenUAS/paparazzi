@@ -25,7 +25,7 @@
 #  J=1 USER_CFLAGS=-Werror prove tests/aircrafts
 #
 # Example on how to test a specific conf.xml and disabling printing of warnings:
-#  CONF_XML=conf/airframes/flixr/conf.xml HIDE_WARNINGS=1 prove tests/aircrafts
+#  PAPARAZZI_SRC=$PWD PAPARAZZI_HOME=$PWD J=AUTO CONF_XML=conf/userconf/OPENUAS/openuas_conf.xml HIDE_WARNINGS=1 prove tests/aircrafts
 #
 
 use Test::More;
