@@ -123,7 +123,7 @@ NOTES:
       <!--<module name="flight_benchmark">
         <define name="BENCHMARK_AIRSPEED value="TRUE"/>
         <define name="BENCHMARK_ALTITUDE value="TRUE"/>
-        <define name="BENCHMARK_P/mnt/ad9c1acf-3293-427b-9b65-3f121f8e1d3d/develop/allthings_paparazzi/paparazzi/sw/ground_segment/tmtc/gpsd2ivy OSITION value="TRUE"/>
+        <define name="BENCHMARK_POSITION value="TRUE"/>
         <define name="BENCHMARK_TOLERANCE_AIRSPEED" value="1" unit="m/s"/>
         <define name="BENCHMARK_TOLERANCE_ALTITUDE" value="4" unit="m"/>
         <define name="BENCHMARK_TOLERANCE_POSITION" value="6" unit="m"/>
@@ -132,14 +132,13 @@ NOTES:
       <module name="sys_mon"/><!-- Enable if one want to check processor load for higher loop, nav, module etc. frequencies -->
       <!-- <module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
+      <module name="tune_airspeed"/>
       <!-- For easier on desk testing transparent_usb, else transparent -->
       <!-- <module name="telemetry" type="transparent_usb"/>-->
       <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
         <configure name="MODEM_PORT" value="UART2"/> <!--  Telem1 on pixracer -->
         <configure name="MODEM_BAUD" value="B57600"/>
       </module>
-
-
 
     </target>
 

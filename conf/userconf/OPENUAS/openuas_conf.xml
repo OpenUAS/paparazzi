@@ -29,7 +29,7 @@
    telemetry="telemetry/default_rotorcraft.xml"
    flight_plan="flight_plans/rotorcraft_survey.xml"
    settings="settings/rotorcraft_basic.xml"
-   settings_modules="modules/digital_cam_video.xml modules/video_rtp_stream.xml modules/video_capture.xml modules/bebop_cam.xml modules/nav_survey_poly_rotorcraft.xml modules/nav_survey_rectangle_rotorcraft.xml modules/geo_mag.xml modules/air_data.xml modules/stabilization_indi_simple.xml modules/ahrs_float_cmpl_quat.xml modules/imu_common.xml modules/gps_ubx_ucenter.xml modules/gps.xml modules/stabilization_indi.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml"
+   settings_modules="modules/digital_cam_video.xml modules/video_rtp_stream.xml modules/video_capture.xml modules/bebop_cam.xml modules/nav_survey_poly_rotorcraft.xml modules/nav_survey_rectangle_rotorcraft.xml modules/geo_mag.xml modules/air_data.xml modules/stabilization_indi_simple.xml modules/ahrs_float_cmpl_quat.xml modules/imu_common.xml modules/gps.xml modules/stabilization_indi.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml"
    gui_color="#d294d294d294"
   />
   <aircraft
@@ -108,7 +108,6 @@
    settings="settings/fixedwing_basic.xml [settings/estimation/ac_char.xml] [settings/control/ctl_energy.xml] settings/rc_settings_ins.xml [settings/control/tune_agr_climb.xml] [settings/control/ctl_energyadaptive.xml] settings/OPENUAS/openuas_tuning_rc.xml"
    settings_modules="modules/photogrammetry_calculator.xml modules/nav_catapult.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/geo_mag.xml modules/air_data.xml modules/nav_basic_fw.xml modules/guidance_full_pid_fw.xml modules/stabilization_adaptive_fw.xml modules/ahrs_float_cmpl_quat.xml modules/tune_airspeed.xml modules/gps.xml modules/gps_ubx_ucenter.xml modules/imu_common.xml"
    gui_color="white"
-   release="_________________"
   />
   <aircraft
    name="G2"
@@ -131,7 +130,6 @@
    settings="settings/rotorcraft_basic.xml"
    settings_modules="modules/nav_survey_poly_rotorcraft.xml modules/nav_survey_rectangle_rotorcraft.xml modules/geo_mag.xml modules/air_data.xml modules/ins_extended.xml modules/ahrs_int_cmpl_quat.xml modules/px4flow_i2c.xml modules/stabilization_indi_simple.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml modules/gps_ubx_ucenter.xml modules/gps.xml"
    gui_color="#ffffec9c9ef7"
-   release="52548d36db1e4ed0eebe0d9f62dd91a06f45e79f"
   />
   <aircraft
    name="Itsy_Bitsy"
@@ -143,7 +141,6 @@
    settings="settings/rotorcraft_basic.xml"
    settings_modules="modules/air_data.xml modules/geo_mag.xml modules/gps_ubx_ucenter.xml modules/ahrs_int_cmpl_quat.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/gps.xml modules/imu_common.xml modules/radio_control_superbitrf_rc.xml"
    gui_color="#fffff92a2254"
-   release="8e50f043b163f2b838dadaf1740a3e17b292505b"
   />
   <aircraft
    name="Moksha"
@@ -188,6 +185,17 @@
    settings="settings/fixedwing_basic.xml"
    settings_modules="modules/nav_catapult.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/digital_cam.xml modules/infrared_adc.xml modules/gps_ubx_ucenter.xml modules/nav_basic_fw.xml modules/gps.xml modules/guidance_basic_fw.xml modules/stabilization_attitude_fw.xml"
    gui_color="#ffffeb519c78"
+  />
+  <aircraft
+   name="Twinstar_ND"
+   ac_id="184"
+   airframe="airframes/OPENUAS/openuas_multiplex_twinstar_nd.xml"
+   radio="radios/OPENUAS/openuas_openrxsr_sbus_16_out.xml"
+   telemetry="telemetry/OPENUAS/openuas_fixedwing_imu_rc.xml"
+   flight_plan="flight_plans/OPENUAS/openuas_versatile_unified.xml"
+   settings="settings/fixedwing_basic.xml [settings/estimation/ac_char.xml] [settings/control/ctl_energy.xml] settings/rc_settings_ins.xml [settings/control/tune_agr_climb.xml] [settings/control/ctl_energyadaptive.xml] settings/OPENUAS/openuas_tuning_rc.xml"
+   settings_modules="modules/digital_cam.xml modules/photogrammetry_calculator.xml modules/nav_catapult.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/geo_mag.xml modules/air_data.xml modules/nav_basic_fw.xml modules/guidance_full_pid_fw.xml modules/stabilization_adaptive_fw.xml modules/ahrs_float_cmpl_quat.xml modules/tune_airspeed.xml modules/gps.xml modules/gps_ubx_ucenter.xml modules/imu_common.xml"
+   gui_color="white"
   />
   <aircraft
    name="UMX_Sbach_342"

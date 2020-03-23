@@ -199,9 +199,14 @@
       <define name="AIR_DATA_CALC_AMSL_BARO" value="TRUE" />
     </module>
     <!-- CDW: module name="obc2014"/-->
+
     <!-- module name="sys_mon"/> -->
+
     <!--
     <module name="flight_benchmark">
+      <define name="BENCHMARK_AIRSPEED value="TRUE"/>
+      <define name="BENCHMARK_ALTITUDE value="TRUE"/>
+      <define name="BENCHMARK_POSITION value="TRUE"/>
       <define name="BENCHMARK_TOLERANCE_AIRSPEED" value="2" unit="m/s"/>
       <define name="BENCHMARK_TOLERANCE_ALTITUDE" value="4" unit="m"/>
       <define name="BENCHMARK_TOLERANCE_POSITION" value="6" unit="m"/>
@@ -215,7 +220,7 @@
       <define name="AIRSPEED_ADC_BIAS" value="413"/>
     </module>
 
-    <module name="tune_airspeed" />
+    <module name="tune_airspeed"/>
 
     <module name="adc_generic">
       <!-- If we want to read the voltage of battery voltage main engine over AP board via V_BATT -->

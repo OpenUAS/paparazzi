@@ -3,6 +3,11 @@
 
 #define BOARD_PX4FMU_V4
 
+/* differences between board not implemented ATM considder them all the same */
+//#define BOARD_PX4FMU_V4_R12 differenced not implemented ATM
+//#define BOARD_PX4FMU_V4_R14
+//#define BOARD_PX4FMU_V4_R15
+
 /* PX4FMU_V4 a.k.a. Pixracer board has a 24MHz external clock and 168MHz internal. */
 
 /* STM32F4 STM32F427VIT6 */
@@ -91,7 +96,7 @@
 #define UART6_GPIO_PORT_RX GPIOC
 #define UART6_GPIO_RX GPIO7
 
-/* Serial Debugging Connector, not used with PPRZ as of now, use JTAG, can be put to other good use */
+/* Serial Debugging Connector, not used with PPRZ as of now, use JTAG for debugging, o this uart can be put to other use if really needed */
 #define UART7_GPIO_AF GPIO_AF8
 #define UART7_GPIO_PORT_RX GPIOE
 #define UART7_GPIO_RX GPIO7
@@ -255,7 +260,7 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define ADC_3_GPIO_PORT GPIOA
 #define ADC_3_GPIO_PIN GPIO3
 #endif
-#define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f) //TODO: test if valid
+#define DefaultMilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f) //TODO: test if valid
 
 /* Allow to define ADC_CHANNEL_VSUPPLY in the airframe file */
 #ifndef ADC_CHANNEL_VSUPPLY
