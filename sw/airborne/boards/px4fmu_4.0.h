@@ -3,7 +3,7 @@
 
 #define BOARD_PX4FMU_V4
 
-/* differences between board not implemented ATM considder them all the same */
+/* differences between board not implemented ATM consider them all the same */
 //#define BOARD_PX4FMU_V4_R12 differenced not implemented ATM
 //#define BOARD_PX4FMU_V4_R14
 //#define BOARD_PX4FMU_V4_R15
@@ -62,6 +62,16 @@
 #define UART1_GPIO_PORT_TX GPIOB
 #define UART1_GPIO_TX GPIO6
 
+//FIXME: add those
+/*
+ESP8266_PD ( power down )
+ESP8266_GPIO2
+ESP8266_RESET
+ESP8266_GPIO0
+ESP8266_RTS
+ESP8266_CTS
+*/
+
 /* -TELEM1 Connector */
 #define UART2_GPIO_AF GPIO_AF7
 #define UART2_GPIO_PORT_RX GPIOD
@@ -104,7 +114,6 @@
 #define UART7_GPIO_TX GPIO8
 
 /* Connector -FRS FrSky */
-//TODO: Test
 #define UART8_GPIO_AF GPIO_AF8
 #define UART8_GPIO_PORT_RX GPIOE
 #define UART8_GPIO_RX GPIO0
@@ -225,12 +234,10 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #endif
 #define USE_AD_TIM3 1
 
-// Internal ADC for voltage level measurement
-////FIXME: test and fix if still not working
+// Internal ADC used for board voltage level measurement
 #ifndef USE_ADC_1
 #define USE_ADC_1 1
 #endif
-
 #if USE_ADC_1
 #define AD1_1_CHANNEL 4 //ADC12_IN4
 #define ADC_1 AD1_1
@@ -238,8 +245,6 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define ADC_1_GPIO_PIN GPIO4
 #endif
 
-// Per default for the board to sense voltage level via external sensor on ADC
-//FIXME: test and fix if still not working
 #ifndef USE_ADC_2
 #define USE_ADC_2 1
 #endif
@@ -250,7 +255,6 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define ADC_2_GPIO_PIN GPIO2
 #endif
 
-// Per default for the board to sense current via external sensor on ADC
 #ifndef USE_ADC_3
 #define USE_ADC_3 1
 #endif
@@ -260,24 +264,44 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define ADC_3_GPIO_PORT GPIOA
 #define ADC_3_GPIO_PIN GPIO3
 #endif
-#define DefaultMilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f) //TODO: test if valid
 
-/* Allow to define ADC_CHANNEL_VSUPPLY in the airframe file */
+//ADC_RSSI_IN
+#ifndef USE_ADC_4
+#define USE_ADC_4 1
+#endif
+#if USE_ADC_4
+#define AD1_4_CHANNEL 11 // ADC123_IN11
+#define ADC_4 AD1_4
+#define ADC_4_GPIO_PORT GPIOC
+#define ADC_4_GPIO_PIN GPIO1
+#endif
+
+
+/* Allow to define another ADC_CHANNEL_VSUPPLY in the airframe file */
 #ifndef ADC_CHANNEL_VSUPPLY
-#define ADC_CHANNEL_VSUPPLY ADC_2
+  #define ADC_CHANNEL_VSUPPLY ADC_1 // Per default for the board to sense voltage (V) level via external sensor is via ADC_2
+  #define DefaultVoltageOfAdc(adc) (10.5 * (float)adc) // FIXME: Value scale internal vdd to 5V
+#else
+  #if USE_ADC_2
+    #define DefaultVoltageOfAdc(adc) ((3.3f/4096.0f) * 10.245f * (float)adc) // About the value scale for a common 3DR clone Power Brick 
+  #else
+    #define DefaultVoltageOfAdc(adc) ((3.3f/4096.0f) * 6.0f * (float)adc) // About the value scale for a common other sensor 
+  #endif
 #endif
 
 /* Allow to define another ADC for Current measurement in the airframe file */
 #ifndef ADC_CHANNEL_CURRENT
-#define ADC_CHANNEL_CURRENT ADC_3
+#define ADC_CHANNEL_CURRENT ADC_3 // Per default for the board to sense current (I) via external sensor is via ADC_3
 #endif
 
-//??FT = Five-volt tolerant. In order to sustain a voltage higher than VDD+0.3 the internal pull-up/pull-down resistors must be disabled.
-//FIXME: Determine best stock values
-#if USE_ADC_2
-#define DefaultVoltageOfAdc(adc) (0.004f * (float)adc) // FIXME: Value scale for a common PowerBrick
+#if USE_ADC_3
+#define DefaultMilliAmpereOfAdc(adc) (9.55 * ((float)adc))// Quite close to the value scale for a common 3DR clone Power Brick 
 #else
-#define DefaultVoltageOfAdc(adc) (0.004f * (float)adc) // FIXME: Value scale internal vdd to 5V
+#define DefaultMilliAmpereOfAdc(adc) (0.1 * ((float)adc)) // FIXME: Value scale internal current use, for whatever it is useful
+#endif
+
+#ifndef ADC_CHANNEL_RSSI
+#define ADC_CHANNEL_RSSI ADC_4
 #endif
 
 /* I2C mapping */
@@ -290,7 +314,7 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define USE_BARO_BOARD 1
 #endif
 
-/* Another Magnetometer on board a HMC5983 not the one in the IMU 9250*/
+/* Another Magnetometer on board on R14 a HMC5983 on R15 ST ,so not the one in the IMU 9250*/
 //FIXME: better default option for use of maybe fuse data
 #ifndef USE_MAGNETOMETER_B
 #define USE_MAGNETOMETER_B 0
@@ -305,7 +329,6 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 /* PWM */
 #define PWM_USE_TIM1 1
 #define PWM_USE_TIM4 1
-
 
 //TODO: ifdef USE_SERVO6 for PPM out to e.g. servo extender board ...
 // Basically a inter mcu Extra device;)
@@ -398,6 +421,8 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define PWM_TIM1_CHAN_MASK (PWM_SERVO_1_OC_BIT|PWM_SERVO_2_OC_BIT|PWM_SERVO_3_OC_BIT|PWM_SERVO_4_OC_BIT)
 #define PWM_TIM4_CHAN_MASK (PWM_SERVO_5_OC_BIT|PWM_SERVO_6_OC_BIT)
 
+//LED_SAFETY GPIO PORTC GPIO PIN 3
+//BUTTON_SAFETY	GPIO PORTC GPIO PIN 4
 /* Buzzer (A.k.a. Alarm) */
 //TODO: Test
 #if USE_BUZZER
