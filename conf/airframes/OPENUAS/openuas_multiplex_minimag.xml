@@ -99,9 +99,9 @@ NOTES:
 
       <!-- Analog Sonar connected to RSSI pin on Pixracer -->
       <module name="sonar_adc">
+        <define name="SENSOR_SYNC_SEND_SONAR"/> <!-- TODO Disable after first 10 test flights -->
         <configure name="USE_ADC_4" value="TRUE"/>
         <configure name="ADC_SONAR" value="ADC_4"/>
-        <define name="SENSOR_SYNC_SEND_SONAR"/>
       </module>
 
       <!-- enable if you want it for debugging the raw ADC values, handy... -->
@@ -138,6 +138,7 @@ NOTES:
       <!-- <module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
       <module name="tune_airspeed"/>
+
       <!-- For easier on desk testing transparent_usb, else transparent -->
       <!--<module name="telemetry" type="transparent_usb"/>-->
       <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
@@ -238,7 +239,7 @@ NOTES:
 
     <define name="autopilot_motors_on" value="TRUE"/><!-- TODO: choose ;) -->
     <!-- temp fix for geomag, normally only used for rotorcraft -->
-    <define name="SENSOR_SYNC_SEND"/> <!-- Temp for debugging Baro -->
+    <define name="SENSOR_SYNC_SEND"/> <!-- <!-- TODO Disable after first 10 test flights temporary for debugging Baro -->
     <configure name="USE_BARO_BOARD" value="TRUE"/>
 
     <!-- amount of time it take for the bat to trigger check -->
