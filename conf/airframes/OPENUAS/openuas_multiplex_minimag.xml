@@ -54,7 +54,7 @@ NOTES:
 
       <configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/><!--  unit="Hz" -->
       <configure name="AHRS_CORRECT_FREQUENCY" value="500"/> <!--  unit="Hz" -->
-      <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/><!-- best value unit="Hz" for ACTIVE magneto-->
+      <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/><!-- best value unit="Hz" for ACTIVE magneto -->
 
       <configure name="NAVIGATION_FREQUENCY" value="16"/> <!--  unit="Hz" -->
       <configure name="CONTROL_FREQUENCY" value="120"/> <!--  unit="Hz" -->
@@ -64,14 +64,14 @@ NOTES:
       <module name="imu" type="mpu9250_spi">
         <configure name="IMU_MPU9250_SPI_DEV" value="spi1"/>
         <configure name="IMU_MPU9250_SPI_SLAVE_IDX" value="SPI_SLAVE2"/>
-        <define name="IMU_MPU9250_READ_MAG" value="TRUE"/>
+        <define name="IMU_MPU9250_READ_MAG" value="FALSE"/>
 
         <!-- To be able to set AP IMU orientaion when AP is mounted rotated, body to IMU should also work -->
         <define name="IMU_MPU9250_CHAN_X" value="0"/>
         <define name="IMU_MPU9250_CHAN_Y" value="2"/>
         <define name="IMU_MPU9250_CHAN_Z" value="1"/>
-        <define name="IMU_MPU9250_X_SIGN" value="+1"/>
-        <define name="IMU_MPU9250_Y_SIGN" value="-1"/>
+        <define name="IMU_MPU9250_X_SIGN" value="-1"/>
+        <define name="IMU_MPU9250_Y_SIGN" value="+1"/>
         <define name="IMU_MPU9250_Z_SIGN" value="+1"/>
       </module>
 
@@ -255,11 +255,10 @@ NOTES:
     <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
     <define name="USE_MAGNETOMETER_ONGROUND" value="FALSE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
    <!-- If AHRS_MAG_CORRECT_FREQUENCY is set outside of target no need USE_MAGNETOMETER it is assumed TRUE -->
-    <configure name="USE_MAGNETOMETER" value="FALSE"/><!-- should be as in USE the device-->
+    <configure name="USE_MAGNETOMETER" value="TRUE"/><!-- should be as in USE the device-->
 
 <!-- ************************* MODULES ************************* -->
 <!-- Warning: unit conversion does not work in this section of airframe, so use the native units, or you'll have trouble...-->
-
 
     <module name="gps" type="ublox">
       <configure name="GPS_BAUD" value="B115200"/><!-- UBX message only rate set to ~20HZ with GPS, GLONASS, BEIDU and GALILEIO at the SAME time is lots of GNSS data-->
@@ -272,7 +271,7 @@ NOTES:
         <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
         <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
         <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
-        <!--<define name="AHRS_USE_GPS_HEADING" value="TRUE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
+        <!--<define name="AHRS_USE_GPS_HEADING" value="FALSE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
         <!-- <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/>--> <!--Already TRUE by default Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
         <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
         <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
@@ -280,9 +279,9 @@ NOTES:
         <!--<define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/> --><!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
         <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
         <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-        <define name="AHRS_ICQ_IMU_ID" value="ABI_BROADCAST"/> <!-- ABI sender id of IMU to use -->
-        <define name="AHRS_ICQ_MAG_ID" value="MAG_HMC5883_SENDER_ID" /><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf -->
-        <!--<define name="AHRS_ICQ_MAG_ID" value="MAG_QMC5883_SENDER_ID" />-->
+        <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
+        <define name="AHRS_FC_MAG_ID" value="MAG_HMC58XX_SENDER_ID" /><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf  change your AHRS type-->
+        <!--<define name="AHRS_FC_MAG_ID" value="MAG_QMC5883_SENDER_ID" />--><!-- Use this insted of MAG_HMC5883_SENDER_ID for alternative sensor -->
     </module>
 
     <module name="ins" type="alt_float"/>  <!--Does not work in SIM: extended thus use alt_float"/> -->
@@ -347,6 +346,18 @@ NOTES:
 
     <!-- module name="nav" type="catapult"/> --><!-- TODO Switch it on later after first flights -->
 
+    <!-- For R15 a ST LIS3MDL magneto on the main PCB test if conflict with other magneto -->
+    <!--module name="mag_lis3mdl">
+      <define name="MODULE_LIS3MDL_UPDATE_AHRS" value="TRUE"/>
+      <configure name="MAG_LIS3MDL_I2C_DEV" value="i2c1"/>
+    </module-->
+
+    <!-- For R14 a HMC5883 magneto on the main PCB, test if conflicts with other magneto -->
+    <!--module name="mag" type="hmc58xx">
+      <configure name="MAG_HMC58XX_I2C_DEV" value="i2c1"/>
+      <define name="MODULE_HMC58XX_UPDATE_AHRS" value="TRUE"/>
+    </module-->
+
     <!-- external mag for better heading estimate
     uses the magnetometor that is available on the GPS board
     Thi one is temperature compensated and furtherest away from all other devices
@@ -354,20 +365,30 @@ NOTES:
     In case we where sloppy builing in the GPS+mag combo, ..we always are ;)
     we nead to compensate this a bit e.g. the pitch
     our luck at least the tree axis are aligned already in hardware :) -->
-    <!--<module name="mag" type="hmc58xx">-->
+    <module name="mag" type="hmc58xx">
       <!--<define name="HMC58XX_STARTUP_DELAY" value="1.4"/>--><!-- If you mag somehow does not work, Enable this line, and maybe even change it to a higher value if it still does not work e.g. 1.9 -->
-      <!--<configure name="MAG_HMC58XX_I2C_DEV" value="i2c1"/>-->
+      <configure name="MAG_HMC58XX_I2C_DEV" value="i2c1"/>
       <!--<define name="MODULE_HMC58XX_SYNC_SEND" value="TRUE"/>--><!-- temporary for debugging external magneto and setup orientation sign and Body to Magneto angles-->
-      <!--<define name="MODULE_HMC58XX_UPDATE_AHRS" value="FALSE"/>--> <!-- When all calib and works to TRUE -->
+      <define name="MODULE_HMC58XX_UPDATE_AHRS" value="TRUE"/> <!-- When all calib and works to TRUE -->
 
-     <!-- <define name="HMC58XX_CHAN_X" value="1"/>
+      <define name="HMC58XX_CHAN_X" value="1"/>
       <define name="HMC58XX_CHAN_Y" value="0"/>
       <define name="HMC58XX_CHAN_Z" value="2"/>
       <define name="HMC58XX_CHAN_X_SIGN" value="-"/>
       <define name="HMC58XX_CHAN_Y_SIGN" value="+"/>
-      <define name="HMC58XX_CHAN_Z_SIGN" value="-"/>
-    </module>-->
+      <define name="HMC58XX_CHAN_Z_SIGN" value="+"/>
+    </module>
 
+    <!-- To get the signs (and channels) right, show a realtime plot scaled IMU_MAG mx, my, mz then:
+
+    - [x] When you align your IMU with the direction of north, you should see x>0, y=~0, z>0.
+
+    - [x] When pitching the IMU down, the magnetic vector is aligning with x,
+          so x should increase and z should decrease to zero.
+
+    - [x] If yawing your IMU to the left, the magnetic vector is aligning with y,
+          so y should be positive and increase, x should decrease to zero and z stay positive.
+-->
     <!-- In case you have magnetometer+gnss combo with a differrent chip than advertised use the one below
     Could be that this driver is not yet in your branch ATM -->
     <!--<module name="mag" type="qmc5883">
@@ -381,8 +402,6 @@ NOTES:
       <define name="QMC5883_CHAN_Y_SIGN" value="+"/>
       <define name="QMC5883_CHAN_Z_SIGN" value="+"/>
     </module>-->
-
-    <!-- For R15 a ST LIS3MDL magneto on the main PCB test if conflict with other magneto -->
 
     <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
     <module name="agl_dist">
@@ -421,6 +440,13 @@ NOTES:
       <define name="MAG_TO_IMU_PHI" value="0.0"/>
       <define name="MAG_TO_IMU_THETA" value="0.0"/>
       <define name="MAG_TO_IMU_PSI" value="0.0"/>
+  </section>-->
+
+  <!-- Rotation of the 2nd magneto on the main AP board -->
+  <!--<section name="LIS3MDL" prefix="LIS3MDL_">
+    <define name="MAG_TO_IMU_PHI" value="0."/>
+    <define name="MAG_TO_IMU_THETA" value="0."/>
+    <define name="MAG_TO_IMU_PSI" value="0."/>
   </section>-->
 
 <!-- ************************* ACTUATORS ************************* -->
@@ -601,34 +627,36 @@ The most crucial part for the magnetometer calibration:
     <define name="MAG_Y_SIGN" value="-1"/>
     <define name="MAG_Z_SIGN" value="-1"/>-->
 
-  <!-- HMC5883 calib on 20200413 -->
-    <!--<define name="MAG_X_NEUTRAL" value="-80"/>
-    <define name="MAG_Y_NEUTRAL" value="-16"/>
-    <define name="MAG_Z_NEUTRAL" value="133"/>
-    <define name="MAG_X_SENS" value="3.47329367009" integer="16"/>
-    <define name="MAG_Y_SENS" value="3.71621098216" integer="16"/>
-    <define name="MAG_Z_SENS" value="4.00187601502" integer="16"/>-->
+  <!-- The external HMC5883 calib on 20200413 -->
+    <define name="MAG_X_NEUTRAL" value="0"/>
+    <define name="MAG_Y_NEUTRAL" value="0"/>
+    <define name="MAG_Z_NEUTRAL" value="0"/>
+    <define name="MAG_X_SENS" value="3.87329367009" integer="16"/>
+    <define name="MAG_Y_SENS" value="3.81621098216" integer="16"/>
+    <define name="MAG_Z_SENS" value="3.80187601502" integer="16"/>
 
     <!-- for the magentometer currently in use -->
     <!-- calib on 20200413 -->
-    <!--<define name= "MAG_X_CURRENT_COEF" value="6.05685324013"/>
+    <define name= "MAG_X_CURRENT_COEF" value="6.05685324013"/>
     <define name= "MAG_Y_CURRENT_COEF" value="-1.02510867617"/>
-    <define name= "MAG_Z_CURRENT_COEF" value="-4.23834099957"/>-->
+    <define name= "MAG_Z_CURRENT_COEF" value="-4.23834099957"/>
 
 <!-- if using the internal magnetometer and set IMU_MPU9250_READ_MAG" to TRUE"/>-->
-
+<!--
     <define name="MAG_X_NEUTRAL" value="40"/>
     <define name="MAG_Y_NEUTRAL" value="-67"/>
     <define name="MAG_Z_NEUTRAL" value="126"/>
     <define name="MAG_X_SENS" value="3.72743572464" integer="16"/>
     <define name="MAG_Y_SENS" value="3.77984806639" integer="16"/>
     <define name="MAG_Z_SENS" value="4.27632896683" integer="16"/>
+  -->
 
     <!-- For the magentometer currently in use -->
-
+<!--
     <define name="MAG_X_CURRENT_COEF" value="0.0"/>
     <define name="MAG_Y_CURRENT_COEF" value="0.0"/>
     <define name="MAG_Z_CURRENT_COEF" value="0.0"/>
+    -->
 
 <!-- if using the other ST magnetometer on the main board -->
 <!--

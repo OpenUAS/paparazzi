@@ -308,8 +308,8 @@
         <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
         <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
         <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.5"/> <!-- TODO: determine Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-        <define name="AHRS_ICQ_IMU_ID" value="ABI_BROADCAST"/> <!-- ABI sender id of IMU to use -->
-        <define name="AHRS_ICQ_MAG_ID" value="MAG_CALIB_UKF_ID" /><!-- for when using the mag_clib_ukf -->
+        <define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/> <!-- ABI sender id of IMU to use -->
+        <define name="AHRS_FC_MAG_ID" value="MAG_CALIB_UKF_ID" /><!-- for when using the mag_clib_ukf -->
     </module>
 
     <module name="ins" type="alt_float"/>  <!--Does not work in SIM: extended thus use alt_float"/> -->
