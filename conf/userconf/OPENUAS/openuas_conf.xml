@@ -152,6 +152,7 @@
    settings="settings/fixedwing_basic.xml [settings/estimation/ac_char.xml] [settings/control/ctl_energy.xml] settings/rc_settings_ins.xml [settings/control/tune_agr_climb.xml] [settings/control/ctl_energyadaptive.xml] settings/OPENUAS/openuas_tuning_rc.xml"
    settings_modules="modules/photogrammetry_calculator.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/geo_mag.xml modules/air_data.xml modules/nav_basic_fw.xml modules/guidance_full_pid_fw.xml modules/stabilization_adaptive_fw.xml modules/ahrs_float_cmpl_quat.xml modules/gps.xml modules/tune_airspeed.xml modules/imu_common.xml"
    gui_color="white"
+   release="ad1e2b9c0e234a83dbf1c4533a88a3d973e6644d"
   />
   <aircraft
    name="Moksha"
