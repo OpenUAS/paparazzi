@@ -553,13 +553,14 @@ The most crucial part for the magnetometer calibration:
 
 <!-- ************************* AHRS ************************* -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- Values used if no GNSS fix, on 3D fix is update by geo_mag module -->
-    <!-- Better keep geo_mag module ifyou have a GNSDS, else replace the values with your local magnetic field -->
+    <!-- Values used if no GNSS fix, on 3D fix is updated by geo_mag module -->
+    <!-- Better use the geo_mag module if you have a GNSS, else replace the values with your local magnetic field -->
 
-    <!-- Local Magnetic field DE2019 -->
-    <define name="H_X" value="0.38644"/>
-    <define name="H_Y" value="0.02054"/>
-    <define name="H_Z" value="0.92209"/>
+    <!--North, East and Vertical Components do: Normalize[{19738.7, 899.5, 44845.6}] -->
+    <!-- Local Magnetic field DE2020 -->
+    <define name="H_X" value="0.402784"/>
+    <define name="H_Y" value="0.018355"/>
+    <define name="H_Z" value="0.915111"/>
   </section>
 
 <!-- ************************* INS ************************* -->

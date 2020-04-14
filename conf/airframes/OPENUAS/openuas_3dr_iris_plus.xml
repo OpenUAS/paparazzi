@@ -396,19 +396,16 @@ The most crucial part for the magnetometer calibration:
   <!-- local magnetic field -->
   <!-- http://wiki.paparazziuav.org/wiki/Subsystem/ahrs#Local_Magnetic_Field -->
   <section name="AHRS" prefix="AHRS_">
-    <!-- values used if no GPS fix, on 3D fix is update by geo_mag module -->
     <!-- <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="0"/>--> <!-- only for Optitrack -->
-    <!-- Local Magnetic field NL2019 ZH -->
-    <!--
-     <define name="H_X" value="0.382478"/>
-     <define name="H_Y" value="0.00563406"/>
-     <define name="H_Z" value="0.923948"/>
-     -->
 
-    <!-- Local Magnetic field DE2019 RP -->
-    <define name="H_X" value="0.38644"/>
-    <define name="H_Y" value="0.02054"/>
-    <define name="H_Z" value="0.92209"/>
+    <!-- Values used if no GNSS fix, on 3D fix is updated by geo_mag module -->
+    <!-- Better use the geo_mag module if you have a GNSS, else replace the values with your local magnetic field -->
+
+    <!--North, East and Vertical Components do: Normalize[{19738.7, 899.5, 44845.6}] -->
+    <!-- Local Magnetic field DE2020 -->
+    <define name="H_X" value="0.402784"/>
+    <define name="H_Y" value="0.018355"/>
+    <define name="H_Z" value="0.915111"/>
 
     <define name="USE_GPS_HEADING" value="TRUE"/>
     <define name="MAG_UPDATE_ALL_AXES" value="TRUE"/>
