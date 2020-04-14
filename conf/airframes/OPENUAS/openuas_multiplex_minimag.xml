@@ -46,7 +46,7 @@ NOTES:
       <!-- Note that PERIODIC_FREQUENCY should be least equal or greater than AHRS_PROPAGATE_FREQUENCY -->
       <configure name="PERIODIC_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
-      <!-- NOT USED now-->
+      <!-- Not enabled ATM default should be good -->
       <!--<define name="MPU9250_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_1000"/>
       <define name="MPU9250_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>
       <define name="MPU9250_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
@@ -79,7 +79,7 @@ NOTES:
       for ubx_ucenter one has can set it oneself since we have all kinds
       of nifty Galilleio setting we rather keep that so no autosetting now.-->
       <!--<module name="gps" type="ubx_ucenter">-->
-        <!--<define name="GPS_UBX_NAV5_DYNAMICS" value="NAV5_DYN_PEDASTRIAN"/>-->
+        <!--<define name="GPS_UBX_NAV5_DYNAMICS" value="NAV5_DYN_PEDESTRIAN"/>-->
         <!--<define name="GPS_UBX_UCENTER_RATE" value="51"/>--> <!-- In milliseconds. 0x0033 = 51ms = ~19Hz -->
       <!--</module>-->
 
@@ -98,7 +98,8 @@ NOTES:
         <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.01"/><!-- Set a good value if your linearity is not so linear as our sensor was -->
       </module>
 
-      <!-- Analog Sonar connected to RSSI pin on Pixracer -->
+      <!-- Analog Sonar connected to RSSI pin on Pixracer (If PWM added to Board file also PWM based device at your discretion = less noise in signal) -->
+
       <module name="sonar_adc">
         <configure name="USE_ADC_4" value="TRUE"/>
         <configure name="ADC_SONAR" value="ADC_4"/>
@@ -141,11 +142,11 @@ NOTES:
       <module name="tune_airspeed"/>
 
       <!-- For easier on desk testing transparent_usb, else transparent -->
-      <module name="telemetry" type="transparent_usb"/>
-     <!-- <module name="telemetry" type="transparent">--><!-- Or use type="xbee_api" for Digi Xbee modems -->
-     <!--   <configure name="MODEM_PORT" value="UART3"/>--><!--  Telem2 on pixracer -->
-     <!--   <configure name="MODEM_BAUD" value="B57600"/>--><!-- B9600 later on for distance -->
-     <!-- </module>-->
+      <!--<module name="telemetry" type="transparent_usb"/>-->
+      <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
+        <configure name="MODEM_PORT" value="UART3"/><!--  Telem2 on pixracer -->
+        <configure name="MODEM_BAUD" value="B57600"/><!-- B9600 later on for distance -->
+      </module>
 
     </target>
 
@@ -253,7 +254,7 @@ NOTES:
 
     <define name="AHRS_TRIGGERED_ATTITUDE_LOOP"/>
     <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
-    <define name="USE_MAGNETOMETER_ONGROUND" value="FALSE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
+    <define name="USE_MAGNETOMETER_ONGROUND" value="TRUE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
    <!-- If AHRS_MAG_CORRECT_FREQUENCY is set outside of target no need USE_MAGNETOMETER it is assumed TRUE -->
     <configure name="USE_MAGNETOMETER" value="TRUE"/><!-- should be as in USE the device-->
 
@@ -268,7 +269,7 @@ NOTES:
     <module name="tune_airspeed"/> <!-- Enable if one want to perform airspeed tuning -->
 
     <module name="ahrs" type="float_cmpl_quat"> <!-- Compare e.g. float_dcm -->
-        <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
+        <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/> <!-- as in USE it for values in the AHRS -->
         <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
         <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
         <!--<define name="AHRS_USE_GPS_HEADING" value="FALSE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
@@ -276,7 +277,7 @@ NOTES:
         <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
         <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
         <!--<define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="0.174533"/>--><!--unit="rad"/--><!-- don't update gyro bias if heading deviation is above this rotation threshold"-->
-        <!--<define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/> --><!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
+        <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
         <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
         <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
         <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
@@ -452,7 +453,7 @@ NOTES:
 <!-- ************************* ACTUATORS ************************* -->
   <!-- Different for every airframe -->
   <servos>
-    <servo name="S_THROTTLE" no="0" min="1265" neutral="1275" max="1830"/><!-- Castle creation fixed endpoints are ~1250μs till 1850μs-->
+    <servo name="S_THROTTLE" no="0" min="1265" neutral="1275" max="1820"/><!-- Castle creation fixed endpoints are ~1250μs till 1850μs-->
     <servo name="S_AILERON_LEFT" no="1" min="1900" neutral="1500" max="1100"/>
     <servo name="S_ELEVATOR" no="2" min="1900" neutral="1500" max="1100"/>
     <servo name="S_RUDDER" no="3" min="1100" neutral="1500" max="1900"/><!-- Todo gyrto compensation -->
@@ -627,19 +628,23 @@ The most crucial part for the magnetometer calibration:
     <define name="MAG_Y_SIGN" value="-1"/>
     <define name="MAG_Z_SIGN" value="-1"/>-->
 
-  <!-- The external HMC5883 calib on 20200413 -->
-    <define name="MAG_X_NEUTRAL" value="0"/>
-    <define name="MAG_Y_NEUTRAL" value="0"/>
-    <define name="MAG_Z_NEUTRAL" value="0"/>
-    <define name="MAG_X_SENS" value="3.87329367009" integer="16"/>
-    <define name="MAG_Y_SENS" value="3.81621098216" integer="16"/>
-    <define name="MAG_Z_SENS" value="3.80187601502" integer="16"/>
+  <!-- The external HMC5883 calib on 20200414 -->
+    <define name="MAG_X_NEUTRAL" value="7"/>
+    <define name="MAG_Y_NEUTRAL" value="76"/>
+    <define name="MAG_Z_NEUTRAL" value="133"/>
+    <define name="MAG_X_SENS" value="3.82579687604" integer="16"/>
+    <define name="MAG_Y_SENS" value="3.6213651898" integer="16"/>
+    <define name="MAG_Z_SENS" value="4.01635370187" integer="16"/>
 
     <!-- for the magentometer currently in use -->
-    <!-- calib on 20200413 -->
-    <define name= "MAG_X_CURRENT_COEF" value="6.05685324013"/>
+    <!-- Calib on 20200414 -->
+    <define name= "MAG_X_CURRENT_COEF" value="-0.677655963532"/>
+    <define name= "MAG_Y_CURRENT_COEF" value="-7.38678178538"/>
+    <define name= "MAG_Z_CURRENT_COEF" value="-5.02116042576"/>
+
+    <!--<define name= "MAG_X_CURRENT_COEF" value="6.05685324013"/>
     <define name= "MAG_Y_CURRENT_COEF" value="-1.02510867617"/>
-    <define name= "MAG_Z_CURRENT_COEF" value="-4.23834099957"/>
+    <define name= "MAG_Z_CURRENT_COEF" value="-4.23834099957"/>-->
 
 <!-- if using the internal magnetometer and set IMU_MPU9250_READ_MAG" to TRUE"/>-->
 <!--
