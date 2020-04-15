@@ -185,7 +185,6 @@
         <arg flag="-s" constant="57600"/>
       </program>
       <program name="Server"/>
-      <program name="GPSd position display"/>
     </session>
     <session name="Flight USB-serial@9600">
       <program name="Data Link">
