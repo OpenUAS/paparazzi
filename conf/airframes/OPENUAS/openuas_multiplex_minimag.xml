@@ -1,29 +1,36 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 <airframe name="Minimag">
   <description>
-+ Airframe with the PX4 Pixracer v1 flightcontroller hardware
++ Airframe with the PX4 Pixracer v1 R15 flightcontroller hardware
     + Model: Multiplex Minimag removed fixed landing gear and easy removable stabilo modification
-    + Autopilot:   PX4FMU 4.0 aka Pixracer v1.0 R15
+    + Autopilot:   PX4FMU 4.0 in the form of a Pixracer v1.0 R15
     + Actuators:   Regular metal gear servos
     + GNSS         Ublox M9N GNSS + HMC5883L Magnetometer
     + ESC:         CastleCreations Phoenix 35
     + RCRX:        OpenRXSR Receiver
     + AIRSPEED:    Eagletree Airspeed v3 via I2C
-    + TELEMETRY:   Si10xx Chip based with custom firmware
+    + TELEMETRY:   Si10xx Chip based with firmware allowing PPRZ RSSI
     + CURRENT:     A standard V/I 3DR PowerBrick clone sensor on the default analog ports
     + RANGER:      MAXBOTICS Ultrasonic sensor analog on RSSI pin just for fun
 
 NOTES:
      + Using Enahanced Total Energy control as control loop in Final AC
      + Servo pins point to FRONT of airframe
-     + AP is rotated 90 degrees, SD and USB to top
+     + AP is rotated 90 degrees counterclockwise, so SDcard and USB to top
      + Engine battery voltage and current values via separate sensor
      + Servos and Sonar powered via ESC, AP via powerbrick
      + Flashing the firmware is done via original PX4 bootloader...
        Simple, USB cable in, upload.. voila PPRZ aircraft on a Pixracer...
      + A GNSS device with ANOTHER magneto on it is used, external...
      + On I2C we have airspeed sensor and external magneto via a I2C split
-     + Separate Aileron outputs for flapperon (down) spoileron (up) braking precision landings
+     + Separate Aileron outputs for possible flapperon (down) spoileron (up) braking precision landings
+     + uBlox M9P Pedestrian setting would fit the bill best, lets see...
+     ++ Max Altitude[m]: 9000
+     ++ Max HorizontalVelocity [m/s]: 30
+     ++ Max VerticalVelocity [m/s]: 20
+     ++ Sanity check type: Altitude and Velocity
+     ++ Max PositionDeviation: Small
+     + GNSS set to ~19Hz update rate 4 constelation, SBAS disabled
 
      If testing "Classic" (as in not ETECS..) make sure to disable the settings/estimation/ac_char
      Se the USE_AIRSPEED value to FALSE at first, for no airspeed tests
