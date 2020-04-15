@@ -309,6 +309,15 @@ NOTES:
 
     <module name="geo_mag"/>
 
+    <!-- Quite a good alternative for the catapult module in this case -->
+    <!--<module name="takeoff_detect">-->
+      <!--<define name="TAKEOFF_DETECT_LAUNCH_PITCH" value="0.785398"/>--><!-- unit="rad"--><!--45deg Pitch angle for takeoff detection (sets 'launch' state to TRUE)-->
+      <!--<define name="TAKEOFF_DETECT_ABORT_PITCH" value="-0.349066"/>--> <!-- unit="rad"--> <!-- -20deg Pitch angle to abort takeoff (set 'launch' to FALSE)-->
+      <!--<define name="TAKEOFF_DETECT_TIMER" value="1.2"/>--> <!-- Timer for takeoff detection in seconds (default 2s above pitch angle threshold)-->
+      <!--<define name="TAKEOFF_DETECT_DISABLE_TIMER" value="6.0"/>--> <!--Timer for module de-activation (default 4s after the launch detection)-->
+      <!--<define name="TAKEOFF_DETECT_ALSO_IN_AUTO1" value="TRUE"/>--> <!-- Sometimes throwing is not so easy :) so takeoff stabilized -->
+    <!--</module>-->
+
       <!-- The Pixracer has a built in SD card slot connected over SPI bus to the MCU -->
     <!--
     <module name="logger_sd_spi_direct.xml">
@@ -346,6 +355,7 @@ NOTES:
     <module name="nav" type="flower"/>
 
     <!-- module name="nav" type="catapult"/> --><!-- TODO Switch it on later after first flights -->
+
 
     <!-- For R15 a ST LIS3MDL magneto on the main PCB test if conflict with other magneto -->
     <!--module name="mag_lis3mdl">

@@ -166,7 +166,7 @@
       </program>
       <program name="Link Combiner"/>
     </session>
-    <session name="OpenUAS testflights">
+    <session name="OpenUAS testflights 2020">
       <program name="GCS">
         <arg flag="-speech"/>
         <arg flag="-layout" constant="OPENUAS/openuas_bottom_settings.xml"/>
