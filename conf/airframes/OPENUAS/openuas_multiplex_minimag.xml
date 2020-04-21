@@ -18,10 +18,10 @@
 NOTES:
      + Using Enahanced Total Energy control as control loop in Final AC
      + Servo pins point to FRONT of airframe
-     + AP is rotated 90 degrees counterclockwise, so SDcard and USB to top
+     + AP is rotated sideways 90 degrees counterclockwise, so SDcard and USB to top
      + Engine battery voltage and current values via separate sensor
      + Servos and Sonar powered via ESC, AP via powerbrick
-     + Flashing the firmware is done via original PX4 bootloader...
+     + Flashing the firmware can be done via original PX4 bootloader...
        Simple, USB cable in, upload.. voila PPRZ aircraft on a Pixracer...
      + A GNSS device with ANOTHER magneto on it is used, external...
      + On I2C we have airspeed sensor and external magneto via a I2C split
@@ -388,6 +388,7 @@ NOTES:
     we nead to compensate this a bit e.g. the pitch
     our luck at least the tree axis are aligned already in hardware :) -->
     <module name="mag" type="hmc58xx">
+   <!-- <define name="MAG_TO_IMU_THETA" value="6" unit="deg"/>-->
       <!--<define name="HMC58XX_STARTUP_DELAY" value="1.4"/>--><!-- If you mag somehow does not work, Enable this line, and maybe even change it to a higher value if it still does not work e.g. 1.9 -->
       <configure name="MAG_HMC58XX_I2C_DEV" value="i2c1"/>
       <!--<define name="MODULE_HMC58XX_SYNC_SEND" value="TRUE"/>--><!-- temporary for debugging external magneto and setup orientation sign and Body to Magneto angles-->
@@ -606,7 +607,8 @@ NOTES:
     <!-- Replace these values with your own calibration, on the correct sensor -->
 
   <!-- calib on 20200414 -->
-    <!--<define name="ACCEL_X_NEUTRAL" value="-86"/>
+    <!--
+    <define name="ACCEL_X_NEUTRAL" value="-86"/>
     <define name="ACCEL_Y_NEUTRAL" value="104"/>
     <define name="ACCEL_Z_NEUTRAL" value="56"/>-->
     <define name="ACCEL_X_NEUTRAL" value="0"/>
@@ -759,7 +761,8 @@ The most crucial part for the magnetometer calibration:
   </section>
 
 <!-- ************************* MAG_CALIB_UKF ************************* -->
-  <!--section name="MAG_CALIB_UKF" prefix="MAG_CALIB_UKF_">
+<!--Hotstart  for faster convergence flights to flight if there is a storage option -->
+<!--  <section name="MAG_CALIB_UKF" prefix="MAG_CALIB_UKF_">
     <define name="HOTSTART" value="FALSE"/>
     <define name="HOTSTART_SAVE_FILE" value=""/>
     <define name="NORM" value="1.0f"/>

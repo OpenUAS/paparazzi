@@ -1,7 +1,7 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 <airframe name="ARdrone2">
   <description>
-   Parrot AR.Drone 2.0 with added UBlox GPS, and Airframe to validate all onboard functionally...
+   Parrot AR.Drone 2.0 with added UBlox GPS, just an Airframe to validate all onboard functionally...
 
      + Autopilot:   Default board
      + Actuators:   Default motors
@@ -24,14 +24,14 @@
      + PPRZLink v2 advised for tcas fun
      + To testfly this airframe yourself you need to:
      ++ point to your own calibrations xml, search for 'calibration' in this document
-     ++ Make sure your drone runs firmware 4.7.1
+     ++ Make sure your drone runs firmware 2.4.8 or 2.4.10
 
  WIP:
      + Not all gains are tuned to optimum, feel free to enhance and a PR...
 
  Launching
-     + 1) Set TX to AUTO2 (or even switch off your TX is you dare)
-       2) wait until props spins after a second or so
+     + 1) Set TX to AUTO2
+       2) wait until props spin after a second or so... then
        3) There it goes... performing your mission, you better made sure to have a good flightplan
 
   Setting1:
@@ -49,7 +49,7 @@
     so use the native units, or you'll have big trouble... -->
     <target name="ap" board="ardrone2">
 
-      <!-- If your compile resides somewhere else, change this line an point to where it is -->
+      <!-- If your cross compiler resides somewhere else, change this line an point to where it is -->
       <configure name="PREFIX" value="/opt/arm-2012.03/bin/arm-none-linux-gnueabi"/>
       <define name="USE_MEMALIGN"/>
       <!-- Towards less aligner issues -->
