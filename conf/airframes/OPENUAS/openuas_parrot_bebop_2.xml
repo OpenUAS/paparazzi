@@ -69,11 +69,11 @@
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
       <module name="udp"/>
-      <!-- INDI RPM feedback not implemented in sim, will it be YOU who adds this? TIA! -->
+      <!-- INDI RPM feedback not implemented in sim, will it be YOU who adds this.. TIA -->
       <module name="stabilization" type="indi">
         <define name="INDI_RPM_FEEDBACK" value="FALSE"/>
       </module>
-        <define name="STABILIZATION_INDI_G2_R" value="0.0"/><!-- for jsbsim (rotor inertia is not modelled) -->
+        <define name="STABILIZATION_INDI_G2_R" value="0.05"/><!-- for jsbsim (rotor inertia is not modelled) -->
         <!-- <define name="STABILIZATION_INDI_G2_R" value="0.20"/> --><!-- If one wants to use Gazebo sim -->
       <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->
     </target>
@@ -126,27 +126,37 @@
       <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="12"/>--> <!-- An Orange R620X Has maximum sbus channel output of 12 -->
     <!--</module>-->
 
-    <module name="gps" type="datalink"/> <!-- for Optitrace systems use type="datalink" -->
+    <module name="gps" type="ublox"/> <!-- for Optitrac systems use type="datalink" -->
     <!-- This GPS is a real ublox M8N, so setting can be saved, no need
     for ubx_ucenter one has can set it oneself since we have all kinds
     of nifty Galilleio setting begin 2020 we rather keep that, but for now...
     lazyness, so used ;) -->
-    <!--<module name="gps" type="ubx_ucenter"/>-->
+    <module name="gps" type="ubx_ucenter"/>
     <!--<module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
     <module name="motor_mixing"/>
     <module name="actuators" type="bebop"/>
-    <module name="imu" type="bebop"/>
+    <module name="imu" type="bebop">
+      <define name="BEBOP_LOWPASS_FILTER" value="MPU60X0_DLPF_42HZ"/>
+      <define name="BEBOP_SMPLRT_DIV" value="0"/>
+      <define name="BEBOP_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_2000"/>
+      <define name="BEBOP_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>
+    </module>
 
-    <module name="ins" type="ekf2"/> <!-- type="extended"/>-->
+    <module name="ins" type="extended"> <!--or ekf2" or extended-->
+
+    <!-- Disable use of GPS: -->
+    <!--  define name="INS_INT_GPS_ID" value="ABI_DISABLE"-->
+    </module>
+
     <module name="ahrs" type="float_cmpl_quat">
       <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
-      <!--<configure name="USE_MAGNETOMETER" value="TRUE"/>--><!-- if using INS EKF2 this forced already-->
-      <!--<configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/>-->
+      <configure name="USE_MAGNETOMETER" value="TRUE"/> <!-- if using INS EKF2 this forced already-->
+      <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/><!-- if using INS EKF2 this forced already-->
       <define name="AHRS_MAG_UPDATE_ALL_AXES" value="TRUE"/>
       <!-- <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/>-->
-      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0" unit="m/s"/>
-      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.1f"/>
+      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="3.0"/> <!-- in unit m/s" -->
+      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/>
     </module>
     <module name="stabilization" type="indi_simple"/>
     <!-- for later if simple works
@@ -173,9 +183,9 @@
       <define name="POLYSURVEY_DEFAULT_DISTANCE" value="10"/><!-- in M -->
     </module>
 
-    <module name="logger_file">
+    <!--<module name="logger_file">
       <define name="FILE_LOGGER_PATH" value="/data/ftp/internal_000"/>
-    </module>
+    </module>-->
 
     <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
     <module name="agl_dist">
@@ -184,16 +194,25 @@
 
     <module name="bebop_cam"/>
 
+    <!--<module name="pose_history"/>-->
+
+    <!--<module name="cv_opticflow">
+      <define name="OPTICFLOW_CAMERA" value="bottom_camera"/>
+      <define name="MAX_HORIZON" value="10"/>
+      <define name="OPTICFLOW_DEROTATION_CORRECTION_FACTOR_X" value="0.8"/>--> <!--Obtained from a linefit-->
+      <!--<define name="OPTICFLOW_DEROTATION_CORRECTION_FACTOR_Y" value="0.85"/>--> <!--Obtained from a linefit-->
+    <!--</module>-->
+
     <module name="video_capture">
-      <define name="VIDEO_CAPTURE_CAMERA" value="bottom_camera"/>
+      <define name="VIDEO_CAPTURE_CAMERA" value="front_camera"/>
       <define name="VIDEO_CAPTURE_PATH" value="/data/ftp/internal_000/media/ouas"/>
     </module>
 
     <module name="video_rtp_stream">
-      <define name="VIEWVIDEO_CAMERA" value="bottom_camera"/>
+      <define name="VIEWVIDEO_CAMERA" value="front_camera"/>
       <!-- <define name="VIEWVIDEO_CAMERA2" value="bottom_camera"/> -->
       <define name="VIEWVIDEO_DOWNSIZE_FACTOR" value="1"/>
-      <define name="VIEWVIDEO_QUALITY_FACTOR" value="80"/>
+      <define name="VIEWVIDEO_QUALITY_FACTOR" value="42"/>
     </module>
 
     <!--<module name="bebop_ae_awb"/>-->
@@ -224,8 +243,8 @@
   </firmware>
 
 <!-- ********************** RC COMMANDS ************************** -->
-<!-- If RC is connected to USB -->
-<!--  <rc_commands>
+<!-- If RC receiver is connected to USB serial converter( SBus out) make sure to set a radio file also -->
+  <!--<rc_commands>
     <set command="THRUST" value="@THROTTLE"/>
     <set command="ROLL" value="@ROLL"/>
     <set command="PITCH" value="@PITCH"/>
@@ -405,6 +424,10 @@ The most crucial part for the magnetometer calibration:
     <define name="USE_GPS_ALT_SPEED" value="FALSE"/>
     <define name="VFF_R_GPS" value="0.1"/>
 
+    <!-- If you trust GPS a lot: -->
+    <!-- <define name="VFF_R_GPS" value="0.01"/> -->
+    <!-- <define name="VFF_VZ_R_GPS" value="0.01"/> -->
+
     <!-- trust more the baro over the gps alt -->
     <define name="INV_NXZ" value="0.3"/>
     <define name="INV_NH" value="2.0"/>
@@ -439,13 +462,14 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
-    <!-- control effectiveness -->
-    <define name="G1_P" value="0.05"/>
-    <define name="G1_Q" value="0.025"/>
-    <define name="G1_R" value="0.0022"/>
+    <!-- control effectiveness, can be obtained by switching on "adaptive" in the indi settings -->
+    <define name="G1_P" value="0.0390"/>
+    <define name="G1_Q" value="0.0473"/>
+    <define name="G1_R" value="0.00122"/>
+
     <define name="G2_R" value="0.20"/>
 
-    <!-- For the bebop2 we need to filter the roll rate due to the dampers -->
+    <!-- For the bebop2 we need to filter the roll rate due to the dampers, with fixed damper set to false -->
     <define name="FILTER_ROLL_RATE" value="TRUE"/>
     <define name="FILTER_PITCH_RATE" value="FALSE"/>
     <define name="FILTER_YAW_RATE" value="FALSE"/>
@@ -465,6 +489,14 @@ The most crucial part for the magnetometer calibration:
     <define name="REF_RATE_R" value="28.0"/>
 
     <!-- second order filter parameters -->
+    <!-- Check if still needed
+        <define name="FILT_OMEGA" value="20.0"/>
+    <define name="FILT_ZETA" value="0.7"/>
+    <define name="FILT_OMEGA_R" value="20.0"/>
+    <define name="FILT_ZETA_R" value="0.7"/>
+        -->
+
+    <!-- second order filter parameters -->
     <define name="FILT_CUTOFF" value="3.2"/>
     <define name="FILT_CUTOFF_R" value="3.2"/>
 
@@ -482,16 +514,23 @@ The most crucial part for the magnetometer calibration:
     <define name="HOVER_KP" value="350"/>
     <define name="HOVER_KD" value="85"/>
     <define name="HOVER_KI" value="20"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.53"/>
+    <define name="NOMINAL_HOVER_THROTTLE" value="0.57"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="TRUE"/>
+    <!-- TODO: Check
+    <define name="ADAPT_INITIAL_HOVER_THROTTLE" value="NOMINAL_HOVER_THROTTLE"/>
+    <define name="ADAPT_MIN_HOVER_THROTTLE" value="0.50"/>
+    <define name="ADAPT_MAX_HOVER_THROTTLE" value="0.64"/>
+    <define name="ADAPT_NOISE_FACTOR" value="0.8"/>
+    -->
   </section>
 
   <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
     <define name="MAX_BANK" value="22" unit="deg"/><!-- TODO: determine -->
     <define name="REF_MAX_SPEED" value="2.5" unit="m/s"/>
-    <define name="PGAIN" value="120"/>
-    <define name="DGAIN" value="100"/>
-    <define name="IGAIN" value="30"/>
+    <define name="PGAIN" value="120"/><!-- GPS: 120 no GPS: 0-->
+    <define name="DGAIN" value="100"/><!-- GPS: 80 no GPS: 302-->
+    <define name="IGAIN" value="30"/><!-- GPS: 30 no GPS: 0-->
+
     <define name="REF_ZETA" value="1.0"/> <!-- 1.0 or more for no waypoint overshooting -->
   </section>
 
@@ -515,8 +554,8 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="NAVIGATION" prefix="NAV_">
-    <define name="CLIMB_VSPEED" value="0.5"/>
-    <define name="DESCEND_VSPEED" value="-1.0"/>
+    <define name="CLIMB_VSPEED" value="4.5"/>
+    <define name="DESCEND_VSPEED" value="-1.5"/>
   </section>
 
   <section name="AUTOPILOT">
@@ -524,6 +563,14 @@ The most crucial part for the magnetometer calibration:
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
     <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_Z_HOLD"/>
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/>
+
+    <!--
+    <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/>
+    <define name="MODE_MANUAL" value="AP_MODE_MODULE"/>
+    <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_Z_HOLD"/>
+    <define name="MODE_AUTO2" value="AP_MODE_ATTITUDE_DIRECT"/>
+    -->
+
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
   </section>
 
@@ -537,8 +584,8 @@ The most crucial part for the magnetometer calibration:
     <define name="MAX_BAT_LEVEL" value="12.6" unit="V"/> <!-- 3S lipo 3x4.2 = 12.6 -->
     <define name="LOW_BAT_LEVEL" value="10.8" unit="V"/>
     <define name="CRITIC_BAT_LEVEL" value="10.4" unit="V"/>
-    <define name="CATASTROPHIC_BAT_LEVEL" value="9.9" unit="V"/> <!-- TODO: test when AP board switches off -->
-    <define name="MIN_BAT_LEVEL" value="9.0" unit="V"/>
+    <define name="CATASTROPHIC_BAT_LEVEL" value="9.6" unit="V"/> <!-- TODO: test when AP board switches off -->
+    <define name="MIN_BAT_LEVEL" value="9.0" unit="V"/> <!-- TODO: test when AP board switches off -->
   </section>
 
 <!-- ********************** GCS SPECIFICS ************************** -->
@@ -556,5 +603,6 @@ The most crucial part for the magnetometer calibration:
     <define name="WEIGHT" value="0.4"/>
     <define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>
   </section>
+  <!--<include href="conf/simulator/gazebo/airframes/bebop.xml"/>-->
 
 </airframe>
