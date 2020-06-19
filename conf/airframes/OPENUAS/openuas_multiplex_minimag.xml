@@ -156,7 +156,7 @@ NOTES:
       <!--<module name="telemetry" type="transparent_usb"/>-->
       <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
         <configure name="MODEM_PORT" value="UART3"/><!--  Telem2 on pixracer -->
-        <configure name="MODEM_BAUD" value="B57600"/><!-- B9600 later on for distance -->
+        <configure name="MODEM_BAUD" value="B57600"/><!-- B9600 later on for distance since modem will be set to lower airrate thus higher sensitivity -->
       </module>
 
     </target>

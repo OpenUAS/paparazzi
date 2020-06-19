@@ -126,12 +126,12 @@
       <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="12"/>--> <!-- An Orange R620X Has maximum sbus channel output of 12 -->
     <!--</module>-->
 
-    <module name="gps" type="ublox"/> <!-- for Optitrac systems use type="datalink" -->
+    <module name="gps" type="datalink"/> <!-- for Optitrac systems use type="datalink" -->
     <!-- This GPS is a real ublox M8N, so setting can be saved, no need
     for ubx_ucenter one has can set it oneself since we have all kinds
     of nifty Galilleio setting begin 2020 we rather keep that, but for now...
     lazyness, so used ;) -->
-    <module name="gps" type="ubx_ucenter"/>
+    <!--<module name="gps" type="ubx_ucenter"/>-->
     <!--<module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
     <module name="motor_mixing"/>

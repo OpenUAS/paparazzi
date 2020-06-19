@@ -4,7 +4,7 @@
 + Airframe with the PX4 Pixracer v1 R15 flightcontroller hardware
     + Model: A Fixedwing with flexiblewing actuation steering
     + Autopilot:   PX4FMU 4.0 in the form of a Pixracer v1.0 R15
-    + Actuators:   Regularservos
+    + Actuators:   Regular servos and 2xBIG stronng fr the wing to twist
     + GNSS         Ublox M9N GNSS + HMC5883L Magnetometer
     + ESC:         Default
     + RCRX:        OpenRXSR Receiver
