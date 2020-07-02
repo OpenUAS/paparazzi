@@ -1,5 +1,5 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
-<airframe name="Disco">
+<airframe name="mini_spirit">
   <description>
 * DF Mini Spirit Fixedwing (https://www.openuas.org/airframes/)
 + For Forever Flying
@@ -13,7 +13,6 @@
      + RC RX:       OpenR-XSR set to Sbus out
 
  NOTES:
-
      + Hey, calibrate your magneto! Yes, you too ;), unit UKF auto works...
      + Yeah.. and your Accelometer also... EKF2 will like you :)
      + Uses PAPARAZZI "standard" radio channel settings, see TU Delft Devo 10 output
@@ -36,7 +35,7 @@
   <firmware name="fixedwing">
 <!-- ********************** For in the real flying hardware ******************** -->
 
-    <target name="ap" board="disco">
+   <target name="ap" board="px4fmu_4.0">
 
       <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
 
@@ -214,7 +213,7 @@
     a final navigational solution then also set it to FALSE
     -->
 
-    <define name="USE_AIRSPEED" value="TRUE"/><!-- Use the sensor, not stating use it in flight -->
+    <!--<define name="USE_AIRSPEED" value="FALSE"/>--><!-- Use the sensor, not stating use it in flight -->
 
     <define name="RADIO_CONTROL_AUTO1"/><!--FIXME: not working in JSBSim target-->
 
@@ -252,8 +251,6 @@
       <!-- <configure name="GPS_PORT" value="UARTx"/>--><!-- Uses the default GPS port on pixracer no need to set it -->
     </module>
 
-    <module name="tune_airspeed"/> <!-- Enable if one want to perform airspeed tuning -->
-
     <module name="ahrs" type="float_cmpl_quat"> <!-- Compare e.g. float_dcm -->
         <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
         <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
@@ -273,7 +270,7 @@
 
     <module name="ins" type="alt_float"/>  <!--Does not work in SIM: extended thus use alt_float"/> -->
 
-    <module name="control" type="new"/>
+    <module name="control"/>
     <module name="navigation"/>
     <!--<module name="imu_quality_assessment"/>--><!-- disable after initial tuning-->
     <module name="auto1_commands"/> <!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
@@ -339,9 +336,6 @@
     <module name="nav" type="vertical_raster"/>
     <module name="nav" type="flower"/>
 
-    <!-- module name="nav" type="catapult"/> --><!-- TODO Switch it on later after first flights -->
-
-
     <!-- For R15 a ST LIS3MDL magneto on the main PCB test if conflict with other magneto -->
     <!--module name="mag_lis3mdl">
       <define name="MODULE_LIS3MDL_UPDATE_AHRS" value="TRUE"/>
@@ -405,8 +399,6 @@
         <define name="USE_SONAR"/>
     </module>
 
-    <!--<module name="nav" type="catapult"/>-->
-
     <module name="photogrammetry_calculator"/>
 
     <!--<module name="digital_cam_video">
@@ -449,18 +441,9 @@
 <!-- ************************* ACTUATORS ************************* -->
   <!-- Different for every airframe -->
   <servos>
-    <servo name="S_THROTTLE" no="0" min="1265" neutral="1275" max="1820"/><!-- Castle creation fixed endpoints are ~1250μs till 1850μs-->
-<!-- ************************* ACTUATORS ************************* -->
-  <servos>
     <servo name="S_THROTTLE" no="0" min="1100" neutral="1105" max="1900"/> <!--fixed endpoints should be set in ESC in μs-->
     <servo name="S_ELEVON_LEFT" no="1" min="1100" neutral="1500" max="1900"/>
-    <servo name="S_ELEVON_RIGHT" no="6" min="1900" neutral="1500" max="1100"/><!--neutral maybe 1450 in this arframe a new servo with no good midpoint-->
-    <!-- Below 4 empty, but usable, servo connectors on the CHUCK board -->
-    <servo name="S_RUDDER" no="2" min="1100" neutral="150" max="1900"/> <!-- There is no rudder servo Can be used for other purpose e.g. added drop mechanism -->
-    <servo name="S_ELEVATOR" no="3" min="1100" neutral="1500" max="1900"/> <!-- There is no pure elevator servo Can be used for other purpose e.g. added ACL lights module -->
-    <servo name="S_GEAR" no="4" min="1100" neutral="1500" max="1900"/> <!-- No gear eiter Can be used for other purpose of choice -->
-    <servo name="S_FLAPS" no="5" min="1100" neutral="1500" max="1900"/> <!-- No real flaps either, Can be used for other purpose of choice -->
-  </servos>
+    <servo name="S_ELEVON_RIGHT" no="2" min="1900" neutral="1500" max="1100"/><!--neutral maybe 1450 in this arframe a new servo with no good midpoint-->
   </servos>
 
   <section name="ServoPositions">
