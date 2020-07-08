@@ -232,6 +232,28 @@
    gui_color="#ffffeb519c78"
   />
   <aircraft
+   name="Trashcan"
+   ac_id="203"
+   airframe="airframes/OPENUAS/openuas_eachine_trashcan.xml"
+   radio="radios/FrSky_Taranis_X9Dplus_TAERMK.xml"
+   telemetry="telemetry/default_rotorcraft_slow.xml"
+   flight_plan="flight_plans/dummy.xml"
+   settings="settings/rotorcraft_basic.xml"
+   settings_modules="[modules/ahrs_float_cmpl_quat.xml] [modules/gps.xml] [modules/guidance_rotorcraft.xml] [modules/imu_common.xml] [modules/ins_extended.xml] [modules/nav_basic_rotorcraft.xml] modules/radio_control_cc2500_frsky.xml [modules/stabilization_int_quat.xml]"
+   gui_color="yellow"
+  />
+  <aircraft
+   name="Trashcan_voir"
+   ac_id="202"
+   airframe="airframes/OPENUAS/openuas_eachine_trashcan.xml"
+   radio="radios/FrSky_Taranis_X9Dplus_TAERMK.xml"
+   telemetry="telemetry/default_rotorcraft_slow.xml"
+   flight_plan="flight_plans/dummy.xml"
+   settings="settings/rotorcraft_basic.xml"
+   settings_modules="[modules/ahrs_float_cmpl_quat.xml] [modules/gps.xml] [modules/guidance_rotorcraft.xml] [modules/imu_common.xml] [modules/ins_extended.xml] [modules/nav_basic_rotorcraft.xml] modules/radio_control_cc2500_frsky.xml [modules/stabilization_int_quat.xml]"
+   gui_color="white"
+  />
+  <aircraft
    name="Twinstar_ND"
    ac_id="184"
    airframe="airframes/OPENUAS/openuas_multiplex_twinstar_nd.xml"
