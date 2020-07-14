@@ -101,7 +101,7 @@
   <aircraft
    name="EFlite_T28"
    ac_id="216"
-   airframe="airframes/OPENUAS/openuas_eflite_t28_MASTER_NEW.xml"
+   airframe="airframes/OPENUAS/openuas_eflite_t28.xml"
    radio="radios/OPENUAS/openuas_openrxsr_sbus_16_out.xml"
    telemetry="telemetry/OPENUAS/openuas_fixedwing_imu_rc.xml"
    flight_plan="flight_plans/OPENUAS/openuas_versatile_unified.xml"
