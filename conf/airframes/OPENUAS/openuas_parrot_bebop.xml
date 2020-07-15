@@ -77,7 +77,6 @@
       <module name="udp"/>
       <!-- INDI RPM feedback not implemented in sim, will it be YOU who adds this? TIA! -->
       <module name="stabilization" type="indi">
-        <define name="INDI_RPM_FEEDBACK" value="TRUE"/>
       </module>
       <define name="STABILIZATION_INDI_G2_R" value="0.0"/><!-- for jsbsim (rotor inertia is not modelled) or if one wants to use Gazebo sim -->
       <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->

@@ -69,13 +69,6 @@
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
       <module name="udp"/>
-      <!-- INDI RPM feedback not implemented in sim, will it be YOU who adds this.. TIA -->
-      <module name="stabilization" type="indi">
-        <define name="INDI_RPM_FEEDBACK" value="FALSE"/>
-      </module>
-        <define name="STABILIZATION_INDI_G2_R" value="0.05"/><!-- for jsbsim (rotor inertia is not modelled) -->
-        <!-- <define name="STABILIZATION_INDI_G2_R" value="0.20"/> --><!-- If one wants to use Gazebo sim -->
-      <!--<module name="uart"/>--><!-- TODO: Exteral HITL PC debugging e.g test external device triggering while mission flying in sim -->
     </target>
 
     <define name="WIND_INFO"/>
@@ -161,7 +154,6 @@
     <module name="stabilization" type="indi_simple"/>
     <!-- for later if simple works
     <module name="stabilization" type="indi">
-      <define name="INDI_RPM_FEEDBACK" value="TRUE"/>
     </module>-->
     <!--<module name="guidance" type="indi"/>--><!-- for later if classic works-->
 

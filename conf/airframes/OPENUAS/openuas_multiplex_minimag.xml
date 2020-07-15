@@ -531,9 +531,9 @@ NOTES:
     <set command="GEAR" value="@AUX1"/>
     <set command="FLAP" value="@AUX2"/>
     <!-- for tuning via RC these ones below -->
-    <!--
-    <set command="GAIN1"    value="@GAIN1"/>
-    <set command="CALIB"    value="@CALIB"/>-->
+
+    <set command="GAIN1"    value="@AUX3"/>
+    <set command="CALIB"    value="@AUX4"/>
   </rc_commands>
 
 <!-- ************************ AUTO RC COMMANDS ***************************** -->
