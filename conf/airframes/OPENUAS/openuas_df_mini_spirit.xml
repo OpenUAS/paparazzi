@@ -2,27 +2,22 @@
 <airframe name="mini_spirit">
   <description>
 * DF Mini Spirit Fixedwing (https://www.openuas.org/airframes/)
-+ For Forever Flying
-  Parrot Disco
-     + Autopilot:   Pixracer
+     + Autopilot:   Lisa MXS
      + Actuators:   Default PNP servos
-     + GPS:         uBlox M8N GNSS
+     + GPS:         uBlox CAM M8Q GNSS
      + AIRSPEED:    -
      + TELEMETRY:   ESP8622 WiFi
-     + CURRENT:     Small Hall
-     + RC RX:       OpenR-XSR set to Sbus out
+     + RC RX:       OpenRXSR set to CPPM out
 
  NOTES:
-     + Hey, calibrate your magneto! Yes, you too ;), unit UKF auto works...
-     + Yeah.. and your Accelometer also... EKF2 will like you :)
      + Uses PAPARAZZI "standard" radio channel settings, see TU Delft Devo 10 output
      + ESP Bottom camera can used just for some mapping, not high resolution but still fun...
      + A 450mAh battery, expect flighttimes of ?minutes at ?m/s
-     + PPRZLink v2 advised for tcas fun
+     + PPRZLink v2 advised for tcas fun if you have multiple airframes
      + OpenRX XSR
 
  WIP:
-     + Addition of mini Airspeed sensor
+     + Addition of pico Airspeed sensor
 
  Launching
      + 1)Set TX to AUTO2 (or even switch off your TX is you dare)
@@ -35,7 +30,7 @@
   <firmware name="fixedwing">
 <!-- ********************** For in the real flying hardware ******************** -->
 
-   <target name="ap" board="px4fmu_4.0">
+   <target name="ap" board="lisa_mxs_1.0">
 
       <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
 
@@ -948,7 +943,7 @@ The most crucial part for the magnetometer calibration:
   <section name="GCS">
     <define name="SPEECH_NAME" value="Spirit"/>
     <define name="AC_ICON" value="flyingwing"/> <!--  Just to make sure ;) -->
-    <define name="ALT_SHIFT_PLUS_PLUS" value="50"/> <!-- TODO: change for more testflight convinience -->
+    <define name="ALT_SHIFT_PLUS_PLUS" value="30"/> <!-- TODO: change for more testflight convinience -->
     <define name="ALT_SHIFT_PLUS" value="10"/>  <!-- TODO: change for more testflight convinience -->
     <define name="ALT_SHIFT_MINUS" value="-10"/>  <!-- TODO: change for more testflight convinience -->
   </section>

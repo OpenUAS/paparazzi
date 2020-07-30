@@ -163,6 +163,7 @@
    settings="settings/fixedwing_basic.xml"
    settings_modules="modules/ahrs_float_cmpl_quat.xml modules/air_data.xml modules/photogrammetry_calculator.xml modules/geo_mag.xml modules/gps.xml modules/gps_ubx_ucenter.xml modules/guidance_basic_fw.xml modules/imu_common.xml modules/nav_basic_fw.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/stabilization_attitude_fw.xml"
    gui_color="white"
+   release="60b900115fa1b16d4915b79eeb8b27d6a03a0efe"
   />
   <aircraft
    name="Minimag"
