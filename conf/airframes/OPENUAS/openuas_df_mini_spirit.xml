@@ -32,6 +32,7 @@
 
    <target name="ap" board="lisa_mxs_1.0">
 
+      <!--<configure name="FLASH_MODE" value="SWD_NOPWR"/>--> <!-- Enable if flashing with black magic probe v2.0 or newer -->
       <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>
 
       <!-- Towards better kind of aligner initial conditions -->
@@ -61,29 +62,10 @@
       <configure name="TELEMETRY_FREQUENCY" value="60"/> <!--  unit="Hz" -->
       <configure name="MODULES_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
-      <module name="imu" type="mpu9250_spi">
-        <configure name="IMU_MPU9250_SPI_DEV" value="spi1"/>
-        <configure name="IMU_MPU9250_SPI_SLAVE_IDX" value="SPI_SLAVE2"/>
-        <define name="IMU_MPU9250_READ_MAG" value="FALSE"/>
+      <module name="imu" type="lisa_mx_v2.1"/>
 
-        <!-- To be able to set AP IMU orientaion when AP is mounted rotated, body to IMU should also work -->
-        <define name="IMU_MPU9250_CHAN_X" value="0"/>
-        <define name="IMU_MPU9250_CHAN_Y" value="2"/>
-        <define name="IMU_MPU9250_CHAN_Z" value="1"/>
-        <define name="IMU_MPU9250_X_SIGN" value="-1"/>
-        <define name="IMU_MPU9250_Y_SIGN" value="+1"/>
-        <define name="IMU_MPU9250_Z_SIGN" value="+1"/>
-      </module>
-
-      <configure name="USE_ADC_2" value="TRUE"/> <!-- For external PowerBrick Voltage measure-->
-      <define name="ADC_CHANNEL_VSUPPLY" value="ADC_2"/>
-
-      <module name="current_sensor"><!-- For external PowerBrick Current measurement-->
-        <configure name="USE_ADC_3" value="TRUE"/>
-        <configure name="ADC_CURRENT_SENSOR" value="ADC_3"/>
-        <define name="CURRENT_ESTIMATION_NONLINEARITY" value="1.01"/><!-- Set a good value if your linearity is not so linear as our sensor was -->
-      </module>
-
+    <!-- Actuators -->
+      <module name="actuators" type="pwm"/>
 
       <module name="gps" type="ubx_ucenter"/>
       <!-- enable if you want it for debugging the raw ADC values, handy... -->
@@ -97,6 +79,13 @@
       <module name="radio_control" type="sbus"> <!-- The output type of RX, over the air it can can be all kinds e.g. DSMX, FRSky-->
         <define name="RADIO_CONTROL_NB_CHANNEL" value="16"/>  <!-- Set the OpenRXSR receiver to maximum channel output of 8 9ms -->
         <!--<configure name="SBUS_PORT" value="UART5"/>--> <!-- Default use UART2  on FMU4 -->
+
+      </module>
+
+      <module name="radio_control" type="ppm">
+        <!--<define name="RADIO_CONTROL_NB_CHANNEL" value="16"/>-->  <!-- Set the OpenRXSR receiver to maximum channel output of 8 9ms -->
+        <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
+        <configure name="RADIO_CONTROL_PPM_PIN" value="SERVO6"/>
         <!-- Mode set one a three way switch -->
         <!--  Per default already GEAR if not defined  <define name="RADIO_MODE" value="RADIO_GEAR"/> --><!-- yes, already done by default if not redefined to something else-->
         <define name="RADIO_GEAR" value="RADIO_AUX2"/>
@@ -119,10 +108,8 @@
 
       <!-- <module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
-      <!-- For easier on desk testing transparent_usb, else transparent -->
-      <!--<module name="telemetry" type="transparent_usb"/>-->
-      <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
-        <configure name="MODEM_PORT" value="UART3"/><!--  Telem2 on pixracer -->
+      <module name="telemetry" type="transparent">
+        <configure name="MODEM_PORT" value="UART3"/>
         <configure name="MODEM_BAUD" value="B57600"/>
       </module>
 
