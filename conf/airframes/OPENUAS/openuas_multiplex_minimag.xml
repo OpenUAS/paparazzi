@@ -11,7 +11,7 @@
     + AIRSPEED:    Eagletree Airspeed v3 via I2C
     + TELEMETRY:   Si10xx Chip based with firmware allowing PPRZ RSSI
     + CURRENT:     A standard V/I 3DR PowerBrick clone sensor on the default analog ports
-    + RANGER:      MAXBOTICS Ultrasonic sensor analog on RSSI pin just for fun
+    + RANGER:      MAXBOTICS MB1010, LV-MaxSonar-EZ1 Ultrasonic sensor analog, via RSSI pin, just for fun with PPRZ code validation
     + MOTOR:       Kv 1300 rpm pro V
     + PROP:        3 Blade dia and pitch in inch
 
@@ -153,11 +153,11 @@ NOTES:
       <module name="tune_airspeed"/>
 
       <!-- For easier on desk testing transparent_usb, else transparent -->
-      <!--<module name="telemetry" type="transparent_usb"/>-->
-      <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
-        <configure name="MODEM_PORT" value="UART3"/><!--  Telem2 on pixracer -->
-        <configure name="MODEM_BAUD" value="B57600"/><!-- B9600 later on for distance since modem will be set to lower airrate thus higher sensitivity -->
-      </module>
+      <module name="telemetry" type="transparent_usb"/>
+       <!-- <module name="telemetry" type="transparent">--><!-- Or use type="xbee_api" for Digi Xbee modems -->
+       <!-- <configure name="MODEM_PORT" value="UART3"/>--><!--  Telem2 on pixracer -->
+       <!-- <configure name="MODEM_BAUD" value="B57600"/>--><!-- B9600 later on for distance since modem will be set to lower airrate thus higher sensitivity -->
+      <!--</module>-->
 
     </target>
 
@@ -296,13 +296,16 @@ NOTES:
         <!--<define name="AHRS_FC_MAG_ID" value="MAG_QMC5883_SENDER_ID" />--><!-- Use this insted of MAG_HMC5883_SENDER_ID for alternative sensor -->
     </module>
 
-    <module name="ins" type="alt_float"/>  <!--Does not work in SIM: extended thus use alt_float"/> -->
+    <module name="ins" type="alt_float">  <!--Does not work in SIM: extended thus use alt_float"/> -->
+      <define name="SONAR_COMPENSATE_ROTATION" value="FALSE"/><!-- compensate AGL for body rotation -->
+      <!--<define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>-->
+    </module>
 
     <!-- See http://wiki.paparazziuav.org/wiki/EnergyControl -->
     <module name="control" type="new"/><!-- energy or energyadaptive or type="new" to you gusto -->
     <module name="navigation"/>
     <!--<module name="imu_quality_assessment"/>--><!-- disable after initial tuning-->
-    <module name="auto1_commands"/> <!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
+    <!--<module name="auto1_commands"/> --><!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
     <!--<module name="send_imu_mag_current"/>--> <!-- Can be Disabled after one time callibration -->
 
     <module name="baro_ms5611_spi" >
@@ -427,9 +430,9 @@ NOTES:
     </module>-->
 
     <!-- can be used in flightplan during takeoff/landing or lowflyby with default sonar -->
-    <module name="agl_dist">
+    <!--<module name="agl_dist">
         <define name="USE_SONAR"/>
-    </module>
+    </module>-->
 
     <!--<module name="nav" type="catapult"/>-->
 
@@ -530,10 +533,10 @@ NOTES:
     <set command="YAW" value="@YAW"/>
     <set command="GEAR" value="@AUX1"/>
     <set command="FLAP" value="@AUX2"/>
-    <!-- for tuning via RC these ones below -->
+    <!-- for tuning via RC these ones below, Bothed for now since latest master code changes . in settings from TX... -->
 
-    <set command="GAIN1"    value="@AUX3"/>
-    <set command="CALIB"    value="@AUX4"/>
+    <!--<set command="GAIN1"    value="@AUX3"/>
+    <set command="CALIB"    value="@AUX4"/>-->
   </rc_commands>
 
 <!-- ************************ AUTO RC COMMANDS ***************************** -->
@@ -553,7 +556,6 @@ NOTES:
     <set command="GAIN1"    value="@GAIN1"/>
     <set command="CALIB"    value="@CALIB"/> -->
   </auto_rc_commands>
-
 
 <!-- ************************ COMMANDS ***************************** -->
   <commands>
@@ -740,9 +742,22 @@ The most crucial part for the magnetometer calibration:
 
 <!-- ************************* SONAR ************************* -->
   <!-- Analog voltage with a scaling factor of (Vcc/512) per inch. A supply of 5V yields ~9.8mV/in. -->
+
+  <!-- For LV 01 Analog voltage with a scaling factor of (Vcc/512) per inch.
+  m/v
+  5/512 = 0,0098V per inch = 0,003844734 per cm = 0,000038447V per M on 5v
+  if target compare is 3,3 then(3,3/5=0,66) 0,66*0,000038447=0,000025375V / M
+  With a supply of 5V  0,003844734mV/mm
+
+  Maybe then scale this to 5v/3.3v ?on this board
+  SCALE: Sensor sensitivity in m/adc (float)
+  -->
+
   <section name="SONAR" prefix="SONAR_">
-    <define name="SCALE" value="0.01" integer="16"/> <!-- TODO: build in this one MB1340 XL-MaxSonar-AE4 5V supply scaled to 3.3V -->
-    <define name="OFFSET" value="0.02" unit="m"/> <!-- Belly landing so height to tarmac almost 0 -->
+    <define name="MEDIAN_SIZE" value="9"/>
+    <define name="USE_ADC_FILTER" value="TRUE"/>
+    <define name="SCALE" value="0.0025375244" integer="16"/> <!--  TODO: MB1010, LV-MaxSonar-EZ1 5V supply scaled to 3.3V 3.3/5 = 0.66 * scale 0.0166-->
+    <define name="OFFSET" value="0.0"/> <!-- no unit is ADC meas ofset Todo to a Si Unit Belly landing so height to tarmac almost 0 -->
     <define name="MAX_RANGE" value="6.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
     <define name="MIN_RANGE" value="0.15" unit="m"/> <!-- ...sadly -->
   </section>
@@ -753,12 +768,12 @@ The most crucial part for the magnetometer calibration:
   </section>-->
 
 <!-- ***************************** AGL ***************************** -->
-  <section name="AGL" prefix="AGL_DIST_SONAR_">
+  <!--<section name="AGL" prefix="AGL_DIST_SONAR_">
     <define name="ID" value="ABI_BROADCAST"/>
     <define name="MAX_RANGE" value="6." unit="m"/>
     <define name="MIN_RANGE" value="0.001" unit="m"/>
-    <define name="FILTER" value="1.5"/> <!--TODO: Low pass filter time constant, maybe no needed with new EZ4-->
-  </section>
+    <define name="FILTER" value="1.5"/>--> <!--TODO: Low pass filter time constant, maybe no needed with new EZ4-->
+  <!--</section>-->
 
 <!-- ************************* MAG_CALIB_UKF ************************* -->
 <!--Hotstart  for faster convergence flights to flight if there is a storage option -->

@@ -44,6 +44,10 @@
 #define SONAR_SCALE 0.0166
 #endif
 
+#ifndef SONAR_MEDIAN_SIZE
+#define SONAR_MEDIAN_SIZE 9 //Good for noisy analog sonars
+#endif
+
 struct SonarAdc {
   uint16_t meas;          ///< Raw ADC value
   uint16_t offset;        ///< Sonar offset in ADC units
