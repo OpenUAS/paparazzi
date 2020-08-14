@@ -151,8 +151,6 @@
       <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0f"/>
     </module>
 
-
-
     <!-- Also used if QNH needed -->
     <module name="air_data">
      <define name="CALC_AIRSPEED" value="FALSE"/>
@@ -555,7 +553,7 @@ second order filter parameters -->
   <section name="AUTOPILOT">
     <define name="MODE_STARTUP" value="AP_MODE_NAV"/>
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_Z_HOLD"/>
+    <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_RC_CLIMB"/> <!--or use AP_MODE_ATTITUDE_Z_HOLD"/>-->
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/>
 
     <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
@@ -581,7 +579,7 @@ second order filter parameters -->
     <define name="ALT_SHIFT_PLUS_PLUS" value="5"/>
     <define name="ALT_SHIFT_PLUS"      value="1"/>
     <define name="ALT_SHIFT_MINUS"     value="-1"/>
-    <define name="AC_ICON"             value="quadrotor_x"/>
+    <define name="AC_ICON"             value="quadrotor_xi"/>
   </section>
 
 <!-- ************************ NPSSIM ******************************* -->

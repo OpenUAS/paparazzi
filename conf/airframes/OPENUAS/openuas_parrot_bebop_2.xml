@@ -184,6 +184,10 @@
         <!-- Make sure something like this is defined <define name="USE_SONAR"/>-->
     </module>
 
+    <!--<module name="imu_temp_ctrl">
+      <define name="IMU_TEMP_CTRL_DEBUG"/>
+    </module>-->
+
     <module name="bebop_cam"/>
 
     <!--<module name="pose_history"/>-->
@@ -553,7 +557,7 @@ The most crucial part for the magnetometer calibration:
   <section name="AUTOPILOT">
     <define name="MODE_STARTUP" value="AP_MODE_NAV"/>
     <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_Z_HOLD"/>
+    <define name="MODE_AUTO1" value="AP_MODE_ATTITUDE_RC_CLIMB"/> <!--or use AP_MODE_ATTITUDE_Z_HOLD"/>-->
     <define name="MODE_AUTO2" value="AP_MODE_NAV"/>
 
     <!--
@@ -585,7 +589,7 @@ The most crucial part for the magnetometer calibration:
     <define name="ALT_SHIFT_PLUS_PLUS" value="5"/>
     <define name="ALT_SHIFT_PLUS"      value="1"/>
     <define name="ALT_SHIFT_MINUS"     value="-1"/>
-    <define name="AC_ICON"             value="quadrotor_x"/>
+    <define name="AC_ICON"             value="quadrotor_xi"/>
   </section>
 
 <!-- ************************ NPSSIM ******************************* -->

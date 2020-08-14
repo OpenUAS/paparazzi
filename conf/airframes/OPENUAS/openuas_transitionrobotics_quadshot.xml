@@ -23,9 +23,9 @@
  WIP:
     + AGL min X assisted flight
 
-    RENAME seros
+    RENAME servos
     Reorganize AC order
-    Do batter set
+    Do battery set
 
   </description>
 
@@ -161,10 +161,6 @@
     <define name="WIND_INFO"/>
     <define name="WIND_INFO_RET"/>
 
-  </firmware>
-
-  <modules main_freq="512">
-
     <module name="motor_mixing"/>
 
     <module name="radio_control" type="sbus">
@@ -243,7 +239,7 @@
     </module>
     -->
 
-  </modules>
+  </firmware>
 
 <!-- ********************** RC COMMANDS ************************** -->
   <rc_commands>

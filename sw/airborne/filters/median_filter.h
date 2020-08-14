@@ -25,7 +25,10 @@
 #define MEDIAN_H
 
 #define MAX_MEDIAN_DATASIZE 13
+#ifndef MEDIAN_SIZE
 #define MEDIAN_DEFAULT_SIZE 5
+#define MEDIAN_SIZE 5
+#endif
 
 #include "std.h"
 #include "math/pprz_algebra_int.h"

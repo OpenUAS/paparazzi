@@ -13,7 +13,7 @@
     + CURRENT:     A standard V/I 3DR PowerBrick clone sensor on the default analog ports
     + RANGER:      MAXBOTICS MB1010, LV-MaxSonar-EZ1 Ultrasonic sensor analog, via RSSI pin, just for fun with PPRZ code validation
     + MOTOR:       Kv 1300 rpm pro V
-    + PROP:        3 Blade dia and pitch in inch
+    + PROP:        3 Blade 6in x 4.5in Left
 
 NOTES:
      + Using Enahanced Total Energy control as control loop in Final AC
@@ -32,7 +32,7 @@ NOTES:
      ++ Max VerticalVelocity [m/s]: 20
      ++ Sanity check type: Altitude and Velocity
      ++ Max PositionDeviation: Small
-     + GNSS set to almost 20Hz update rate 4 constelation, SBAS disabled
+     + GNSS set to ~12Hz update rate, 4 constelations, SBAS disabled
 
      If testing "Classic" (as in not ETECS..) make sure to disable the settings/estimation/ac_char
      Se the USE_AIRSPEED value to FALSE at first, for no airspeed tests
@@ -41,6 +41,9 @@ NOTES:
   </description>
   <firmware name="fixedwing">
 <!-- ********************** For in the real flying hardware ******************** -->
+
+    <define name="AGR_CLIMB"/> <!--Has aggressive mode handy for testing purposes -->
+    <define name="TUNE_AGRESSIVE_CLIMB"/>
 
     <target name="ap" board="px4fmu_4.0">
 
@@ -65,9 +68,9 @@ NOTES:
       <configure name="AHRS_CORRECT_FREQUENCY" value="500"/> <!--  unit="Hz" -->
       <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/><!-- best value unit="Hz" for ACTIVE magneto -->
 
-      <configure name="NAVIGATION_FREQUENCY" value="16"/> <!--  unit="Hz" -->
-      <configure name="CONTROL_FREQUENCY" value="120"/> <!--  unit="Hz" -->
-      <configure name="TELEMETRY_FREQUENCY" value="60"/> <!--  unit="Hz" -->
+      <!--<configure name="NAVIGATION_FREQUENCY" value="8"/>--> <!--  unit="Hz" -->
+      <!--<configure name="CONTROL_FREQUENCY" value="120"/>--> <!--  unit="Hz" -->
+      <!--<configure name="TELEMETRY_FREQUENCY" value="60"/--> <!--  unit="Hz" -->
       <configure name="MODULES_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
       <module name="imu" type="mpu9250_spi">
@@ -89,7 +92,7 @@ NOTES:
       of nifty Galilleio setting we rather keep that so no autosetting now.-->
       <!--<module name="gps" type="ubx_ucenter">-->
         <!--<define name="GPS_UBX_NAV5_DYNAMICS" value="NAV5_DYN_PEDESTRIAN"/>-->
-        <!--<define name="GPS_UBX_UCENTER_RATE" value="51"/>--> <!-- In milliseconds. 0x0033 = 51ms = ~19Hz -->
+        <!--<define name="GPS_UBX_UCENTER_RATE" value="51"/>--> <!-- In milliseconds. 0x0033 = 51ms = ~19Hz --><!-- make sure packets fit portrate-->
       <!--</module>-->
 
       <module name="airspeed_ets">
@@ -153,11 +156,11 @@ NOTES:
       <module name="tune_airspeed"/>
 
       <!-- For easier on desk testing transparent_usb, else transparent -->
-      <module name="telemetry" type="transparent_usb"/>
-       <!-- <module name="telemetry" type="transparent">--><!-- Or use type="xbee_api" for Digi Xbee modems -->
-       <!-- <configure name="MODEM_PORT" value="UART3"/>--><!--  Telem2 on pixracer -->
-       <!-- <configure name="MODEM_BAUD" value="B57600"/>--><!-- B9600 later on for distance since modem will be set to lower airrate thus higher sensitivity -->
-      <!--</module>-->
+      <!--<module name="telemetry" type="transparent_usb"/>-->
+      <module name="telemetry" type="transparent"><!-- Or use type="xbee_api" for Digi Xbee modems -->
+       <configure name="MODEM_PORT" value="UART3"/><!--  Telem2 on pixracer -->
+       <configure name="MODEM_BAUD" value="B57600"/><!-- set B9600 later on for distance since modem will be set to lower *air*rate thus higher sensitivity -->
+      </module>
 
     </target>
 
@@ -243,9 +246,6 @@ NOTES:
 
     <define name="RADIO_CONTROL_AUTO1"/><!--FIXME: not working in JSBSim target-->
 
-    <define name="AGR_CLIMB"/> <!--Has aggressive mode handy for testing purposes -->
-    <define name="TUNE_AGRESSIVE_CLIMB"/>
-
     <define name="STRONG_WIND"/>
     <define name="WIND_INFO"/>
     <define name="WIND_INFO_RET"/>
@@ -254,6 +254,7 @@ NOTES:
     <!-- temp fix for geomag, normally only used for rotorcraft -->
     <define name="SENSOR_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights temporary for debugging Baro -->
     <configure name="USE_BARO_BOARD" value="TRUE"/>
+    <define name="USE_BARO_MEDIAN_FILTER"/>
 
     <!-- amount of time it take for the bat to trigger check -->
     <!-- to avoid bat low spike detection when strong pullup withch draws short sudden power-->
@@ -267,32 +268,32 @@ NOTES:
     <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
     <define name="USE_MAGNETOMETER_ONGROUND" value="FALSE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
    <!-- If AHRS_MAG_CORRECT_FREQUENCY is set outside of target no need USE_MAGNETOMETER it is assumed TRUE -->
-    <configure name="USE_MAGNETOMETER" value="FALSE"/><!-- should be as in USE the device-->
+    <configure name="USE_MAGNETOMETER" value="TRUE"/><!-- should be as in USE the device-->
 
 <!-- ************************* MODULES ************************* -->
 <!-- Warning: unit conversion does not work in this section of airframe, so use the native units, or you'll have trouble...-->
 
     <module name="gps" type="ublox">
-      <configure name="GPS_BAUD" value="B115200"/><!-- UBX message only rate set to ~20HZ with GPS, GLONASS, BEIDU and GALILEIO at the SAME time is lots of GNSS data-->
+      <configure name="GPS_BAUD" value="B460800"/><!-- UBX message only but rate set to ~12HZ with GPS, GLONASS, BEIDU and GALILEIO at the SAME time is lots of GNSS data-->
       <!-- <configure name="GPS_PORT" value="UARTx"/>--><!-- Uses the default GPS port on pixracer no need to set it -->
     </module>
 
-    <module name="tune_airspeed"/> <!-- Enable if one want to perform airspeed tuning -->
+    <!--<module name="tune_airspeed"/>--> <!-- Enable if one want to perform airspeed tuning -->
 
-    <module name="ahrs" type="float_cmpl_quat"> <!-- Compare e.g. float_dcm -->
-        <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
-        <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
-        <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
-        <!--<define name="AHRS_USE_GPS_HEADING" value="FALSE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
-        <!--<define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/>--> <!--Already TRUE by default Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
-        <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
-        <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
-        <!--<define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="0.174533"/>--><!--unit="rad"/--><!-- don't update gyro bias if heading deviation is above this rotation threshold"-->
-        <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="0.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
-        <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
-        <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-        <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
-        <define name="AHRS_FC_MAG_ID" value="MAG_HMC58XX_SENDER_ID" /><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf  change your AHRS type-->
+    <module name="ahrs" type="float_dcm"> <!-- Compare e.g. float_dcm -->
+      <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
+      <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
+      <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
+      <!--<define name="AHRS_USE_GPS_HEADING" value="FALSE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
+      <!--<define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/>--> <!--Already TRUE by default Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
+      <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
+      <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
+      <!--<define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="0.174533"/>--><!--unit="rad"/--><!-- don't update gyro bias if heading deviation is above this rotation threshold"-->
+      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="4.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
+      <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
+      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
+      <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
+      <define name="AHRS_FC_MAG_ID" value="MAG_HMC58XX_SENDER_ID" /><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf  change your AHRS type-->
         <!--<define name="AHRS_FC_MAG_ID" value="MAG_QMC5883_SENDER_ID" />--><!-- Use this insted of MAG_HMC5883_SENDER_ID for alternative sensor -->
     </module>
 
@@ -741,23 +742,18 @@ The most crucial part for the magnetometer calibration:
   </section>
 
 <!-- ************************* SONAR ************************* -->
-  <!-- Analog voltage with a scaling factor of (Vcc/512) per inch. A supply of 5V yields ~9.8mV/in. -->
-
-  <!-- For LV 01 Analog voltage with a scaling factor of (Vcc/512) per inch.
-  m/v
-  5/512 = 0,0098V per inch = 0,003844734 per cm = 0,000038447V per M on 5v
-  if target compare is 3,3 then(3,3/5=0,66) 0,66*0,000038447=0,000025375V / M
-  With a supply of 5V  0,003844734mV/mm
-
-  Maybe then scale this to 5v/3.3v ?on this board
-  SCALE: Sensor sensitivity in m/adc (float)
+  <!--
+  MB1010, LV-MaxSonar-EZ1 External BEC 5V power supply
+  Datasheet states a scaling factor of (Vcc/512) per inch.
+  A supply of 5V yields 0.0098V per inch = 0.0039 per cm
+  if target comparator is 3.3v then(3.3/5=0.66) 0.66*0.0038447=0.0025375V/cm
   -->
 
   <section name="SONAR" prefix="SONAR_">
     <define name="MEDIAN_SIZE" value="9"/>
     <define name="USE_ADC_FILTER" value="TRUE"/>
-    <define name="SCALE" value="0.0025375244" integer="16"/> <!--  TODO: MB1010, LV-MaxSonar-EZ1 5V supply scaled to 3.3V 3.3/5 = 0.66 * scale 0.0166-->
-    <define name="OFFSET" value="0.0"/> <!-- no unit is ADC meas ofset Todo to a Si Unit Belly landing so height to tarmac almost 0 -->
+    <define name="SCALE" value="0.0025375" integer="16"/> <!-- 0.003844734 TODO: MB1010, LV-MaxSonar-EZ1 5V supply scaled to 3.3V 3.3/5 = 0.66 * scale 0.0166-->
+    <define name="OFFSET" value="90"/> <!-- No unit, value is ADC meas offset. FIXME to a Si Unit. BTW AC is Belly landing no landing gear so height to tarmac almost 0 -->
     <define name="MAX_RANGE" value="6.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
     <define name="MIN_RANGE" value="0.15" unit="m"/> <!-- ...sadly -->
   </section>
@@ -899,10 +895,10 @@ The most crucial part for the magnetometer calibration:
     <!-- Climb loop (pitch) -->
     <define name="AUTO_PITCH_PGAIN" value="0.030"/> <!-- TODO: Determine -->
     <define name="AUTO_PITCH_DGAIN" value="0.01"/>   <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_IGAIN" value="0.00"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_IGAIN" value="0.005"/> <!-- TODO: Determine -->
     <!--define name="AUTO_PITCH_CLIMB_THROTTLE_INCREMENT" value="0.14"/-->
-    <define name="AUTO_PITCH_MAX_PITCH" value="55" unit="deg"/><!-- TODO: Determine default and best -->
-    <define name="AUTO_PITCH_MIN_PITCH" value="-55" unit="deg"/><!-- TODO: Determine default and best -->
+    <define name="AUTO_PITCH_MAX_PITCH" value="35" unit="deg"/><!-- TODO: Determine default and best -->
+    <define name="AUTO_PITCH_MIN_PITCH" value="-35" unit="deg"/><!-- TODO: Determine default and best -->
 
     <!-- ============= ETECS ============= -->
     <define name="ENERGY_TOT_PGAIN" value="0.35"/> <!-- TODO: Determine -->
@@ -910,7 +906,7 @@ The most crucial part for the magnetometer calibration:
     <define name="ENERGY_DIFF_PGAIN" value="0.40"/> <!-- TODO: Determine -->
     <define name="ENERGY_DIFF_IGAIN" value="0.10"/> <!-- TODO: Determine -->
 
-    <define name="GLIDE_RATIO" value="8."/> <!-- 7 to 1 --> <!-- TODO: Determine default but also with heavier batt -->
+    <define name="GLIDE_RATIO" value="8."/> <!-- 7 to 1 --> <!-- TODO: Determine default but also with heavier battery -->
 
     <define name="AUTO_THROTTLE_OF_AIRSPEED_PGAIN" value="0.06"/>
     <define name="AUTO_THROTTLE_OF_AIRSPEED_IGAIN" value="0.01"/>
@@ -918,19 +914,18 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_PITCH_OF_AIRSPEED_PGAIN" value="0.01"/> <!-- TODO: Determine -->
     <define name="AUTO_PITCH_OF_AIRSPEED_IGAIN" value="0.003"/> <!-- TODO: Determine -->
     <define name="AUTO_PITCH_OF_AIRSPEED_DGAIN" value="0.03"/> <!-- TODO: Determine -->
-
   </section>
 
 <!-- ************************* AGGRESIVE *************************** -->
   <section name="AGGRESSIVE" prefix="AGR_">
-    <define name="BLEND_START" value="30" unit="m"/> <!-- Altitude Error to Initiate Aggressive Climb CANNOT BE ZERO!!-->
-    <define name="BLEND_END" value="10" unit="m"/> <!-- Altitude Error to Blend Aggressive to Regular Climb Modes  CANNOT BE ZERO!!-->
+    <define name="BLEND_START" value="40" unit="m"/> <!-- Altitude Error to Initiate Aggressive Climb CANNOT BE ZERO!!-->
+    <define name="BLEND_END" value="15" unit="m"/> <!-- Altitude Error to Blend Aggressive to Regular Climb Modes  CANNOT BE ZERO!!-->
     <define name="CLIMB_THROTTLE" value="0.85" unit="%"/> <!-- Throttlelevel for Aggressive Climb -->
-    <define name="CLIMB_PITCH" value="45" unit="deg"/> <!-- Pitch for Aggressive Climb -->
-    <define name="DESCENT_THROTTLE" value="0.4" unit="%"/> <!-- Throttlelevel for Aggressive Decent -->
-    <define name="DESCENT_PITCH" value="-30" unit="deg"/> <!-- Pitch for Aggressive Decent -->
-    <define name="CLIMB_NAV_RATIO" value="0.6" unit="%"/> <!-- Percent Navigation for Altitude Error Equal to Start Altitude -->
-    <define name="DESCENT_NAV_RATIO" value="0.9" unit="%"/>
+    <define name="CLIMB_PITCH" value="40" unit="deg"/> <!-- Pitch for Aggressive Climb -->
+    <define name="DESCENT_THROTTLE" value="0.3" unit="%"/> <!-- Throttlelevel for Aggressive Decent -->
+    <define name="DESCENT_PITCH" value="-35" unit="deg"/> <!-- Pitch for Aggressive Decent -->
+    <define name="CLIMB_NAV_RATIO" value="0.7" unit="%"/> <!-- Percent Navigation for Altitude Error Equal to Start Altitude -->
+    <define name="DESCENT_NAV_RATIO" value="0.95" unit="%"/>
   </section>
 
 <!-- **************************** BAT ****************************** -->

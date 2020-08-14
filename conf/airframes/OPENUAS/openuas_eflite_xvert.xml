@@ -7,10 +7,10 @@
       + Autopilot:   Default STM32F3 based
       + Actuators:   Default servos, 2 PWM servo's, 2 escs through some proprietary atmega uart protocol
       + GPS:         Ublox M8N GNSS over I2C
-      + IMU:         MPU6500 and external HMC58XX
+      + IMU:         MPU6500 on mainboard and external HMC58XX on GNSS module
       + TELEMETRY:   Si10xx Chip based with full fledged multifreq firmware
       + CURRENT:     A standard Volt and Current sensor on the analog ports
-      + RANGER:      TFMini UART() on Telem2
+      + RANGER:      {none yet}
       + RC:          RC over Datalink
 
     NOTES:

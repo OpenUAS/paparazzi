@@ -41,11 +41,19 @@
  *  Sensor sensitivity in m/adc (float)
  */
 #ifndef SONAR_SCALE
-#define SONAR_SCALE 0.0166
+#define SONAR_SCALE 0.0166f
 #endif
 
 #ifndef SONAR_MEDIAN_SIZE
-#define SONAR_MEDIAN_SIZE 9 //Good for noisy analog sonars
+#define SONAR_MEDIAN_SIZE 7 //Good for noisy analog sonars
+#endif
+
+#ifndef SONAR_MIN_RANGE
+#define SONAR_MIN_RANGE 0.15f //Common value for regular sonars. Cannot measure closer than that
+#endif
+
+#ifndef SONAR_MAX_RANGE
+#define SONAR_MAX_RANGE 7.0f //Reasonable maximum value for regular sonars.
 #endif
 
 struct SonarAdc {

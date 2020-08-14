@@ -151,23 +151,8 @@
       <configure name="GPS_PORT" value="UART2"/>
       -->
     </module>
-  </firmware>
 
-  <firmware name="test_progs">
-    <target name="test_actuators_pwm_sin"  board="lisa_s_1.0">
-      <define name="SERVO_HZ" value="40"/>
-    </target>
-    <!-- <target name="test_actuators_pwm"      board="lisa_s_1.0">
-      <define name="SERVO_HZ" value="40"/>
-    </target> -->
-    <target name="test_adc"                board="lisa_s_1.0"/>
-    <!-- Since test is not implemented yet, idea is to just write and read a block and check data -->
-    <!-- FIXME <target name="test_sdcard"  board="lisa_s_1.0"/>-->
-    </firmware>
-
- <!-- ************************* MODULES ************************* -->
-  <modules>
-    <!-- <module name="auto1_commands"/>-->
+        <!-- <module name="auto1_commands"/>-->
 
     <!--  TODO: Start to log from trigger in Flightplan specific block or condition -->
     <!--  TODO: Currently Direct SD for FW is broken ... -->
@@ -204,7 +189,20 @@
     <module name="nav" type="vertical_raster"/>
     <module name="nav" type="flower"/>
     <!-- <module name="nav" type="catapult"/>--><!-- TODO Enable after first successful flights -->
-  </modules>
+
+  </firmware>
+
+  <firmware name="test_progs">
+    <target name="test_actuators_pwm_sin"  board="lisa_s_1.0">
+      <define name="SERVO_HZ" value="40"/>
+    </target>
+    <!-- <target name="test_actuators_pwm"      board="lisa_s_1.0">
+      <define name="SERVO_HZ" value="40"/>
+    </target> -->
+    <target name="test_adc"                board="lisa_s_1.0"/>
+    <!-- Since test is not implemented yet, idea is to just write and read a block and check data -->
+    <!-- FIXME <target name="test_sdcard"  board="lisa_s_1.0"/>-->
+  </firmware>
 
   <!-- ************************* ACTUATORS ************************* -->
   <servos>

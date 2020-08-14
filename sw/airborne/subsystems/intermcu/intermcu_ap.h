@@ -27,8 +27,8 @@
 #ifndef INTERMCU_AP_ROTORCRAFT_H
 #define INTERMCU_AP_ROTORCRAFT_H
 
-#include "subsystems/intermcu.h"
 #include "generated/airframe.h"
+#include "subsystems/intermcu.h"
 #include "subsystems/electrical.h"
 
 void intermcu_set_actuators(pprz_t *command_values, uint8_t ap_mode);
@@ -37,16 +37,42 @@ void intermcu_send_spektrum_bind(void);
 void intermcu_set_enabled(bool value);
 
 /* We need radio defines for the Autopilot */
+/* Default channel assignments */
+#ifndef RADIO_THROTTLE
 #define RADIO_THROTTLE   0
+#endif
+#ifndef RADIO_ROLL
 #define RADIO_ROLL       1
+#endif
+#ifndef RADIO_PITCH
 #define RADIO_PITCH      2
+#endif
+#ifndef RADIO_YAW
 #define RADIO_YAW        3
-#define RADIO_MODE       4
-#define RADIO_KILL_SWITCH 5
+#endif
+#ifndef RADIO_GEAR
+#define RADIO_GEAR       4
+#endif
+#ifndef RADIO_FLAP
+#define RADIO_FLAP       5
+#endif
+#ifndef RADIO_AUX1
 #define RADIO_AUX1       5
+#endif
+#ifndef RADIO_AUX2
 #define RADIO_AUX2       6
+#endif
+#ifndef RADIO_AUX3
 #define RADIO_AUX3       7
+#endif
+
+#ifndef RADIO_CONTROL_NB_CHANNEL
 #define RADIO_CONTROL_NB_CHANNEL 8
+#endif
+
+#if RADIO_CONTROL_NB_CHANNEL > 8
+#error "RADIO_CONTROL_NB_CHANNEL should not be higher than 8, else bandwith of could be IMCU saturated"
+#endif
 
 /* Structure for FBW status */
 struct fbw_status_t {

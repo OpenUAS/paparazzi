@@ -108,11 +108,8 @@
       <define name="LOG_RAW_GPS"/>-->
     </module>
     <module name="navigation"/>
-  </firmware>
 
-  <modules main_freq="120">
-<!-- ******************************* MODULES ******************************* -->
-    <!-- <module name="gps" type="ubx_ucenter"/>--> <!-- Disable uCenter in the future, setup the hardware itself -->
+     <!-- <module name="gps" type="ubx_ucenter"/>--> <!-- Disable uCenter in the future, setup the hardware itself -->
     <module name="ahrs_chimu_spi"/>
        <!--    <define name="CHIMU_BIG_ENDIAN"/> -->
    <!--  </module>-->
@@ -172,7 +169,8 @@
     <!-- <module name="nav" type="catapult"/> -->
 
     <module name="baro_sim"/>
-  </modules>
+
+  </firmware>
 
 <!-- ****************************** ACTUATORS ****************************** -->
   <servos>

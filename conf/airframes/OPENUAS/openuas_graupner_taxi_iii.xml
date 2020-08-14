@@ -22,18 +22,17 @@
     <define name="WIND_INFO_RET"/>
     <define name="AGR_CLIMB"/>
     <define name="TUNE_AGRESSIVE_CLIMB"/>
-    <define name="USE_I2C0"/>
+
     <define name="PITCH_TRIM"/>
 
     <define name="USE_I2C0"/>
-
     <module name="radio_control" type="ppm">
        <!-- for debugging PPM value the one below -->
        <!-- <define name="TELEMETRY_MODE_FBW" value="1"/> -->
     </module>
 
     <module name="telemetry" type="transparent">
-      <configure name="MODEM_BAUD" value="B9600"/>
+      <configure name="MODEM_BAUD" value="B57600"/>
       <configure name="MODEM_PORT" value="UART1"/>
     </module>
 

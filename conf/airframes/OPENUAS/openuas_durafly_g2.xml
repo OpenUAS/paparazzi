@@ -181,11 +181,7 @@
       <configure name="GPS_BAUD" value="B57600"/>
     </module>
 
-  </firmware>
-
-<!-- ************************* MODULES ************************* -->
-  <modules>
-    <module name="auto1_commands"/><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
+        <module name="auto1_commands"/><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
 
     <module name="baro_ms5611_spi" >
       <configure name="MS5611_SPI_DEV" value="spi1"/>
@@ -271,7 +267,7 @@
     <module name="tcas">
     </module>
 
-  </modules>
+  </firmware>
 
   <!-- ************************* ACTUATORS ************************* -->
 
