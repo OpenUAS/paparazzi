@@ -45,6 +45,7 @@ NOTES:
     <define name="AGR_CLIMB"/> <!--Has aggressive mode handy for testing purposes -->
     <define name="TUNE_AGRESSIVE_CLIMB"/>
 
+    <!--<define name="GPS_UBX_MAX_PAYLOAD" value="2048"/>--><!-- Temp enlarge buffer for debugging velocity issue of uBlox M9 types FW v4.03-->
     <target name="ap" board="px4fmu_4.0">
 
       <!-- Towards better kind of aligner initial conditions -->
@@ -68,8 +69,8 @@ NOTES:
       <configure name="AHRS_CORRECT_FREQUENCY" value="500"/> <!--  unit="Hz" -->
       <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/><!-- best value unit="Hz" for ACTIVE magneto -->
 
-      <!--<configure name="NAVIGATION_FREQUENCY" value="8"/>--> <!--  unit="Hz" -->
-      <!--<configure name="CONTROL_FREQUENCY" value="120"/>--> <!--  unit="Hz" -->
+      <configure name="NAVIGATION_FREQUENCY" value="16"/> <!--  unit="Hz" -->
+      <configure name="CONTROL_FREQUENCY" value="120"/> <!--  unit="Hz" -->
       <!--<configure name="TELEMETRY_FREQUENCY" value="60"/--> <!--  unit="Hz" -->
       <configure name="MODULES_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
@@ -98,7 +99,7 @@ NOTES:
       <module name="airspeed_ets">
         <configure name="AIRSPEED_ETS_I2C_DEV" value="i2c1"/>
         <define name="AIRSPEED_ETS_START_DELAY" value="1"/>
-        <define name="AIRSPEED_ETS_SCALE" value="1.44"/> <!-- default 1.8-->
+        <!--<define name="AIRSPEED_ETS_SCALE" value="1.44"/>--> <!-- default 1.8-->
         <define name="AIRSPEED_ETS_OFFSET" value="5"/> <!-- default 0 -->
         <define name="AIRSPEED_ETS_SYNC_SEND"/>  <!-- TODO Disable after first 10 test flights -->
       </module>
@@ -253,7 +254,7 @@ NOTES:
     <define name="autopilot_motors_on" value="TRUE"/><!-- TODO: choose ;) -->
     <!-- temp fix for geomag, normally only used for rotorcraft -->
     <define name="SENSOR_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights temporary for debugging Baro -->
-    <configure name="USE_BARO_BOARD" value="TRUE"/>
+    <configure name="USE_BARO_BOARD" value="FALSE"/>
     <define name="USE_BARO_MEDIAN_FILTER"/>
 
     <!-- amount of time it take for the bat to trigger check -->
@@ -265,7 +266,7 @@ NOTES:
     <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="410"/> <!--unit="s/10" in tenth of seconds for engine kill or in ELECTRICAL_PERIODIC_FREQ-->
 
     <define name="AHRS_TRIGGERED_ATTITUDE_LOOP"/>
-    <define name="USE_AHRS_GPS_ACCELERATIONS" value="TRUE"/> <!-- forward acceleration compensation from GPS speed -->
+    <define name="USE_AHRS_GPS_ACCELERATIONS" value="FALSE"/> <!-- forward acceleration compensation from GPS speed -->
     <define name="USE_MAGNETOMETER_ONGROUND" value="FALSE"/> <!--DEFINE only used if float_dcm Use magnetic compensation before takeoff only while GPS course not good -->
    <!-- If AHRS_MAG_CORRECT_FREQUENCY is set outside of target no need USE_MAGNETOMETER it is assumed TRUE -->
     <configure name="USE_MAGNETOMETER" value="TRUE"/><!-- should be as in USE the device-->
@@ -285,11 +286,11 @@ NOTES:
       <configure name="AHRS_ALIGNER_LED" value="2"/><!-- Which color you want sir? ;) -->
       <define name="AHRS_MAG_UPDATE_ALL_AXES" value="FALSE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
       <!--<define name="AHRS_USE_GPS_HEADING" value="FALSE"/>--><!-- TRUE by default Use GPS course to update heading for time being,if FALSE data from magneto only -->
-      <!--<define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/>--> <!--Already TRUE by default Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
+      <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="FALSE"/> <!--Already TRUE by default Compensation of centrifugal force via GPS speed (to fly in circles with a fixedwing)"-->
       <define name="AHRS_GPS_SPEED_IN_NEGATIVE_Z_DIRECTION" value="FALSE"/> <!-- AHRS_GRAVITY_UPDATE_COORDINATED_TURN assumes the GPS speed is in the X axis direction. Quadshot, DelftaCopter and other hybrids can have the GPS speed in the negative Z direction" -->
-      <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
+      <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="TRUE"/> <!-- apply a low pass filter on rotational velocity"-->
       <!--<define name="AHRS_BIAS_UPDATE_HEADING_THRESHOLD" value="0.174533"/>--><!--unit="rad"/--><!-- don't update gyro bias if heading deviation is above this rotation threshold"-->
-      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="4.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
+      <define name="AHRS_HEADING_UPDATE_GPS_MIN_SPEED" value="0.0"/> <!--unit="m/s"--> <!-- CAREFULL,  Don't update heading from GPS course if GPS ground speed is below is this threshold in m/s" -->
       <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
       <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
       <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
@@ -838,9 +839,9 @@ The most crucial part for the magnetometer calibration:
 
     <!-- Classic -->
     <!-- outer loop proportional gain -->
-    <define name="ALTITUDE_PGAIN" value="0.09"/> <!--unit="(m/s)/m"-->
+    <define name="ALTITUDE_PGAIN" value="0.06"/> <!--unit="(m/s)/m"-->
     <!-- disable climb rate limiter -->
-    <define name="AUTO_CLIMB_LIMIT" value="2*V_CTL_ALTITUDE_MAX_CLIMB"/>
+    <define name="AUTO_CLIMB_LIMIT" value="1.2*V_CTL_ALTITUDE_MAX_CLIMB"/>
     <!-- auto throttle -->
     <!-- Cruise throttle + limits -->
     <define name="AUTO_THROTTLE_MIN_CRUISE_THROTTLE" value="0.45" unit="%"/>  <!-- TODO: Determine -->
@@ -850,13 +851,13 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_THROTTLE_LOITER_TRIM" value="1000" unit="pprz_t"/>
     <define name="AUTO_THROTTLE_DASH_TRIM" value="-2000" unit="pprz_t"/>
 
-    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.30" unit="%/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.10" unit="%/(m/s)"/> <!-- TODO: Determine -->
 
     <!-- Climb loop (throttle) -->
     <define name="AUTO_THROTTLE_PGAIN" value="0.005" unit="%/(m/s)"/>
     <define name="AUTO_THROTTLE_IGAIN" value="0.002"/>
     <define name="AUTO_THROTTLE_DGAIN" value="0.0"/>
-    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.09" unit="rad/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.06" unit="rad/(m/s)"/> <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_NOMINAL_CRUISE_PITCH" value="0." unit="rad"/> <!-- default 0 -->
 
     <define name="THROTTLE_SLEW_LIMITER" value="0.6" unit="m/s/s"/>  <!-- Limiter for e.g. a powerful motor -->
@@ -864,7 +865,7 @@ The most crucial part for the magnetometer calibration:
     <!-- airspeed control -->
     <!-- Best to never set AUTO_AIRSPEED_SETPOINT lower than airframe stall speed if you hate repairs ;) -->
     <!-- investigate: howto if higher then _AIRSPEED_SETPOINT then airframe tries to maintain a constand ground speed UNKNOWN -->
-    <define name="AUTO_AIRSPEED_SETPOINT" value="14.0" unit="m/s"/>
+    <define name="AUTO_AIRSPEED_SETPOINT" value="12.0" unit="m/s"/>
     <define name="AUTO_AIRSPEED_THROTTLE_PGAIN" value="0.12" unit="%/(m/s)"/>
     <define name="AUTO_AIRSPEED_THROTTLE_DGAIN" value="0.09"/>
     <define name="AUTO_AIRSPEED_THROTTLE_IGAIN" value="0.02"/>
@@ -872,8 +873,8 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_AIRSPEED_PITCH_DGAIN" value="0.0"/>
     <define name="AUTO_AIRSPEED_PITCH_IGAIN" value="0.06"/>
 
-    <define name="AIRSPEED_MAX" value="20.0" unit="m/s"/>
-    <define name="AIRSPEED_MIN" value="9.0" unit="m/s"/>
+    <define name="AIRSPEED_MAX" value="18.0" unit="m/s"/>
+    <define name="AIRSPEED_MIN" value="7.0" unit="m/s"/>
 
     <!-- pitch trim -->
     <define name="PITCH_LOITER_TRIM" value="0.5" unit="deg"/> <!-- Non ETECS -->
@@ -884,18 +885,18 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_GROUNDSPEED_PGAIN" value="0.8"/>
     <define name="AUTO_GROUNDSPEED_IGAIN" value="0.2"/>
 
-    <define name="AIRSPEED_PGAIN" value="0.19"/>
+    <define name="AIRSPEED_PGAIN" value="0.15"/>
 
     <!-- outer loop saturation -->
     <define name="ALTITUDE_MAX_CLIMB" value="2.0" unit="m/s"/> <!-- TODO: Determine -->
-    <define name="MAX_ACCELERATION" value="0.9" unit="G"/> <!-- TODO: Determine -->
+    <define name="MAX_ACCELERATION" value="1.7" unit="G"/> <!-- TODO: Determine -->
 
     <!-- auto pitch inner loop -->
 
     <!-- Climb loop (pitch) -->
-    <define name="AUTO_PITCH_PGAIN" value="0.030"/> <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_DGAIN" value="0.01"/>   <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_IGAIN" value="0.005"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_PGAIN" value="0.010"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_DGAIN" value="0.001"/>   <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_IGAIN" value="0.001"/> <!-- TODO: Determine -->
     <!--define name="AUTO_PITCH_CLIMB_THROTTLE_INCREMENT" value="0.14"/-->
     <define name="AUTO_PITCH_MAX_PITCH" value="35" unit="deg"/><!-- TODO: Determine default and best -->
     <define name="AUTO_PITCH_MIN_PITCH" value="-35" unit="deg"/><!-- TODO: Determine default and best -->
