@@ -38,15 +38,18 @@
 #endif
 
 #include "subsystems/electrical.h"
-#include "subsystems/radio_control.h"
+
 #include "subsystems/intermcu/intermcu_fbw.h"
 #include "firmwares/rotorcraft/main_fbw.h"
 #include "firmwares/rotorcraft/autopilot_rc_helpers.h"
+#ifdef RADIO_CONTROL
+//#include "subsystems/radio_control.h"
+#endif
 
 #define MODULES_C
 #include "generated/modules.h"
 
-/* So one can use these in command_laws section */
+/* Added here so one can use these in command_laws section */
 #define And(x, y) ((x) && (y))
 #define Or(x, y) ((x) || (y))
 #define Min(x,y) (x < y ? x : y)

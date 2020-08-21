@@ -296,7 +296,7 @@
     <module name="gps" type="ublox"/>
     <module name="tune_airspeed"/> <!-- Enable if one want to perform airspeed tuning -->
 
-    <module name="ahrs" type="float_cmpl_quat"> <!-- Compare e.g. float_dcm -->
+    <module name="ahrs" type="float_cmpl_quat"> <!-- Compare e.g.cmpl_quat  float_dcm -->
         <configure name="AHRS_USE_MAGNETOMETER" value="TRUE"/> <!-- as in USE it for values in the AHRS -->
         <!--<configure name="AHRS_ALIGNER_LED" value="2"/>--><!-- Which color you want sir? ;) -->
         <define name="AHRS_MAG_UPDATE_ALL_AXES" value="TRUE"/> <!-- if TRUE with those high roll n pith angles magneto should be calibrated well or use UKF autocalib -->
@@ -761,6 +761,9 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_GROUNDSPEED_IGAIN" value="0.2"/>
 
     <define name="AIRSPEED_PGAIN" value="0.19"/>
+
+    <!-- For control classic as in not new or enegry etc.-->
+    <define name="AUTO_AIRSPEED_PGAIN" value="0.18" unit="%/(m/s)"/>
 
     <!-- outer loop saturation -->
     <define name="ALTITUDE_MAX_CLIMB" value="3.0" unit="m/s"/> <!-- TODO: Determine -->

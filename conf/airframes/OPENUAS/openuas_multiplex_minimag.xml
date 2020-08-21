@@ -60,10 +60,10 @@ NOTES:
       <configure name="PERIODIC_FREQUENCY" value="512"/> <!--  unit="Hz" -->
 
       <!-- Not enabled ATM default should be good -->
-      <!--<define name="MPU9250_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_1000"/>
+      <define name="MPU9250_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_1000"/>
       <define name="MPU9250_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>
       <define name="MPU9250_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-      <define name="MPU9250_SMPLRT_DIV" value="3"/>-->
+      <define name="MPU9250_SMPLRT_DIV" value="3"/>
 
       <configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/><!--  unit="Hz" -->
       <configure name="AHRS_CORRECT_FREQUENCY" value="500"/> <!--  unit="Hz" -->
@@ -99,10 +99,12 @@ NOTES:
       <module name="airspeed_ets">
         <configure name="AIRSPEED_ETS_I2C_DEV" value="i2c1"/>
         <define name="AIRSPEED_ETS_START_DELAY" value="1"/>
-        <define name="AIRSPEED_ETS_SCALE" value="1.8"/> <!--1.44 default 1.8-->
-        <define name="AIRSPEED_ETS_OFFSET" value="5"/> <!-- default 0 -->
+        <define name="AIRSPEED_ETS_SCALE" value="1.8"/> <!--1.44 default is 1.8-->
+        <define name="AIRSPEED_ETS_OFFSET" value="0"/> <!-- default 0 -->
         <define name="AIRSPEED_ETS_SYNC_SEND"/>  <!-- TODO Disable after first 10 test flights -->
       </module>
+
+      <module name="filter_1euro_imu"/>
 
       <configure name="USE_ADC_2" value="TRUE"/> <!-- For external PowerBrick Voltage measure-->
       <define name="ADC_CHANNEL_VSUPPLY" value="ADC_2"/>
@@ -279,7 +281,7 @@ NOTES:
       <!-- <configure name="GPS_PORT" value="UARTx"/>--><!-- Uses the default GPS port on pixracer no need to set it -->
     </module>
 
-    <!--<module name="tune_airspeed"/>--> <!-- Enable if one want to perform airspeed tuning -->
+    <module name="tune_airspeed"/> <!-- Enable if one want to perform airspeed tuning -->
 
     <module name="ahrs" type="float_dcm"> <!-- Compare e.g. float_dcm -->
       <configure name="AHRS_USE_MAGNETOMETER" value="FALSE"/> <!-- as in USE it for values in the AHRS -->
@@ -304,6 +306,7 @@ NOTES:
     </module>
 
     <!-- See http://wiki.paparazziuav.org/wiki/EnergyControl -->
+    <!--<module name="control"/>--> <!--Remove the type flag to have classic behavious Eg for uing the Tune Agressive -->
     <module name="control" type="new"/><!-- energy or energyadaptive or type="new" to you gusto -->
     <module name="navigation"/>
     <!--<module name="imu_quality_assessment"/>--><!-- disable after initial tuning-->
@@ -596,6 +599,16 @@ NOTES:
     <define name="DELAY_WITHOUT_GPS" value="4" unit="s"/>
   </section>
 
+<!-- ************************ FILTE TEST TODO: testme ***************************** -->
+  <section name="FILTER_1EURO" prefix="FILTER_1EURO_">
+      <define name="ENABLED" value="FALSE"/> <!-- activate or not the filter by default -->
+      <define name="GYRO_MINCUTOFF" value="10."/> <!-- minimum cutoff freq for gyro signal -->
+      <define name="GYRO_BETA" value="0.1"/> <!-- adaptation coefficient for gyro signal -->
+      <define name="ACCEL_MINCUTOFF" value="0.1"/> <!-- minimum cutoff freq for accel signal -->
+      <define name="ACCEL_BETA" value="0.01"/> <!-- adaptation coefficient for accel signal -->
+      <!--<define name="FREQ" value="512"set fixed frequency, if not defined but INS/AHRS_PROPAGATE_FREQUENCY is defined it is used, otherwise autofreq is used-->
+  </section>
+
 <!-- ************************* IMU ************************* -->
   <section name="IMU" prefix="IMU_">
 
@@ -625,7 +638,7 @@ NOTES:
     <!-- For now we swapped axis this is also a posibility -->
 
     <define name="BODY_TO_IMU_PHI" value="-1.8" unit="deg"/>
-    <define name="BODY_TO_IMU_THETA" value="2.2" unit="deg"/>
+    <define name="BODY_TO_IMU_THETA" value="3.2" unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0.0" unit="deg"/>
 
      <!-- ***************** MAGNETOMETER *****************-->
@@ -734,7 +747,7 @@ The most crucial part for the magnetometer calibration:
     <!-- Use GPS altitude measurments and set the R gain -->
     <define name="USE_GPS_ALT" value="TRUE"/>
     <!--<define name="USE_GPS_ALT_SPEED" value="FALSE"/>-->
-    <define name="VFF_R_GPS" value="0.06"/><!-- trust baro a bit more -->
+    <define name="VFF_R_GPS" value="0.03"/><!-- trust baro a bit more -->
     <!--<define name="VFF_VZ_R_GPS" value="0.2"/>-->
 
     <define name="INS_SONAR_MAX_RANGE" value="6.0"/>
@@ -841,7 +854,7 @@ The most crucial part for the magnetometer calibration:
     <!-- outer loop proportional gain -->
     <define name="ALTITUDE_PGAIN" value="0.06"/> <!--unit="(m/s)/m"-->
     <!-- disable climb rate limiter -->
-    <define name="AUTO_CLIMB_LIMIT" value="1.2*V_CTL_ALTITUDE_MAX_CLIMB"/>
+    <define name="AUTO_CLIMB_LIMIT" value="1.7*V_CTL_ALTITUDE_MAX_CLIMB"/>
     <!-- auto throttle -->
     <!-- Cruise throttle + limits -->
     <define name="AUTO_THROTTLE_MIN_CRUISE_THROTTLE" value="0.45" unit="%"/>  <!-- TODO: Determine -->
@@ -851,13 +864,13 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_THROTTLE_LOITER_TRIM" value="1000" unit="pprz_t"/>
     <define name="AUTO_THROTTLE_DASH_TRIM" value="-2000" unit="pprz_t"/>
 
-    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.10" unit="%/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.08" unit="%/(m/s)"/> <!-- TODO: Determine -->
 
     <!-- Climb loop (throttle) -->
-    <define name="AUTO_THROTTLE_PGAIN" value="0.005" unit="%/(m/s)"/>
-    <define name="AUTO_THROTTLE_IGAIN" value="0.002"/>
+    <define name="AUTO_THROTTLE_PGAIN" value="0.004" unit="%/(m/s)"/>
+    <define name="AUTO_THROTTLE_IGAIN" value="0.0"/>
     <define name="AUTO_THROTTLE_DGAIN" value="0.0"/>
-    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.06" unit="rad/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.05" unit="rad/(m/s)"/> <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_NOMINAL_CRUISE_PITCH" value="0." unit="rad"/> <!-- default 0 -->
 
     <define name="THROTTLE_SLEW_LIMITER" value="0.6" unit="m/s/s"/>  <!-- Limiter for e.g. a powerful motor -->
@@ -887,6 +900,10 @@ The most crucial part for the magnetometer calibration:
 
     <define name="AIRSPEED_PGAIN" value="0.15"/>
 
+    <!-- Only for control classic as in not new or enegry etc.-->
+    <define name="AUTO_AIRSPEED_PGAIN" value="0.18" unit="%/(m/s)"/>
+    <define name="AUTO_AIRSPEED_IGAIN" value="0.2"/>
+
     <!-- outer loop saturation -->
     <define name="ALTITUDE_MAX_CLIMB" value="2.0" unit="m/s"/> <!-- TODO: Determine -->
     <define name="MAX_ACCELERATION" value="1.7" unit="G"/> <!-- TODO: Determine -->
@@ -894,12 +911,12 @@ The most crucial part for the magnetometer calibration:
     <!-- auto pitch inner loop -->
 
     <!-- Climb loop (pitch) -->
-    <define name="AUTO_PITCH_PGAIN" value="0.010"/> <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_DGAIN" value="0.001"/>   <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_IGAIN" value="0.001"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_PGAIN" value="0.016"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_DGAIN" value="0.01"/>   <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_IGAIN" value="0.0"/> <!-- TODO: Determine -->
     <!--define name="AUTO_PITCH_CLIMB_THROTTLE_INCREMENT" value="0.14"/-->
-    <define name="AUTO_PITCH_MAX_PITCH" value="35" unit="deg"/><!-- TODO: Determine default and best -->
-    <define name="AUTO_PITCH_MIN_PITCH" value="-35" unit="deg"/><!-- TODO: Determine default and best -->
+    <define name="AUTO_PITCH_MAX_PITCH" value="25" unit="deg"/><!-- TODO: Determine default and best -->
+    <define name="AUTO_PITCH_MIN_PITCH" value="-25" unit="deg"/><!-- TODO: Determine default and best -->
 
     <!-- ============= ETECS ============= -->
     <define name="ENERGY_TOT_PGAIN" value="0.35"/> <!-- TODO: Determine -->

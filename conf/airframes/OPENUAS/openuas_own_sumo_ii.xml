@@ -4,10 +4,10 @@
 + Airframe with the PX4 Pixracer v1 R15 flightcontroller hardware
     + Model:       Multiplex Funjet Ultra and easy removable stabilo modification
     + Autopilot:   PX4FMU 4.0 in the form of a Pixracer v1.0 R15
-    + Actuators:   Regular servos
+    + Actuators:   Regular servos of the ARF or RR version
     + GNSS         Ublox M9N GNSS + QMC5883L Magnetometer
-    + ESC:         Default 35
-    + RCRX:        OpenRXSR Receiver
+    + ESC:         Default ESC 35A of ARF or RR version
+    + RCRX:        OpenRXSR Receiver set to SBUS out
     + AIRSPEED:    Eagletree Airspeed v3 via I2C
     + TELEMETRY:   Si10xx Chip based with firmware allowing PPRZ RSSI
     + CURRENT:     A standard V/I 3DR PowerBrick clone sensor on the default analog ports

@@ -64,6 +64,13 @@
       <define name="LOW_NOISE_THRESHOLD" value="30000"/>
       <define name="LOW_NOISE_TIME" value="10"/>
       -->
+      <module name="radio_control" type="sbus">
+        <configure name="SBUS_PORT" value="UART2"/>
+        <define name="RC_SET_POLARITY" value="0"/>
+        <!--<define name="SBUS_PORT" value="UART2"/>-->
+        <!--<define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
+    </module>
+
     </target>
 
     <target name="nps" board="pc">
@@ -110,7 +117,7 @@
 
     <!-- <module name="extra_pprz_dl"/>--> <!-- e.g. for WiFi *AND* a LongRangeModem -->
 
-    <module name="radio_control" type="datalink"/>
+    <!--<module name="radio_control" type="datalink"/>-->
 
     <!-- Or.... -->
     <!-- SBUS out is AETR by default, our transmitter sends TAER as per standard so correct in radio file -->

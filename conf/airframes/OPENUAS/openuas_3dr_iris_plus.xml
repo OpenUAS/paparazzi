@@ -42,23 +42,13 @@
       <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/>-->
 
       <!-- amount of time it take for the bat to trigger check -->
-      <!-- to avoid bat low spike detection when strong pullup withch draws short sudden power-->
-      <!-- TODO: specificaly test for Disco see if needed or which value -->
+      <!-- to avoid bat low spike detection when strong throttleup  which draws a lot of power suddenly for a short while -->
       <define name="BAT_CHECKER_DELAY" value="60"/><!-- unit="s/10", thus tenth of seconds per default use ELECTRICAL_PERIODIC_FREQ if you for some reason want it differently-->
       <!-- Only one main battery so CATASTROPHIC_BATTERY kill should be somewhat delayed -->
       <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="410"/> <!-- unit="s/10, thus  tenth of seconds for engine kill or in ELECTRICAL_PERIODIC_FREQ-->
       <define name="AUTOPILOT_DISABLE_AHRS_KILL"/>
       <!-- <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>--><!-- HZ-->
       <configure name="USE_BARO_BOARD" value="TRUE"/>
-
-      <!-- USE_SONAR means the device can read values. It does not mean we want to use those values in AHRS yet
-      For that you have a setting <define name="AHRS_USE_SONAR" value="TRUE"/>
-      Since sometimes you want to just read sonar values to scan an area surface height difference but not do
-      anything with it AGL in control -->
-      <define name="USE_TFMINI" value="TRUE"/>
-
-      <define name="AHRS_USE_TFMINI_AGL" value="TRUE"/>
-      <define name="SENSOR_SYNC_SEND_TFMINI"/><!-- Enable if you want it debug the device, eg raw values -->
 
       <configure name="USE_MAGNETOMETER" value="TRUE"/>
 
@@ -103,26 +93,62 @@
         <define name="ADC_CHANNEL_GENERIC2" value="ADC_2"/>
       </module>
 
+          <!-- Optical flow sensor -->
+      <module name="px4flow_i2c">
+        <configure name="USE_PX4FLOW_AGL" value="FALSE"/> <!-- Do not send AGL measurements to state -->
+        <configure name="PX4FLOW_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
+        <configure name="PX4FLOW_NOISE_STDDEV" value="10.0"/> <!-- TODO: tune Standard deviation of the optical flow measurements-->
+      </module>
+
+      <!-- Also used if QNH needed -->
+      <module name="air_data">
+        <define name="CALC_AIRSPEED" value="FALSE"/>
+        <define name="CALC_TAS_FACTOR" value="FALSE"/>
+        <define name="CALC_AMSL_BARO" value="TRUE"/>
+      </module>
+
+      <!-- Can be handy to be used in flightplan during landing or terrain hugging flights -->
+      <module name="agl_dist">
+        <define name="AGL_DIST_ID" value="AGL_LIDAR_TFMINI_ID"/>
+        <define name="AGL_DIST_MAX_RANGE" value="5.0"/>
+        <define name="AGL_DIST_MIN_RANGE" value="0.35"/><!-- 0.1 in newer firmware -->
+        <define name="AGL_DIST_FILTER" value="0.12"/>
+      </module>
+
+      <module name="px4_flash">
+        <configure name="PX4IO_UART" value="uart6"/>
+      </module>
+
+      <module name="px4_gimbal"/><!-- or connected to FBW if one wants-->
+
+      <!-- Ugly workaround for issue in rotorcraft code of  InterMCU icm Radio -->
+      <define name="RADIO_MODE" value="4"/>
+
     </target>
 
 <!-- ******************** The FBW part of PCB ********************** -->
     <target name="fbw" board="px4io_2.4">
-      <!-- FBW IMU but not used for now
+      <!-- FBW IMU, but not used for now
       <define name="AHRS_ALIGNER_SAMPLES_NB" value="600"/>
       <define name="LOW_NOISE_THRESHOLD" value="30000"/>
       <define name="LOW_NOISE_TIME" value="10"/>
       -->
-      <module name="radio_control" type="ppm">
-        <!--<define name="USE_KILL_SWITCH_FOR_MOTOR_ARMING" value="1" />-->
-        <!--<define name="RADIO_KILL_SWITCH" value="RADIO_KILL" />-->
-        <define name="RADIO_AUX2" value="RADIO_GAIN1"/>
-        <define name="RADIO_AUX3" value="RADIO_GAIN2"/>
+
+      <!-- SBUS out is AETR by default, our transmitter sends TAER as per standard so correct in radio file -->
+      <module name="radio_control" type="ppm"> <!-- The output type of RX, over the air it can can be all kinds e.g. DSMX, FRSky-->
+        <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/> --> <!-- Set the OpenRXSR receiver to maximum channel output of 8 -->
+        <!-- <configure name="SBUS_PORT" value="UART?"/> --> <!-- Default use UART2 on FMU4 -->
+        <!-- <define name="USE_KILL_SWITCH_FOR_MOTOR_ARMING" value="1" />-->
+        <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_KILL" />-->
+        <!-- Mode set one a three way switch -->
+        <!--  Per default already GEAR if not defined -->
+        <!-- <define name="RADIO_GEAR" value="RADIO_AUX2"/>-->
+        <!-- <define name="RADIO_FLAP" value="RADIO_AUX3"/>-->
+        <!-- <define name="RADIO_MODE" value="RADIO_GEAR"/>--> <!-- yes, already done by default if not redefined to something else-->
+        <!-- <define name="RADIO_AUX2" value="RADIO_GAIN1"/>-->
       </module>
 
-      <define name="FBW_MODE_AUTO_ONLY" value="TRUE"/>
-
       <!-- Below if one has a DSMX RX connected -->
-
       <!--
       <module name="spektrum_soft_bind"/>
       -->
@@ -151,8 +177,6 @@
         <configure name="INTERMCU_BAUD" value="B1500000"/>
       </module>
 
-
-      <module name="px4_gimbal"/><!-- or connected to AP not FBW if one wants-->
     </target>
 
 <!-- ********************NPS Simulator ********************** -->
@@ -170,9 +194,9 @@
       <module name="telemetry" type="transparent"/>
 
       <module name="radio_control" type="ppm">
-        <define name="RADIO_CONTROL_NB_CHANNEL" value="7"/>
+        <!--<define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
         <define name="RADIO_AUX2" value="RADIO_GAIN1"/>
-        <define name="RADIO_AUX3" value="RADIO_GAIN2"/>
+        <define name="RADIO_AUX3" value="RADIO_GAIN2"/>-->
       </module>
 
       <module name="gps" type="ublox"/>
@@ -188,15 +212,6 @@
 
     <define name="WIND_INFO"/>
     <define name="WIND_INFO_RET"/>
-
-    <module name="px4_flash"/>
-
-    <!-- Optical flow sensor -->
-    <module name="px4flow_i2c">
-      <configure name="USE_PX4FLOW_AGL" value="FALSE"/> <!-- Do not send AGL measurements to state -->
-      <configure name="PX4FLOW_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
-      <configure name="PX4FLOW_NOISE_STDDEV" value="10.0"/> <!-- TODO: tune Standard deviation of the optical flow measurements-->
-    </module>
 
     <module name="mag" type="hmc58xx">
       <configure name="USE_MAGNETOMETER" value="TRUE"/> <!-- Enable the device -->
@@ -237,13 +252,6 @@
 
     <module name="ins" type="extended"/>
 
-    <!-- Also used if QNH needed -->
-    <module name="air_data">
-     <define name="CALC_AIRSPEED" value="FALSE"/>
-     <define name="CALC_TAS_FACTOR" value="FALSE"/>
-     <define name="CALC_AMSL_BARO" value="TRUE"/>
-    </module>
-
     <module name="geo_mag"/>
 
     <module name="send_imu_mag_current"/> <!-- enable if airframe has added electronic or other devices, recalibrate and stuffcalibration in this airframefile-->
@@ -254,14 +262,6 @@
 
     <module name="nav" type="survey_poly_rotorcraft">
       <define name="POLYSURVEY_DEFAULT_DISTANCE" value="10"/><!-- in M -->
-    </module>
-
-    <!-- Can be handy to be used in flightplan during landing or terrain hugging flights -->
-    <module name="agl_dist">
-      <define name="AGL_DIST_ID" value="AGL_LIDAR_TFMINI_ID"/>
-      <define name="AGL_DIST_MAX_RANGE" value="5.0"/>
-      <define name="AGL_DIST_MIN_RANGE" value="0.35"/><!-- 0.1 in newer firmware -->
-      <define name="AGL_DIST_FILTER" value="0.12"/>
     </module>
 
     <!--<module name="digital_cam">-->
@@ -618,7 +618,7 @@ The most crucial part for the magnetometer calibration:
     <define name="SENSOR_WIDTH" value="2.304" unit="mm"/> <!-- In direction of L/R -->
     <define name="SENSOR_HEIGHT" value="1.728" unit="mm"/> <!-- In direction of F/B -->
 
-    <define name="PIXELS_WIDTH" value="320"/><!-- can be cropped to 240-->
+    <define name="PIXELS_WIDTH" value="2048"/>
 
     <!-- Photogrammetry Parameters. Can also be defined in a flightplan instead
     <define name="OVERLAP" value="0.3" unit="%"/>
@@ -627,7 +627,7 @@ The most crucial part for the magnetometer calibration:
     -->
 
     <!-- Flight bounds Parameters when photoscanning
-    depents on your missions goals or restriction at e.g. competitions -->
+    depends on your missions goals or restriction at e.g. competitions -->
     <define name="HEIGHT_MIN" value="50." unit="m"/>
     <define name="HEIGHT_MAX" value="120." unit="m"/>
     <define name="RADIUS_MIN" value="20." unit="m"/>

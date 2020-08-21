@@ -39,20 +39,29 @@
  * Brown wire: SCL
  */
 
-#include "sensors/airspeed_ets.h"
-#include "state.h"
 #include "mcu_periph/i2c.h"
-#include "mcu_periph/uart.h"
-#include "mcu_periph/sys_time.h"
+#include "modules/sensors/airspeed_ets.h"
+//#include "filters/low_pass_filter.h"
+#include "subsystems/abi.h"
+//#include "mcu_periph/uart.h"
 #include "pprzlink/messages.h"
+#include "mcu_periph/sys_time.h"
 #include "subsystems/datalink/downlink.h"
 #include <math.h>
+
+#if PERIODIC_TELEMETRY
+#include "subsystems/datalink/telemetry.h"
+#endif
 
 #ifndef USE_AIRSPEED_ETS
 #if USE_AIRSPEED
 #define USE_AIRSPEED_ETS TRUE
 PRINT_CONFIG_MSG("USE_AIRSPEED_ETS automatically set to TRUE")
 #endif
+#endif
+
+#if USE_AIRSPEED_ETS
+#include "state.h"
 #endif
 
 #if !USE_AIRSPEED_ETS && !AIRSPEED_ETS_SYNC_SEND

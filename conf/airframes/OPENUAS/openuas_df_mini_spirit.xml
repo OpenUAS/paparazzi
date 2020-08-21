@@ -75,12 +75,6 @@
         <!--<configure name="ADC_CHANNEL_GENERIC2" value="ADC_4"/>-->
       <!--</module>-->
 
-      <!-- SBUS out is AETR by default, our transmitter sends TAER as per standard so correct in radio file -->
-      <module name="radio_control" type="sbus"> <!-- The output type of RX, over the air it can can be all kinds e.g. DSMX, FRSky-->
-        <define name="RADIO_CONTROL_NB_CHANNEL" value="16"/>  <!-- Set the OpenRXSR receiver to maximum channel output of 8 9ms -->
-        <!--<configure name="SBUS_PORT" value="UART5"/>--> <!-- Default use UART2  on FMU4 -->
-
-      </module>
 
       <module name="radio_control" type="ppm">
         <!--<define name="RADIO_CONTROL_NB_CHANNEL" value="16"/>-->  <!-- Set the OpenRXSR receiver to maximum channel output of 8 9ms -->
@@ -109,7 +103,7 @@
       <!-- <module name="mag_calib_ukf"/>--><!-- New, and needs more testing, be careful with testflights if enabled -->
 
       <module name="telemetry" type="transparent">
-        <configure name="MODEM_PORT" value="UART3"/>
+        <!--<configure name="MODEM_PORT" value="UART3"/>--><!-- Default? -->
         <configure name="MODEM_BAUD" value="B57600"/>
       </module>
 

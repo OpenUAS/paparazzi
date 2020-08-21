@@ -16,7 +16,7 @@
     NOTES:
       + Hey, calibrate your magneto! Yes, you too ;), unit UKF auto works...
       + Yeah.. and you Accelometer also... EKF2 will like you :)
-      + Flashing the firmware is done (For now..) via SWD wites solder on Main PCBr...
+      + Flashing the firmware is done (For now..) via tiny SWD wires solderd on Main PCB, for Hardcore builder only ;)...
     WIP:
       + Many thing to improve, e.g. RC and the Flashing method
 
@@ -32,7 +32,7 @@
     <!-- To fix the 32k ram limit issue:-->
     <!--<define name="PPRZ_TRIG_INT_USE_FLOAT"/>-->
     <define name="PPRZ_TRIG_CONST" value="const"/>
-    <define name="THD_WORKING_AREA_MAIN" value="1024"/>
+    <define name="THD_WORKING_AREA_MAIN" value="802"/>
     <define name="UART_THREAD_STACK_SIZE" value="190"/>
     <define name="I2C_THREAD_STACK_SIZE" value="190"/>
 
