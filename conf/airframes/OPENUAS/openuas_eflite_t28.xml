@@ -256,7 +256,7 @@ NOTES:
 <!-- Warning: unit conversion does not work in this section of airframe, so use the native units, or you'll have trouble...-->
 
     <module name="gps" type="ublox">
-      <configure name="GPS_BAUD" value="B115200"/><!-- UBX message only rate set to ~20HZ with GPS, GLONASS, BEIDU and GALILEIO at the SAME time is lots of GNSS data-->
+      <configure name="GPS_BAUD" value="B460800"/><!-- UBX message only but rate set to ~12HZ with GPS, GLONASS, BEIDU and GALILEIO at the SAME time is lots of GNSS data-->
       <!-- <configure name="GPS_PORT" value="UARTx"/>--><!-- Uses the default GPS port on pixracer no need to set it -->
     </module>
 
@@ -310,8 +310,15 @@ NOTES:
       <define name="CALC_AMSL_BARO" value="TRUE" />
    </module>
    <module name="geo_mag"/>
-    <!--<module name="gps" type="ubx_ucenter"/> -->
-    <!-- This GPS is a REAL ublox M8N, so setting can be saved, no need for ubx_ucenter one has can set it oneself since we have all kinds of nift Galilleio setting we rather keep that -->
+
+      <!-- This GPS is a real M8N ublox, so setting can be saved, no need
+      for ubx_ucenter one has can set it oneself since we have all kinds
+      of nifty Galilleio setting we rather keep that so no autosetting now.-->
+      <!--<module name="gps" type="ubx_ucenter">-->
+        <!--<define name="GPS_UBX_NAV5_DYNAMICS" value="NAV5_DYN_PEDESTRIAN"/>-->
+        <!--<define name="GPS_UBX_UCENTER_RATE" value="51"/>--> <!-- In milliseconds. 0x0033 = 51ms = ~19Hz --><!-- make sure packets fits portrate-->
+      <!--</module>-->
+
 
     <module name="airspeed_ets">
       <define name="AIRSPEED_ETS_SYNC_SEND"/> <!-- TODO Disable after first 10 test flights -->
