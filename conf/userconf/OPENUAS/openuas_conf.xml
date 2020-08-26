@@ -108,6 +108,7 @@
    settings="settings/fixedwing_basic.xml [settings/estimation/ac_char.xml] [settings/control/ctl_energy.xml] [settings/control/tune_agr_climb.xml] [settings/control/ctl_energyadaptive.xml]"
    settings_modules="modules/ahrs_float_cmpl_quat.xml modules/air_data.xml modules/photogrammetry_calculator.xml modules/geo_mag.xml modules/gps.xml modules/guidance_full_pid_fw.xml modules/imu_common.xml modules/tune_airspeed.xml modules/nav_basic_fw.xml modules/nav_smooth.xml modules/nav_survey_poly_osam.xml modules/stabilization_adaptive_fw.xml"
    gui_color="white"
+   release="76d8963b1b848bf6339ec30e584e67614ecde065"
   />
   <aircraft
    name="Flexo"
