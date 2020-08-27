@@ -165,6 +165,10 @@ NOTES:
        <configure name="MODEM_BAUD" value="B57600"/><!-- set B9600 later on for distance since modem will be set to lower *air*rate thus higher sensitivity -->
       </module>
 
+      <module name="pwm_meas">
+        <define name="USE_PWM_INPUT1" value="PWM_PULSE_TYPE_ACTIVE_LOW"/>
+      </module>
+
     </target>
 
 <!-- **************** For simulation of the flight ******************-->
@@ -724,6 +728,12 @@ The most crucial part for the magnetometer calibration:
 
 <!-- ************************* AHRS ************************* -->
   <section name="AHRS" prefix="AHRS_">
+      <!--This airframe vibrates a lot, which causes accel measurements in excess of 1g continuously-->
+    <!--<define name="GRAVITY_HEURISTIC_FACTOR" value="0"/>
+    <define name="PROPAGATE_LOW_PASS_RATES" value="TRUE"/>
+    <define name="PROPAGATE_LOW_PASS_RATES_MUL" value="19"/>
+    <define name="PROPAGATE_LOW_PASS_RATES_DIV" value="20"/>-->
+    
     <!-- Values used if no GNSS fix, on 3D fix is updated by geo_mag module -->
     <!-- Better use the geo_mag module if you have a GNSS, else replace the values with your local magnetic field -->
 

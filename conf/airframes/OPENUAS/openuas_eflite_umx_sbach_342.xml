@@ -155,7 +155,6 @@
         <!-- <module name="auto1_commands"/>-->
 
     <!--  TODO: Start to log from trigger in Flightplan specific block or condition -->
-    <!--  TODO: Currently Direct SD for FW is broken ... -->
     <!--  <load name="logger_sd_spi_direct.xml">
       <configure name="LOGGER_CONTROL_SWITCH" value="RADIO_MODE"/>-->
       <!-- <configure name="LOGGER_LED" value="3"/>-->
