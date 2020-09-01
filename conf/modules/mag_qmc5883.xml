@@ -3,7 +3,7 @@
 <module name="sensors">
   <doc>
     <description>
-      QMC58xx magnetometer
+      QMC5883 magnetometer
       Module for using an QMC DB5883 magnetometer.
       Honeywell discontinued the HMC5983/HMC5883L in 2016 and licensed the technology to QST Corporation, who now manufacture the replacement QMC5883L.
       However, while the QMC5883L is pin compatible with HMC, it''s registers are not the same as the Honeywell device. It's essentially a different chip.
@@ -42,7 +42,6 @@
   <makefile target="ap">
     <file name="mag_qmc5883.c"/>
     <file name="qmc5883.c" dir="peripherals"/>
-
     <raw>
       ifeq ($(MAG_QMC5883_I2C_DEV),)
         $(error mag_qmc5883 module error: please configure MAG_QMC5883_I2C_DEV)

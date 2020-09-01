@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Felix Ruess <felix.ruess@gmail.com>
+ * Copyright (C) 2020 Paparazzi Team
  *
  * This file is part of paparazzi.
  *
@@ -20,41 +20,41 @@
  */
 
 /**
- * @file modules/sensors/mag_hmc58xx.c
+ * @file modules/sensors/mag_qmc5883.c
  *
- * Module wrapper for Honeywell HMC5843 and HMC5883 magnetometers.
+ * Module wrapper for QST QMC5883 magnetometer, the DB vesion
  */
 
-#include "modules/sensors/mag_hmc58xx.h"
+#include "modules/sensors/mag_qmc5883.h"
 #include "mcu_periph/uart.h"
 #include "pprzlink/messages.h"
 #include "subsystems/datalink/downlink.h"
 #include "generated/airframe.h"
 
-#ifndef HMC58XX_CHAN_X
-#define HMC58XX_CHAN_X 0
+#ifndef QMC5883_CHAN_X
+#define QMC5883_CHAN_X 0
 #endif
-#ifndef HMC58XX_CHAN_Y
-#define HMC58XX_CHAN_Y 1
+#ifndef QMC5883_CHAN_Y
+#define QMC5883_CHAN_Y 1
 #endif
-#ifndef HMC58XX_CHAN_Z
-#define HMC58XX_CHAN_Z 2
+#ifndef QMC5883_CHAN_Z
+#define QMC5883_CHAN_Z 2
 #endif
-#ifndef HMC58XX_CHAN_X_SIGN
-#define HMC58XX_CHAN_X_SIGN +
+#ifndef QMC5883_CHAN_X_SIGN
+#define QMC5883_CHAN_X_SIGN +
 #endif
-#ifndef HMC58XX_CHAN_Y_SIGN
-#define HMC58XX_CHAN_Y_SIGN +
+#ifndef QMC5883_CHAN_Y_SIGN
+#define QMC5883_CHAN_Y_SIGN +
 #endif
-#ifndef HMC58XX_CHAN_Z_SIGN
-#define HMC58XX_CHAN_Z_SIGN +
+#ifndef QMC5883_CHAN_Z_SIGN
+#define QMC5883_CHAN_Z_SIGN +
 #endif
 
-#if MODULE_HMC58XX_UPDATE_AHRS
+#if MODULE_QMC5883_UPDATE_AHRS
 #include "subsystems/imu.h"
 #include "subsystems/abi.h"
 
-#if defined HMC58XX_MAG_TO_IMU_PHI && defined HMC58XX_MAG_TO_IMU_THETA && defined HMC58XX_MAG_TO_IMU_PSI
+#if defined QMC5883_MAG_TO_IMU_PHI && defined QMC5883_MAG_TO_IMU_THETA && defined QMC5883_MAG_TO_IMU_PSI
 #define USE_MAG_TO_IMU 1
 static struct Int32RMat mag_to_imu; ///< rotation from mag to imu frame
 #else
@@ -62,41 +62,41 @@ static struct Int32RMat mag_to_imu; ///< rotation from mag to imu frame
 #endif
 #endif
 
-struct Hmc58xx mag_hmc58xx;
+struct Qmc5883 mag_qmc5883;
 
-void mag_hmc58xx_module_init(void)
+void mag_qmc5883_module_init(void)
 {
-  hmc58xx_init(&mag_hmc58xx, &(MAG_HMC58XX_I2C_DEV), HMC58XX_ADDR);
+  qmc5883_init(&mag_qmc5883, &(MAG_QMC5883_I2C_DEV), QMC5883_ADDR);
 
-#if MODULE_HMC58XX_UPDATE_AHRS && USE_MAG_TO_IMU
+#if MODULE_QMC5883_UPDATE_AHRS && USE_MAG_TO_IMU
   struct Int32Eulers mag_to_imu_eulers = {
-    ANGLE_BFP_OF_REAL(HMC58XX_MAG_TO_IMU_PHI),
-    ANGLE_BFP_OF_REAL(HMC58XX_MAG_TO_IMU_THETA),
-    ANGLE_BFP_OF_REAL(HMC58XX_MAG_TO_IMU_PSI)
+    ANGLE_BFP_OF_REAL(QMC5883_MAG_TO_IMU_PHI),
+    ANGLE_BFP_OF_REAL(QMC5883_MAG_TO_IMU_THETA),
+    ANGLE_BFP_OF_REAL(QMC5883_MAG_TO_IMU_PSI)
   };
   int32_rmat_of_eulers(&mag_to_imu, &mag_to_imu_eulers);
 #endif
 }
 
-void mag_hmc58xx_module_periodic(void)
+void mag_qmc5883_module_periodic(void)
 {
-  hmc58xx_periodic(&mag_hmc58xx);
+  qmc5883_periodic(&mag_qmc5883);
 }
 
-void mag_hmc58xx_module_event(void)
+void mag_qmc5883_module_event(void)
 {
-  hmc58xx_event(&mag_hmc58xx);
+  qmc5883_event(&mag_qmc5883);
 
-  if (mag_hmc58xx.data_available) {
-#if MODULE_HMC58XX_UPDATE_AHRS
+  if (mag_qmc5883.data_available) {
+#if MODULE_QMC5883_UPDATE_AHRS
     // current timestamp
     uint32_t now_ts = get_sys_time_usec();
 
     // set channel order
     struct Int32Vect3 mag = {
-      HMC58XX_CHAN_X_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_X]),
-      HMC58XX_CHAN_Y_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_Y]),
-      HMC58XX_CHAN_Z_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_Z])
+      QMC5883_CHAN_X_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_X]),
+      QMC5883_CHAN_Y_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_Y]),
+      QMC5883_CHAN_Z_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_Z])
     };
     // only rotate if needed
 #if USE_MAG_TO_IMU
@@ -112,23 +112,24 @@ void mag_hmc58xx_module_event(void)
     // scale vector
     imu_scale_mag(&imu);
 
-    AbiSendMsgIMU_MAG_INT32(MAG_HMC58XX_SENDER_ID, now_ts, &imu.mag);
+    AbiSendMsgIMU_MAG_INT32(MAG_QMC5883_SENDER_ID, now_ts, &imu.mag);
 #endif
-#if MODULE_HMC58XX_SYNC_SEND
-    mag_hmc58xx_report();
+#if MODULE_QMC5883_SYNC_SEND
+    mag_qmc5883_report();
 #endif
-#if MODULE_HMC58XX_UPDATE_AHRS ||  MODULE_HMC58XX_SYNC_SEND
-    mag_hmc58xx.data_available = false;
+#if MODULE_QMC5883_UPDATE_AHRS ||  MODULE_QMC5883_SYNC_SEND
+    mag_qmc5883.data_available = false;
 #endif
   }
 }
 
-void mag_hmc58xx_report(void)
+void mag_qmc5883_report(void)
 {
+  //debuggy = (int32_t)(mag_qmc5883.init_status);
   struct Int32Vect3 mag = {
-    HMC58XX_CHAN_X_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_X]),
-    HMC58XX_CHAN_Y_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_Y]),
-    HMC58XX_CHAN_Z_SIGN(int32_t)(mag_hmc58xx.data.value[HMC58XX_CHAN_Z])
+    QMC5883_CHAN_X_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_X]),
+    QMC5883_CHAN_Y_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_Y]),
+    QMC5883_CHAN_Z_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_Z])
   };
-  DOWNLINK_SEND_IMU_MAG_RAW(DefaultChannel, DefaultDevice, &mag.x, &mag.y, &mag.z);
+  DOWNLINK_SEND_IMU_MAG_RAW(DefaultChannel, DefaultDevice, &mag.x, &mag.y, &debuggy);
 }

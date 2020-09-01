@@ -26,6 +26,8 @@
  * This chip is often used as a replacemane of the HMC5883L and not comunicated in the device documentation.
  * 
  * If your "HMC5883L" magnetometer does somehow not work, you likly have a QMC5883, try this driver instead.
+ * 
+ * Only i2c support
  */
 
 #ifndef QMC5883_H
@@ -38,18 +40,21 @@
 /* Address and register definitions */
 #include "peripherals/qmc5883_regs.h"
 
+extern int debuggy;
 struct Qmc5883Config {
+  uint8_t allconfigbits;
+  /*
   uint8_t osr;  ///< Over Sample Rate
   uint8_t rng;  ///< Gauss Full Scale Range
   uint8_t odr;  ///< Output data rate
   uint8_t mode; ///< Measurement mode
+  */
 };
 
 /** config status states */
 enum Qmc5883ConfStatus {
   QMC_CONF_UNINIT,
   QMC_CONF_1,
-  QMC_CONF_2,
   QMC_CONF_DONE
 };
 
@@ -73,7 +78,7 @@ struct Qmc5883 {
   uint16_t adc_overflow_cnt;          ///< counts number of ADC measurement under/overflows
 };
 
-//Feel free to add IRQ handling if needed, see datasheet of howto
+//Add IRQ handling if needed, see datasheet for DRDY pin
 
 // Functions
 extern void qmc5883_init(struct Qmc5883 *qmc, struct i2c_periph *i2c_p, uint8_t addr);
@@ -87,6 +92,7 @@ static inline void qmc5883_periodic(struct Qmc5883 *qmc)
   if (qmc->initialized) {
     qmc5883_read(qmc);
   } else {
+    qmc5883_read(qmc);
     qmc5883_start_configure(qmc);
   }
 }
