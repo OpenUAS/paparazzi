@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2020 OpenuAS
 *
-* Thx Jean-François Erdelyi & Gautier Hattenberger
+* Thanks to Jean-François Erdelyi & Gautier Hattenberger for ADC one
 *
 * This file is part of paparazzi
 *
@@ -25,10 +25,12 @@
 * @author OpenUAS
 * @brief Range sensor input via PWM
 *
-* Driver for a PWM based sonar range sensor
-* Reads sensor using PWM input and outputs sonar distance to object
+* Driver for a PWM based range sensor
+* Reads sensor using PWM input and outputs the distance to object or ground
 *
-* Sensor example: Maxbotix EZ1
+* Sensor example: Maxbotix LV-EZ1
+*
+* See https://www.maxbotix.com/033-using-pulse-width-pin-2.htm
 *
 */
 
@@ -39,9 +41,9 @@
 
 struct SonarPwm {
   uint16_t raw;   ///< raw PWM value
-  float offset;   ///< offset in M
-  float scale;    ///< scale to convert raw to real distance
-  float distance; ///< Distance measured in meters
+  float offset;   ///< offset
+  float scale;    ///< scale to convert raw to a real distance
+  float distance; ///< Distance measured
 };
 
 extern struct SonarPwm sonar_pwm; // Range sensor

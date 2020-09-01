@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2020 OpenuAS
 *
-* Thx Jean-François Erdelyi & Gautier Hattenberger
+* Thanks to Jean-François Erdelyi & Gautier Hattenberger for ADC one
 *
 * This file is part of paparazzi
 *

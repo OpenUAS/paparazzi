@@ -82,7 +82,7 @@ void sonar_adc_read(void)
 
   // Send ABI message
   uint32_t now_ts = get_sys_time_usec();
-  AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_adc.distance);
+  AbiSendMsgAGL(AGL_SONAR_PWM_ID, now_ts, sonar_adc.distance);
 
 #ifdef SENSOR_SYNC_SEND_SONAR
   // Send Telemetry report
