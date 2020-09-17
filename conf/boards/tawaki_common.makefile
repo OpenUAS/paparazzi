@@ -1,15 +1,14 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# chimera_1.0.makefile
+# tawaki_common.makefile
 #
 # based on STM32F7
-# pre-version, only compatible with ChibiOS
+# only compatible with ChibiOS
 #
 
-BOARD=chimera
-BOARD_VERSION=1.0
 BOARD_DIR=$(BOARD)/chibios/v$(BOARD_VERSION)
-BOARD_CFG=\"boards/$(BOARD_DIR)/$(BOARD).h\"
+BOARD_COMMON=$(BOARD)/chibios/common
+BOARD_CFG=\"boards/$(BOARD_COMMON)/$(BOARD).h\"
 
 ARCH=chibios
 $(TARGET).ARCHDIR = $(ARCH)
@@ -72,20 +71,20 @@ SYS_TIME_LED       ?= 1
 # default UART configuration (modem, gps, spektrum)
 #
 
-MODEM_PORT ?= UART3
+MODEM_PORT ?= UART2
 MODEM_BAUD ?= B57600
 
-GPS_PORT ?= UART8
+GPS_PORT ?= UART7
 GPS_BAUD ?= B57600
 
-RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT ?= UART4
-RADIO_CONTROL_SPEKTRUM_SECONDARY_PORT ?= UART7
+RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT ?= UART6
+RADIO_CONTROL_SPEKTRUM_SECONDARY_PORT ?= UART8
 
 # single mode
-SBUS_PORT ?= UART7
+SBUS_PORT ?= UART8
 # dual mode
-SBUS1_PORT ?= UART7
-SBUS2_PORT ?= UART4
+SBUS1_PORT ?= UART8
+SBUS2_PORT ?= UART6
 
 #
 # default actuator configuration

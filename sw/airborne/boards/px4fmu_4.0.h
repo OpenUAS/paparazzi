@@ -62,7 +62,7 @@
 #define UART1_GPIO_PORT_TX GPIOB
 #define UART1_GPIO_TX GPIO6
 
-//FIXME: add those
+//Not used yet unil find some time to test
 /*
 #define ESP8266_TX
 #define ESP8266_RX
