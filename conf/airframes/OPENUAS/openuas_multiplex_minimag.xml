@@ -105,7 +105,7 @@ NOTES:
         <define name="AIRSPEED_ETS_SYNC_SEND"/>  <!-- TODO Disable after first 10 test flights -->
       </module>
 
-      <module name="filter_1euro_imu"/>
+      <!--<module name="filter_1euro_imu"/>-->
 
       <configure name="USE_ADC_2" value="TRUE"/> <!-- For external PowerBrick Voltage measure-->
       <define name="ADC_CHANNEL_VSUPPLY" value="ADC_2"/>
@@ -346,14 +346,15 @@ NOTES:
       <!--<define name="TAKEOFF_DETECT_ALSO_IN_AUTO1" value="TRUE"/>--> <!-- Sometimes throwing is not so easy :) so takeoff stabilized -->
     <!--</module>-->
 
-      <!-- The Pixracer has a built in SD card slot connected over SPI bus to the MCU -->
+    <!-- The Pixracer has a built in SD card slot connected over SPI bus to the MCU -->
     <!--
     <module name="logger_sd_spi_direct.xml">
       <configure name="SDLOGGER_DIRECT_SPI" value="spi2"/>
       <configure name="SDLOGGER_DIRECT_SPI_SLAVE" value="SPI_SLAVE4"/>
       <configure name="SDLOGGER_DIRECT_CONTROL_SWITCH" value="RADIO_AUX3"/>
-      <configure name="LOGGER_LED" value="4"/> --><!-- (mis)use aftey LED -->
-    <!--</module>-->
+      <configure name="LOGGER_LED" value="3"/> 
+    </module>
+    -->
 
   <!-- Below As in telemetry file to add still...
   ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -562,8 +563,8 @@ NOTES:
     TODO disable again after strong wind sidewind autolanding is 100% tuned
       Note that in auto2 mode the Flap and Gear are after test then controlable by flightplan conditions e.g landng block extend gear and flap -->
       <set command="YAW" value="@YAW"/>  <!-- TODO: Diable later -->
-    <!-- <set command="GEAR" value="@GEAR"/> --> <!-- TODO: Diable later -->
-    <!-- <set command="FLAP" value="@FLAP"/> --> <!-- Used for logging start/stop -->
+    <!-- <set command="GEAR" value="@GEAR"/> --> <!-- Can be Used for logging start/stop --
+    <!-- <set command="FLAP" value="@FLAP"/> --> 
 
     <!-- To be able to set gain values via RC Transmitter these ones below.
     This way the can keep his eye on a fast moving plane and set somegain values
