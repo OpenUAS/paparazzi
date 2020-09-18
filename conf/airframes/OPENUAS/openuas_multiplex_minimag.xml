@@ -308,7 +308,7 @@ NOTES:
     <!--<module name="imu_quality_assessment"/>-->
 
     <module name="ins" type="alt_float">  <!--Does not work in SIM: extended thus use alt_float"/> -->
-      <define name="SONAR_COMPENSATE_ROTATION" value="FALSE"/><!-- compensate AGL for body rotation -->
+      <define name="SONAR_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
       <!--<define name="SONAR_UPDATE_ON_AGL" value="TRUE"/>-->
     </module>
 
@@ -316,8 +316,6 @@ NOTES:
     <!--<module name="control"/>--> <!--Remove the type flag to have classic behavious Eg for uing the Tune Agressive -->
     <module name="control" type="new"/><!-- energy or energyadaptive or type="new" to you gusto -->
     <module name="navigation"/>
-
-    <module name="imu_quality_assessment"/><!-- disable after initial filter tuning-->
 
     <module name="auto1_commands"/><!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
     <!--<module name="send_imu_mag_current"/>--> <!-- Can be Disabled after one time callibration -->
@@ -552,8 +550,8 @@ NOTES:
     <set command="FLAP" value="@AUX2"/>
     <!-- for tuning via RC these ones below, Bothed for now since latest master code changes . in settings from TX... -->
 
-    <!--<set command="GAIN1"    value="@AUX3"/>
-    <set command="CALIB"    value="@AUX4"/>-->
+    <!--<set command="GAIN1"    value="@AUX3"/>-->
+    <!--<set command="CALIB"    value="@AUX4"/>-->
   </rc_commands>
 
 <!-- ************************ AUTO RC COMMANDS ***************************** -->
@@ -563,7 +561,7 @@ NOTES:
     TODO disable again after strong wind sidewind autolanding is 100% tuned
       Note that in auto2 mode the Flap and Gear are after test then controlable by flightplan conditions e.g landng block extend gear and flap -->
       <set command="YAW" value="@YAW"/>  <!-- TODO: Diable later -->
-    <!-- <set command="GEAR" value="@GEAR"/> --> <!-- Can be Used for logging start/stop --
+    <!-- <set command="GEAR" value="@GEAR"/> --> <!-- Can be Used for logging start/stop -->
     <!-- <set command="FLAP" value="@FLAP"/> --> 
 
     <!-- To be able to set gain values via RC Transmitter these ones below.
@@ -625,12 +623,12 @@ NOTES:
   <section name="IMU" prefix="IMU_">
 
     <!-- ***************** GYRO *****************-->
-    <!--<define name="GYRO_P_SENS" value=" 1.01" integer="16"/>
-    <define name="GYRO_Q_SENS" value=" 1.01" integer="16"/>
-    <define name="GYRO_R_SENS" value=" 1.01" integer="16"/>-->
-    <!--<define name="GYRO_P_NEUTRAL" value="0"/>
-    <define name="GYRO_Q_NEUTRAL" value="0"/>
-    <define name="GYRO_R_NEUTRAL" value="0"/>-->
+    <!-- <define name="GYRO_P_SENS" value=" 1.01" integer="16"/> -->
+    <!-- <define name="GYRO_Q_SENS" value=" 1.01" integer="16"/> -->
+    <!-- <define name="GYRO_R_SENS" value=" 1.01" integer="16"/> -->
+    <!-- <define name="GYRO_P_NEUTRAL" value="0"/> -->
+    <!-- <define name="GYRO_Q_NEUTRAL" value="0"/> -->
+    <!-- <define name="GYRO_R_NEUTRAL" value="0"/> -->
 
     <!-- *****************ACCELLOMETER *****************-->
     <!-- Replace these values with your own calibration, on the correct sensor -->
@@ -782,11 +780,11 @@ The most crucial part for the magnetometer calibration:
   -->
 
   <section name="SONAR" prefix="SONAR_">
-    <define name="MEDIAN_SIZE" value="9"/>
+    <define name="MEDIAN_SIZE" value="15"/>
     <define name="USE_ADC_FILTER" value="TRUE"/>
     <define name="SCALE" value="0.0025375" integer="16"/> <!-- 0.003844734 TODO: MB1010, LV-MaxSonar-EZ1 5V supply scaled to 3.3V 3.3/5 = 0.66 * scale 0.0166-->
-    <define name="OFFSET" value="90"/> <!-- No unit, value is ADC meas offset. FIXME to a Si Unit. BTW AC is Belly landing no landing gear so height to tarmac almost 0 -->
-    <define name="MAX_RANGE" value="6.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
+    <define name="OFFSET" value="90.0"/> <!-- No unit, value is ADC meas offset. FIXME to a Si Unit. BTW AC is Belly landing no landing gear so height to tarmac almost 0 -->
+    <define name="MAX_RANGE" value="4.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
     <define name="MIN_RANGE" value="0.15" unit="m"/> <!-- ...sadly -->
   </section>
 
@@ -877,17 +875,17 @@ The most crucial part for the magnetometer calibration:
     <!-- Cruise throttle + limits -->
     <define name="AUTO_THROTTLE_MIN_CRUISE_THROTTLE" value="0.45" unit="%"/>  <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_NOMINAL_CRUISE_THROTTLE" value="0.55" unit="%"/> <!-- TODO: Determine -->
-    <define name="AUTO_THROTTLE_MAX_CRUISE_THROTTLE" value="0.80" unit="%"/>
+    <define name="AUTO_THROTTLE_MAX_CRUISE_THROTTLE" value="0.85" unit="%"/>
 
     <define name="AUTO_THROTTLE_LOITER_TRIM" value="1000" unit="pprz_t"/>
     <define name="AUTO_THROTTLE_DASH_TRIM" value="-2000" unit="pprz_t"/>
 
-    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.08" unit="%/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.04" unit="%/(m/s)"/> <!-- TODO: Determine -->
 
     <!-- Climb loop (throttle) -->
-    <define name="AUTO_THROTTLE_PGAIN" value="0.004" unit="%/(m/s)"/>
+    <define name="AUTO_THROTTLE_PGAIN" value="0.04" unit="%/(m/s)"/>
     <define name="AUTO_THROTTLE_IGAIN" value="0.0"/>
-    <define name="AUTO_THROTTLE_DGAIN" value="0.0"/>
+    <define name="AUTO_THROTTLE_DGAIN" value="0.001"/>
     <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.05" unit="rad/(m/s)"/> <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_NOMINAL_CRUISE_PITCH" value="0." unit="rad"/> <!-- default 0 -->
 
@@ -900,9 +898,9 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_AIRSPEED_THROTTLE_PGAIN" value="0.12" unit="%/(m/s)"/>
     <define name="AUTO_AIRSPEED_THROTTLE_DGAIN" value="0.09"/>
     <define name="AUTO_AIRSPEED_THROTTLE_IGAIN" value="0.02"/>
-    <define name="AUTO_AIRSPEED_PITCH_PGAIN" value="0.12" unit="degree/(m/s)"/>
-    <define name="AUTO_AIRSPEED_PITCH_DGAIN" value="0.0"/>
-    <define name="AUTO_AIRSPEED_PITCH_IGAIN" value="0.06"/>
+    <define name="AUTO_AIRSPEED_PITCH_PGAIN" value="0.06" unit="degree/(m/s)"/>
+    <define name="AUTO_AIRSPEED_PITCH_DGAIN" value="0.001"/>
+    <define name="AUTO_AIRSPEED_PITCH_IGAIN" value="0.02"/>
 
     <define name="AIRSPEED_MAX" value="18.0" unit="m/s"/>
     <define name="AIRSPEED_MIN" value="7.0" unit="m/s"/>
@@ -912,7 +910,7 @@ The most crucial part for the magnetometer calibration:
     <define name="PITCH_DASH_TRIM" value="0." unit="deg"/> <!-- Non ETECS -->
 
     <!-- groundspeed control -->
-    <define name="AUTO_GROUNDSPEED_SETPOINT" value="5.0" unit="m/s"/>
+    <define name="AUTO_GROUNDSPEED_SETPOINT" value="6.0" unit="m/s"/>
     <define name="AUTO_GROUNDSPEED_PGAIN" value="0.8"/>
     <define name="AUTO_GROUNDSPEED_IGAIN" value="0.2"/>
 
@@ -929,9 +927,9 @@ The most crucial part for the magnetometer calibration:
     <!-- auto pitch inner loop -->
 
     <!-- Climb loop (pitch) -->
-    <define name="AUTO_PITCH_PGAIN" value="0.016"/> <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_DGAIN" value="0.01"/>   <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_IGAIN" value="0.0"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_PGAIN" value="0.026"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_DGAIN" value="0.02"/>   <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_IGAIN" value="0.001"/> <!-- TODO: Determine -->
     <!--define name="AUTO_PITCH_CLIMB_THROTTLE_INCREMENT" value="0.14"/-->
     <define name="AUTO_PITCH_MAX_PITCH" value="25" unit="deg"/><!-- TODO: Determine default and best -->
     <define name="AUTO_PITCH_MIN_PITCH" value="-25" unit="deg"/><!-- TODO: Determine default and best -->
@@ -993,7 +991,7 @@ The most crucial part for the magnetometer calibration:
     <define name="RACE_AIRSPEED" value="20." unit="m/s"/>
     <define name="MIN_SPEED_FOR_TAKEOFF" value="10." unit="m/s"/> <!-- TODO: determine and change to make it for airspeed -->
     <!-- AIRSPEED_SETPOINT_SLEW is in m/s/s - e.g. a change from 15m/s to 18m/s takes 3s with the default value of 1.-->
-    <define name="AIRSPEED_SETPOINT_SLEW" value="0.4" unit="m/s/s"/> <!-- TODO: Tune to optimum value -->
+    <define name="AIRSPEED_SETPOINT_SLEW" value="0.6" unit="m/s/s"/> <!-- TODO: Tune to optimum value -->
 
     <define name="TAKEOFF_PITCH_ANGLE" value="35" unit="deg"/> <!-- TODO: Tune to optimum value -->
     <define name="FLARE_PITCH_ANGLE" value="15" unit="deg"/> <!-- TODO: Tune to optimum value -->
@@ -1001,11 +999,11 @@ The most crucial part for the magnetometer calibration:
 
     <define name="KILL_MODE_DISTANCE" value="MAX_DIST_FROM_HOME*1.3+HOME_RADIUS" unit="m"/>  <!--  improve value by default turn radius calc -->
 
-    <define name="DEFAULT_CIRCLE_RADIUS" value="100." unit="m"/> <!-- TODO: Determine convinient minimum -->
+    <define name="DEFAULT_CIRCLE_RADIUS" value="80." unit="m"/> <!-- TODO: Determine convinient minimum -->
     <define name="HOME_RADIUS" value="DEFAULT_CIRCLE_RADIUS" unit="m"/>
-    <define name="LANDING_CIRCLE_RADIUS" value="90." unit="m"/> <!-- TODO: determine optimum minimum -->
+    <define name="LANDING_CIRCLE_RADIUS" value="70." unit="m"/> <!-- TODO: determine optimum minimum -->
     <!-- MIN_CIRCLE_RADIUS used and needed for spiral navigation function and panic autolanding turns-->
-    <define name="MIN_CIRCLE_RADIUS" value="80." unit="m"/> <!-- TODO: determine optimum minimum -->
+    <define name="MIN_CIRCLE_RADIUS" value="60." unit="m"/> <!-- TODO: determine optimum minimum -->
 
     <define name="CARROT" value="4." unit="s"/>
 

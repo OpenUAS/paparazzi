@@ -25,7 +25,8 @@
 #include "pprzlink/messages.h"
 #include "subsystems/datalink/downlink.h"
 
-#include "filters/median_filter.h"
+//#include "filters/median_filter.h"
+#include "filters/low_pass_filter.h"
 
 #include "mcu_periph/adc.h"
 #include "subsystems/abi.h"
@@ -34,9 +35,23 @@
 #endif
 #include "modules/sonar/sonar_adc.h"
 
-#ifdef SONAR_USE_ADC_FILTER
-struct MedianFilterFloat sonar_filt;
+/** Use low pass filter on pressure values
+ */
+#ifndef SONAR_USE_ADC_LOWPASS_FILTER
+#define SONAR_USE_ADC_LOWPASS_FILTER TRUE
 #endif
+
+/** Time constant for second order Butterworth low pass filter
+ * Default of 0.19 should give cut-off freq of 1/(2*pi*tau) ~= 1.25Hz
+ */
+#ifndef SONAR_ADC_LOWPASS_TAU
+#define SONAR_ADC_LOWPASS_TAU 0.199
+#endif
+
+#ifdef SONAR_USE_ADC_LOWPASS_FILTER
+static Butterworth2LowPass sonar_filt;
+#endif
+
 struct SonarAdc sonar_adc;
 
 #ifndef SITL
@@ -47,9 +62,10 @@ void sonar_adc_init(void)
 {
   sonar_adc.meas = 0;
   sonar_adc.offset = SONAR_OFFSET;
-  #ifdef SONAR_USE_ADC_FILTER
-  init_median_filter_f(&sonar_filt, SONAR_MEDIAN_SIZE);
-  #endif
+#ifdef SONAR_USE_ADC_LOWPASS_FILTER
+  init_butterworth_2_low_pass(&sonar_filt, SONAR_ADC_LOWPASS_TAU, SONAR_ADC_READ_PERIOD, 0);
+#endif
+
 #ifndef SITL
   adc_buf_channel(ADC_CHANNEL_SONAR, &sonar_adc_buf, DEFAULT_AV_NB_SAMPLE);
 #endif
@@ -60,9 +76,10 @@ void sonar_adc_init(void)
 void sonar_adc_read(void)
 {
 #ifndef SITL
+
   sonar_adc.meas = sonar_adc_buf.sum / sonar_adc_buf.av_nb_sample;
-#ifdef SONAR_USE_ADC_FILTER
-  sonar_adc.distance = update_median_filter_f(&sonar_filt, (float)(sonar_adc.meas - sonar_adc.offset) * SONAR_SCALE);
+#ifdef SONAR_USE_ADC_LOWPASS_FILTER
+  sonar_adc.distance = update_butterworth_2_low_pass(&sonar_filt, (float)(sonar_adc.meas - sonar_adc.offset) * SONAR_SCALE);
 #else
   sonar_adc.distance = (float)(sonar_adc.meas - sonar_adc.offset) * SONAR_SCALE;
 #endif  
