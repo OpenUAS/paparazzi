@@ -17,7 +17,7 @@
 //#define STM32F4 //to debug ADC on F4 does no work
 //#define ADC_SAMPLE_TIME ADC_SMPR_SMP_56CYC //to debug ADC on F4 does no work
 
-/* On PCB there is a Multicolor LED */
+/* On PCB there is a three color LED Red, Green and Blue mixable for a specific endcolor*/
 
 /* Red */
 #ifndef USE_LED_1
@@ -234,7 +234,7 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #endif
 #define USE_AD_TIM3 1
 
-// Internal ADC used for board voltage level measurement
+/* Internal ADC used for board voltage level measurement */
 #ifndef USE_ADC_1
 #define USE_ADC_1 1
 #endif
@@ -319,25 +319,33 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define USE_MAGNETOMETER_B 0
 #endif
 
-/* Default actuators driver */
-#define DEFAULT_ACTUATORS "subsystems/actuators/actuators_pwm.h"
-#define ActuatorDefaultSet(_x,_y) ActuatorPwmSet(_x,_y)
-#define ActuatorsDefaultInit() ActuatorsPwmInit()
-#define ActuatorsDefaultCommit() ActuatorsPwmCommit()
-
-/* PWM */
-#define PWM_USE_TIM1 1
-#define PWM_USE_TIM4 1
-
-//TODO: ifdef USE_SERVO6 for PPM out to e.g. servo extender board ...
-// Basically a inter mcu Extra device ;)
-
 #define USE_PWM1 1
 #define USE_PWM2 1
 #define USE_PWM3 1
 #define USE_PWM4 1
+
+//TODO: Add something like ifdef USE_SERVO6_AS_PPM_OUTPUT insted of PWM to e.g. a servo extender board ...
+// Basically a inter mcu Extra device ;)
+
+#ifndef USE_SERVOS_5AND6
+#define USE_SERVOS_5AND6 1
+#endif
+
+#if USE_SERVOS_5AND6
+#if USE_PWM_INPUT1
+#error "You cannot USE_SERVOS_5AND6 and USE_PWM_INPUT1 at the same time"
+#else
+#define ACTUATORS_PWM_NB 6
 #define USE_PWM5 1
 #define USE_PWM6 1
+#endif
+#else
+#define ACTUATORS_PWM_NB 4
+#endif
+
+/* PWM */
+#define PWM_USE_TIM1 1
+#define PWM_USE_TIM4 1 //Eiter Servo or PWM input thus enabled by default
 
 /* Servo 1 */
 #if USE_PWM1
@@ -418,12 +426,20 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #endif
 
 #define PWM_TIM1_CHAN_MASK (PWM_SERVO_1_OC_BIT|PWM_SERVO_2_OC_BIT|PWM_SERVO_3_OC_BIT|PWM_SERVO_4_OC_BIT)
+#if USE_SERVOS_5AND6
 #define PWM_TIM4_CHAN_MASK (PWM_SERVO_5_OC_BIT|PWM_SERVO_6_OC_BIT)
+#endif
+
+/* Default actuators driver */
+#define DEFAULT_ACTUATORS "subsystems/actuators/actuators_pwm.h"
+#define ActuatorDefaultSet(_x,_y) ActuatorPwmSet(_x,_y)
+#define ActuatorsDefaultInit() ActuatorsPwmInit()
+#define ActuatorsDefaultCommit() ActuatorsPwmCommit()
 
 /*
- * PWM input, also could be used for 
+ * PWM input 
  */
-// PWM_INPUT1 on TIM4
+// PWM_INPUT1 via TIM4
 #ifdef USE_PWM_INPUT1
 #define PWM_INPUT1_GPIO_PORT      GPIOD
 #define PWM_INPUT1_GPIO_PIN       GPIO12
@@ -462,15 +478,15 @@ When a read-operation of an RTD resistance data register occurs, DRDY returns hi
 #define LED_4_AFIO_REMAP ((void)0)
 
 //#if USE_LED_4
-//#ifndef SAFETY_WARNING_LED
+#ifndef SAFETY_WARNING_LED
 #define SAFETY_WARNING_LED 4
+#endif
 //#endif
-//#endif
-// #define LED_SAFETY_GPIO_PORT LED_4_GPIO
-// #define LED_SAFETY_GPIO_PIN LED_4_GPIO_PIN
-// #define LED_SAFETY_GPIO_ON LED_4_GPIO_ON
-// #define LED_SAFETY_GPIO_OFF LED_4_GPIO_OFF
-// #define LED_SAFETY_AFIO_REMAP LED_4_AFIO_REMAP
+#define LED_SAFETY_GPIO_PORT LED_4_GPIO
+#define LED_SAFETY_GPIO_PIN LED_4_GPIO_PIN
+#define LED_SAFETY_GPIO_ON LED_4_GPIO_ON
+#define LED_SAFETY_GPIO_OFF LED_4_GPIO_OFF
+#define LED_SAFETY_AFIO_REMAP LED_4_AFIO_REMAP
 
 /* Safety Button */
 #define BUTTON_SAFETY_GPIO_PORT      GPIOC

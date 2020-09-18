@@ -2,16 +2,17 @@
 <airframe name="Minimag">
   <description>
 + Airframe with the PX4 Pixracer v1 R15 flightcontroller hardware
-    + Model: Multiplex Minimag removed fixed landing gear and easy removable stabilo modification
+    + Model:       Multiplex Minimag removed fixed landing gear and easy removable stabilo modification
     + Autopilot:   PX4FMU 4.0 in the form of a Pixracer v1.0 R15
     + Actuators:   Regular metal gear servos
-    + GNSS         Ublox M9N GNSS + HMC5883L Magnetometer
+    + GNSS         Ublox M9N GNSS
+    + MAG          External HMC5883L Magnetometer on GNSS device
     + ESC:         CastleCreations Phoenix 35
     + RCRX:        OpenRXSR Receiver
     + AIRSPEED:    Eagletree Airspeed v3 via I2C
     + TELEMETRY:   Si10xx Chip based with firmware allowing PPRZ RSSI
     + CURRENT:     A standard V/I 3DR PowerBrick clone sensor on the default analog ports
-    + RANGER:      MAXBOTICS MB1010, LV-MaxSonar-EZ1 Ultrasonic sensor analog, via RSSI pin, just for fun with PPRZ code validation
+    + RANGER:      MAXBOTICS MB1010, LV-MaxSonar-EZ1 Ultrasonic sensor analog, via RSSI pin
     + MOTOR:       Kv 1300 rpm pro V
     + PROP:        3 Blade 6in x 4.5in Left
 
@@ -20,12 +21,12 @@ NOTES:
      + Servo pins point to FRONT of airframe
      + AP is rotated sideways 90 degrees counterclockwise, so SDcard and USB to top
      + Engine battery voltage and current values via separate sensor
-     + Servos and Sonar powered via ESC, AP via powerbrick
+     + Servos and Sonar powered via BEC of ESC, AP via BEC on powerbrick
      + Flashing the firmware can be done via original PX4 bootloader...
        Simple, USB cable in, upload.. voila PPRZ aircraft on a Pixracer...
      + A GNSS device with ANOTHER magneto on it is used, external...
      + On I2C we have airspeed sensor and external magneto via a I2C split
-     + Separate Aileron outputs for possible flapperon (down) spoileron (up) braking precision landings
+     + Separate Aileron servo outputs pin for possible flapperon (down) spoileron (up) braking precision landings
      + uBlox M9P Pedestrian setting would fit the bill best, lets see...
      ++ Max Altitude[m]: 9000
      ++ Max HorizontalVelocity [m/s]: 30
@@ -120,7 +121,7 @@ NOTES:
       <module name="sonar_adc">
         <configure name="USE_ADC_4" value="TRUE"/>
         <configure name="ADC_SONAR" value="ADC_4"/>
-        <define name="SENSOR_SYNC_SEND_SONAR"/> <!-- TODO Disable after first 10 test flights -->
+        <define name="SENSOR_SYNC_SEND_SONAR"/> <!-- TODO Disable after first 10 test flights and filter is setup well -->
       </module>
 
       <!-- enable if you want it for debugging the raw ADC values, handy... -->
@@ -165,9 +166,9 @@ NOTES:
        <configure name="MODEM_BAUD" value="B57600"/><!-- set B9600 later on for distance since modem will be set to lower *air*rate thus higher sensitivity -->
       </module>
 
-      <module name="pwm_meas">
+     <!--<module name="pwm_meas">
         <define name="USE_PWM_INPUT1" value="PWM_PULSE_TYPE_ACTIVE_LOW"/>
-      </module>
+      </module>-->
 
     </target>
 
@@ -315,8 +316,10 @@ NOTES:
     <!--<module name="control"/>--> <!--Remove the type flag to have classic behavious Eg for uing the Tune Agressive -->
     <module name="control" type="new"/><!-- energy or energyadaptive or type="new" to you gusto -->
     <module name="navigation"/>
-    <!--<module name="imu_quality_assessment"/>--><!-- disable after initial tuning-->
-    <!--<module name="auto1_commands"/> --><!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
+
+    <module name="imu_quality_assessment"/><!-- disable after initial filter tuning-->
+
+    <module name="auto1_commands"/><!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
     <!--<module name="send_imu_mag_current"/>--> <!-- Can be Disabled after one time callibration -->
 
     <module name="baro_ms5611_spi" >
@@ -349,11 +352,12 @@ NOTES:
       <configure name="SDLOGGER_DIRECT_SPI" value="spi2"/>
       <configure name="SDLOGGER_DIRECT_SPI_SLAVE" value="SPI_SLAVE4"/>
       <configure name="SDLOGGER_DIRECT_CONTROL_SWITCH" value="RADIO_AUX3"/>
-      <configure name="LOGGER_LED" value="3"/>
-    </module>-->
+      <configure name="LOGGER_LED" value="4"/> --><!-- (mis)use aftey LED -->
+    <!--</module>-->
 
-   <!--  As in telemetry file to add still...
-    <process name="Logger">
+  <!-- Below As in telemetry file to add still...
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++
+  <process name="Logger">
     <mode name="default">
       <message name="FBW_STATUS"          period="1.2"/>
       <message name="DL_VALUE"            period="0.5"/>
@@ -366,6 +370,7 @@ NOTES:
       <message name="COMMANDS"            period=".002"/>
     </mode>
   </process>
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++
   -->
 
     <module name="nav" type="line"/>
@@ -397,7 +402,7 @@ NOTES:
     <!-- external mag for better heading estimate
     uses the magnetometor that is available on the GPS board
     Thi one is temperature compensated and furtherest away from all other devices
-    so less influens (still to measure raw mag values to check this though )
+    so less influence (still to measure raw mag values to check this though )
     In case we where sloppy builing in the GPS+mag combo, ..we always are ;)
     we nead to compensate this a bit e.g. the pitch
     our luck at least the tree axis are aligned already in hardware :) -->
@@ -733,7 +738,7 @@ The most crucial part for the magnetometer calibration:
     <define name="PROPAGATE_LOW_PASS_RATES" value="TRUE"/>
     <define name="PROPAGATE_LOW_PASS_RATES_MUL" value="19"/>
     <define name="PROPAGATE_LOW_PASS_RATES_DIV" value="20"/>-->
-    
+
     <!-- Values used if no GNSS fix, on 3D fix is updated by geo_mag module -->
     <!-- Better use the geo_mag module if you have a GNSS, else replace the values with your local magnetic field -->
 
