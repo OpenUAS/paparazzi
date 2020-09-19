@@ -8,9 +8,9 @@
       Output values are stored in global variables that can be used in flight plans
     </description>
     <section name="AGL" prefix="AGL_DIST_SONAR_">
-      <define name="ID" value="ABI_BROADCAST" description="Sonar ABI ID"/>
-      <define name="MAX_RANGE" value="5." description="Max detection range in meters"/>
-      <define name="MIN_RANGE" value="0.001" description="Min detection range in meters"/>
+      <define name="ID" value="ABI_BROADCAST" description="Sonar ABI ID to be used"/>
+      <define name="MAX_RANGE" value="5." description="Max wanted detection range in meters"/>
+      <define name="MIN_RANGE" value="0.001" description="Min detection range in meters that one wants or reliably can read from the sensor"/>
       <define name="FILTER" value="0.1" description="Low pass filter time constant"/>
     </section>
   </doc>

@@ -99,9 +99,11 @@ NOTES:
 
       <module name="airspeed_ets">
         <configure name="AIRSPEED_ETS_I2C_DEV" value="i2c1"/>
-        <define name="AIRSPEED_ETS_START_DELAY" value="1"/>
-        <define name="AIRSPEED_ETS_SCALE" value="1.8"/> <!--1.44 default is 1.8-->
-        <define name="AIRSPEED_ETS_OFFSET" value="0"/> <!-- default 0 -->
+        <define name="AIRSPEED_ETS_START_DELAY" value="1.1"/>
+        <define name="AIRSPEED_ETS_SCALE" value="1.8"/>
+        <define name="AIRSPEED_ETS_OFFSET" value="0"/>
+        <define name="AIRSPEED_ETS_USE_FILTER" value="TRUE"/> 
+        <define name="AIRSPEED_ETS_LOWPASS_TAU" value=".20"/>
         <define name="AIRSPEED_ETS_SYNC_SEND"/>  <!-- TODO Disable after first 10 test flights -->
       </module>
 
@@ -301,11 +303,9 @@ NOTES:
       <!-- Some insights https://lists.nongnu.org/archive/html/paparazzi-devel/2013-10/msg00126.html -->
       <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0.0"/> <!-- TODO: determine Default is 30.0 Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
       <!--<define name="AHRS_FC_IMU_ID" value="ABI_BROADCAST"/>--> <!-- ABI sender id of IMU to use Change is you change your AHRS type -->
-      <define name="AHRS_FC_MAG_ID" value="MAG_HMC58XX_SENDER_ID" /><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf  change your AHRS type-->
+      <define name="AHRS_FC_MAG_ID" value="MAG_HMC58XX_SENDER_ID"/><!-- MAG_CALIB_UKF_ID for when using the mag_clib_ukf  change your AHRS type-->
         <!--<define name="AHRS_FC_MAG_ID" value="MAG_QMC5883_SENDER_ID" />--><!-- Use this insted of MAG_HMC5883_SENDER_ID for alternative sensor -->
     </module>
-
-    <!--<module name="imu_quality_assessment"/>-->
 
     <module name="ins" type="alt_float">  <!--Does not work in SIM: extended thus use alt_float"/> -->
       <define name="SONAR_COMPENSATE_ROTATION" value="TRUE"/><!-- compensate AGL for body rotation -->
@@ -317,10 +317,12 @@ NOTES:
     <module name="control" type="new"/><!-- energy or energyadaptive or type="new" to you gusto -->
     <module name="navigation"/>
 
+    <module name="imu_quality_assessment"/><!-- disable after initial filter tuning-->
+
     <module name="auto1_commands"/><!-- FIXME not working in JSBSim target with RC controller steering in Simulator--><!-- NOT finished for NON intermcu to be able to set GEAR and FLAP etc. in stabiized mode for easier testflights -->
     <!--<module name="send_imu_mag_current"/>--> <!-- Can be Disabled after one time callibration -->
 
-    <module name="baro_ms5611_spi" >
+    <module name="baro_ms5611_spi">
       <configure name="MS5611_SPI_DEV" value="spi1"/>
       <configure name="MS5611_SLAVE_IDX" value="SPI_SLAVE3"/>
       <!--<define name="SENSOR_SYNC_SEND"/>-->
@@ -350,7 +352,7 @@ NOTES:
       <configure name="SDLOGGER_DIRECT_SPI" value="spi2"/>
       <configure name="SDLOGGER_DIRECT_SPI_SLAVE" value="SPI_SLAVE4"/>
       <configure name="SDLOGGER_DIRECT_CONTROL_SWITCH" value="RADIO_AUX3"/>
-      <configure name="LOGGER_LED" value="3"/> 
+      <configure name="LOGGER_LED" value="3"/>
     </module>
     -->
 
@@ -502,14 +504,14 @@ NOTES:
 
   <section name="ServoPositions">
     <!--  Just name a few,  value can be used in e.g. flightplan -->
-    <define name="LANDINGGEAR_EXTEND" value="-MAX_PPRZ" />
-    <define name="LANDINGGEAR_RETRACT" value="MAX_PPRZ" />
-    <define name="FLAP_FULL" value="-MAX_PPRZ" />
-    <define name="FLAP_HALF" value="-MAX_PPRZ/2" />
-    <define name="FLAP_NONE" value="0" /><!-- TODO hardware mod use full servo range -->
-    <define name="BEACON_ROTATE" value="MAX_PPRZ" />
-    <define name="BEACON_FLASH" value="0" />
-    <define name="BEACON_OFF" value="-MAX_PPRZ" />
+    <define name="LANDINGGEAR_EXTEND" value="-MAX_PPRZ"/>
+    <define name="LANDINGGEAR_RETRACT" value="MAX_PPRZ"/>
+    <define name="FLAP_FULL" value="-MAX_PPRZ"/>
+    <define name="FLAP_HALF" value="-MAX_PPRZ/2"/>
+    <define name="FLAP_NONE" value="0"/><!-- TODO hardware mod use full servo range -->
+    <define name="BEACON_ROTATE" value="MAX_PPRZ"/>
+    <define name="BEACON_FLASH" value="0"/>
+    <define name="BEACON_OFF" value="-MAX_PPRZ"/>
 
     <define name="SERVO_BRAKE_FULL" value="-MAX_PPRZ"/>
     <define name="SERVO_HATCH_OPEN" value="0"/>
@@ -562,7 +564,7 @@ NOTES:
       Note that in auto2 mode the Flap and Gear are after test then controlable by flightplan conditions e.g landng block extend gear and flap -->
       <set command="YAW" value="@YAW"/>  <!-- TODO: Diable later -->
     <!-- <set command="GEAR" value="@GEAR"/> --> <!-- Can be Used for logging start/stop -->
-    <!-- <set command="FLAP" value="@FLAP"/> --> 
+    <!-- <set command="FLAP" value="@FLAP"/> -->
 
     <!-- To be able to set gain values via RC Transmitter these ones below.
     This way the can keep his eye on a fast moving plane and set somegain values
@@ -690,9 +692,9 @@ The most crucial part for the magnetometer calibration:
 
     <!-- Current compensation for the magentometer currently IN USE -->
     <!-- Calib on 20200414 -->
-    <define name= "MAG_X_CURRENT_COEF" value="-0.677655963532"/>
-    <define name= "MAG_Y_CURRENT_COEF" value="-7.38678178538"/>
-    <define name= "MAG_Z_CURRENT_COEF" value="-5.02116042576"/>
+    <define name="MAG_X_CURRENT_COEF" value="-0.677655963532"/>
+    <define name="MAG_Y_CURRENT_COEF" value="-7.38678178538"/>
+    <define name="MAG_Z_CURRENT_COEF" value="-5.02116042576"/>
 
 <!-- if using the internal magnetometer and set IMU_MPU9250_READ_MAG" to TRUE"/>-->
 <!--
@@ -784,7 +786,7 @@ The most crucial part for the magnetometer calibration:
     <define name="USE_ADC_FILTER" value="TRUE"/>
     <define name="SCALE" value="0.0025375" integer="16"/> <!-- 0.003844734 TODO: MB1010, LV-MaxSonar-EZ1 5V supply scaled to 3.3V 3.3/5 = 0.66 * scale 0.0166-->
     <define name="OFFSET" value="90.0"/> <!-- No unit, value is ADC meas offset. FIXME to a Si Unit. BTW AC is Belly landing no landing gear so height to tarmac almost 0 -->
-    <define name="MAX_RANGE" value="4.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
+    <define name="MAX_RANGE" value="6.0" unit="m"/> <!-- test for various surface, but at lease short grass -->
     <define name="MIN_RANGE" value="0.15" unit="m"/> <!-- ...sadly -->
   </section>
 
@@ -819,7 +821,7 @@ The most crucial part for the magnetometer calibration:
 
      <define name="COURSE_PGAIN" value="0.8"/><!-- TODO: Tune values -->
      <define name="COURSE_DGAIN" value="0.02"/><!-- TODO: Tune values -->
-     <define name="COURSE_TAU" value="0.5"/><!-- TODO: Tune values -->
+     <define name="COURSE_TAU" value="0.7"/><!-- TODO: Tune values -->
      <!--
      The prebank is an adjustment to the roll setting which is performed when the aircraft is
      trying to do a circle and when it is close to the circumference of the circle. This way
@@ -839,19 +841,19 @@ The most crucial part for the magnetometer calibration:
     <define name="PITCH_MAX_SETPOINT" value="40" unit="deg"/>
     <define name="PITCH_MIN_SETPOINT" value="-40" unit="deg"/>
 
-    <define name="PITCH_PGAIN" value="7000"/>
+    <define name="PITCH_PGAIN" value="6000"/>
     <define name="PITCH_DGAIN" value="80"/>
-    <define name="PITCH_IGAIN" value="20"/>
-    <define name="PITCH_KFFA" value="5."/>
-    <define name="PITCH_KFFD" value="0."/>
+    <define name="PITCH_IGAIN" value="2"/>
+    <define name="PITCH_KFFA" value="20."/>
+    <define name="PITCH_KFFD" value="4."/>
 
     <define name="ELEVATOR_OF_ROLL" value="1550" unit="PPRZ_MAX"/>
     <define name="ROLL_SLEW" value="0.3"/><!-- TODO: Determine best value-->
-    <define name="ROLL_ATTITUDE_GAIN" value="8000."/>
+    <define name="ROLL_ATTITUDE_GAIN" value="9000."/>
     <define name="ROLL_RATE_GAIN" value="400."/>
     <define name="ROLL_IGAIN" value="100."/>
     <define name="ROLL_KFFA" value="100"/>
-    <define name="ROLL_KFFD" value="0"/>
+    <define name="ROLL_KFFD" value="10"/>
 
     <!--<define name="PITCH_OF_ROLL" value="4." unit="deg"/>--><!-- TODO: -->
     <define name="AILERON_OF_THROTTLE" value="0.0"/><!-- TODO: in case of some pusher prop over control flap -->
@@ -868,13 +870,13 @@ The most crucial part for the magnetometer calibration:
 
     <!-- Classic -->
     <!-- outer loop proportional gain -->
-    <define name="ALTITUDE_PGAIN" value="0.06"/> <!--unit="(m/s)/m"-->
+    <define name="ALTITUDE_PGAIN" value="0.07"/> <!--unit="(m/s)/m"-->
     <!-- disable climb rate limiter -->
     <define name="AUTO_CLIMB_LIMIT" value="1.7*V_CTL_ALTITUDE_MAX_CLIMB"/>
     <!-- auto throttle -->
     <!-- Cruise throttle + limits -->
-    <define name="AUTO_THROTTLE_MIN_CRUISE_THROTTLE" value="0.45" unit="%"/>  <!-- TODO: Determine -->
-    <define name="AUTO_THROTTLE_NOMINAL_CRUISE_THROTTLE" value="0.55" unit="%"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_MIN_CRUISE_THROTTLE" value="0.50" unit="%"/>  <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_NOMINAL_CRUISE_THROTTLE" value="0.6" unit="%"/> <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_MAX_CRUISE_THROTTLE" value="0.85" unit="%"/>
 
     <define name="AUTO_THROTTLE_LOITER_TRIM" value="1000" unit="pprz_t"/>
@@ -883,13 +885,13 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_THROTTLE_CLIMB_THROTTLE_INCREMENT" value="0.04" unit="%/(m/s)"/> <!-- TODO: Determine -->
 
     <!-- Climb loop (throttle) -->
-    <define name="AUTO_THROTTLE_PGAIN" value="0.04" unit="%/(m/s)"/>
-    <define name="AUTO_THROTTLE_IGAIN" value="0.0"/>
+    <define name="AUTO_THROTTLE_PGAIN" value="0.01" unit="%/(m/s)"/>
+    <define name="AUTO_THROTTLE_IGAIN" value="0.001"/>
     <define name="AUTO_THROTTLE_DGAIN" value="0.001"/>
-    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.05" unit="rad/(m/s)"/> <!-- TODO: Determine -->
+    <define name="AUTO_THROTTLE_PITCH_OF_VZ_PGAIN" value="0.03" unit="rad/(m/s)"/> <!-- TODO: Determine -->
     <define name="AUTO_THROTTLE_NOMINAL_CRUISE_PITCH" value="0." unit="rad"/> <!-- default 0 -->
 
-    <define name="THROTTLE_SLEW_LIMITER" value="0.6" unit="m/s/s"/>  <!-- Limiter for e.g. a powerful motor -->
+    <define name="THROTTLE_SLEW_LIMITER" value="0.8" unit="m/s/s"/>  <!-- Limiter for e.g. a powerful motor -->
 
     <!-- airspeed control -->
     <!-- Best to never set AUTO_AIRSPEED_SETPOINT lower than airframe stall speed if you hate repairs ;) -->
@@ -898,7 +900,7 @@ The most crucial part for the magnetometer calibration:
     <define name="AUTO_AIRSPEED_THROTTLE_PGAIN" value="0.12" unit="%/(m/s)"/>
     <define name="AUTO_AIRSPEED_THROTTLE_DGAIN" value="0.09"/>
     <define name="AUTO_AIRSPEED_THROTTLE_IGAIN" value="0.02"/>
-    <define name="AUTO_AIRSPEED_PITCH_PGAIN" value="0.06" unit="degree/(m/s)"/>
+    <define name="AUTO_AIRSPEED_PITCH_PGAIN" value="0.12" unit="degree/(m/s)"/>
     <define name="AUTO_AIRSPEED_PITCH_DGAIN" value="0.001"/>
     <define name="AUTO_AIRSPEED_PITCH_IGAIN" value="0.02"/>
 
@@ -927,8 +929,8 @@ The most crucial part for the magnetometer calibration:
     <!-- auto pitch inner loop -->
 
     <!-- Climb loop (pitch) -->
-    <define name="AUTO_PITCH_PGAIN" value="0.026"/> <!-- TODO: Determine -->
-    <define name="AUTO_PITCH_DGAIN" value="0.02"/>   <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_PGAIN" value="0.015"/> <!-- TODO: Determine -->
+    <define name="AUTO_PITCH_DGAIN" value="0.01"/>   <!-- TODO: Determine -->
     <define name="AUTO_PITCH_IGAIN" value="0.001"/> <!-- TODO: Determine -->
     <!--define name="AUTO_PITCH_CLIMB_THROTTLE_INCREMENT" value="0.14"/-->
     <define name="AUTO_PITCH_MAX_PITCH" value="25" unit="deg"/><!-- TODO: Determine default and best -->
