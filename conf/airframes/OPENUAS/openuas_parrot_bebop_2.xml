@@ -236,6 +236,7 @@
 
     <!-- When flying multiple airframes over eg a mesh they can have info of eachothers position etc. -->
     <module name="traffic_info">
+
     </module>
 <!--
     <module name="tcas">

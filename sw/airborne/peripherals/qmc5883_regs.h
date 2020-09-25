@@ -53,8 +53,8 @@ only relative temperature value is accurate.
 The temperature coefficient is about 100 LSB/°C
 */
 
-//#define QMC5883_REG_TEMPM  0x07  /* Not so useful, therefore not implemented */
-//#define QMC5883_REG_TEMPL  0x08  /* Not so useful, therefore not implemented */
+//#define QMC5883_REG_TEMPM  0x07  /* Not so useful ATM, therefore not implemented */
+//#define QMC5883_REG_TEMPL  0x08  /* Not so useful ATM, therefore not implemented */
 
 /* Registers Config */
 #define QMC5883_REG_CONTROL_1    0x09 

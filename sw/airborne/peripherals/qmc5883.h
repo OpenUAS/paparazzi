@@ -40,7 +40,7 @@
 /* Address and register definitions */
 #include "peripherals/qmc5883_regs.h"
 
-extern int debuggy;
+extern int32_t debuggy;
 struct Qmc5883Config {
   uint8_t allconfigbits;
   /*

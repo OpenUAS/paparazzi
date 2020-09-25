@@ -126,6 +126,7 @@ void mag_qmc5883_module_event(void)
 void mag_qmc5883_report(void)
 {
   //debuggy = (int32_t)(mag_qmc5883.init_status);
+  debuggy = rand() % 20;
   struct Int32Vect3 mag = {
     QMC5883_CHAN_X_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_X]),
     QMC5883_CHAN_Y_SIGN(int32_t)(mag_qmc5883.data.value[QMC5883_CHAN_Y]),
