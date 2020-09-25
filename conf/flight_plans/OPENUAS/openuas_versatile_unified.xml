@@ -120,7 +120,7 @@ Should be unified for Hybrid, FW and rotorcraft
   </variables>
   <exceptions>
     <exception cond="And((datalink_time) > 300, autopilot.launch > 0) " deroute="Standby"/>
-    <exception cond="LOW_BAT_LEVEL > PowerVoltage()" deroute="Standby"/>
+    <exception cond="LOW_BAT_LEVEL > PowerVoltage()" deroute="Standby"/><!-- if there is no connection, no RC and batt empty motor stops, AP still works, so still a circled landing at standby no AC loss-->
     <exception cond="Or(! InsideMissionBoundary(GetPosX(), GetPosY()), GetPosAlt() > GetAltRef() + 600) && !(nav_block == IndexOfBlock('Wait GPS')) && !(nav_block == IndexOfBlock('Geo init')) && !(nav_block == IndexOfBlock('Waiting for RC Transmitter')) && !(nav_block == IndexOfBlock('Takeoff')) && !(nav_block == IndexOfBlock('land')) && !(nav_block == IndexOfBlock('Final')) && !(nav_block == IndexOfBlock('Flare'))" deroute="Standby"/>
   </exceptions>
   <blocks>
@@ -150,7 +150,8 @@ Should be unified for Hybrid, FW and rotorcraft
     <block name="Waiting for RC Transmitter">
      <!-- <attitude roll="0" throttle="0" vmode="throttle"/>--> <!-- To disable wriggly Actuators in Auto2, and throttle to 0 just in case -->
       <!-- If you have an RC transmitter backup, one must have the TX at least switched on once. This check can be disabled if everything works 100% in Auto2 and you have no TX -->
-      <while cond="RCLost()"/> <!-- To make sure we do not hop to AUTO2 and motor could starts running, at least switch on then maybe off if you want to -->
+      <while cond="RCLost()"/> <!-- To make sure we do not hop to AUTO2 yet and motor (theoretically) could start, at least switch on then maybe off if you want to -->
+      <!-- thee is ofcourse still the launch value limited by either catapult or takeoff_detect modules -->
     </block>
 
     <!-- A Choice...
@@ -166,18 +167,18 @@ Should be unified for Hybrid, FW and rotorcraft
 
     <block name="ReadyForDeparture" >
       <!-- <set value="0" var="ap_state->commands[COMMAND_CAMBER]"/> -->
-      <!-- <set value="0" var="ap_state->commands[COMMAND_BRAKE]"/> -->
+      <!--<set value="0" var="ap_state->commands[COMMAND_BRAKE]"/> -->
       <set var="v_ctl_speed_mode" value="V_CTL_SPEED_AIRSPEED" /><!-- set the preferred flight mode -->
-      <!-- Must have an RC for this flightplan and on at least for the start, we wait till the throttle is high -->
+      <!-- Must have an RC for this flightplan and switched on, at least for the start, we wait till the throttle is high -->
       <exception cond="ThrottleHigh()" deroute="Takeoff"/>
-      <!-- The nav_takeoff_pitch_setting makes it visible for we are ready for it-->
+      <!-- The nav_takeoff_pitch_setting makes it visible on the elevator/elevon that we are ready for it-->
     </block>
 
     <block key="t" name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png" group="Ops">
       <!-- <set var="ap_state->commands[COMMAND_LIGHT]" value="PPRZ_MAX"/> -->
       <set var="autopilot.kill_throttle" value="0"/>
       <!--<var="autopilot.launch" set value="1"  />-->
-      <while cond="1 > autopilot.launch"/> <!-- Setting of launch performed with takeoff_detect module disable -->
+      <while cond="1 > autopilot.launch"/> <!-- Setting of launch performed with takeoff_detect module -->
       <set var="autopilot.flight_time" value="0"/>
       <!--<call_once fun="AirbrakesOff()"/>-->
       <set var="v_ctl_auto_airspeed_setpoint" value="nav_airspeed_nominal_setting" /><!--or RACE_AIRSPEED? -->

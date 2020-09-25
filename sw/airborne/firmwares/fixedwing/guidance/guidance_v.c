@@ -111,8 +111,12 @@ float v_ctl_auto_groundspeed_igain;
 float v_ctl_auto_groundspeed_sum_err;
 #define V_CTL_AUTO_AIRSPEED_MAX_SUM_ERR 200
 #define V_CTL_AUTO_GROUNDSPEED_MAX_SUM_ERR 100
+#ifndef V_CTL_AUTO_CLIMB_LIMIT
 #define V_CTL_AUTO_CLIMB_LIMIT 0.5/4.0 // m/s/s
+#endif
+#ifndef V_CTL_AUTO_AGR_CLIMB_GAIN
 #define V_CTL_AUTO_AGR_CLIMB_GAIN 2.0 // altitude gain multiplier while in aggressive climb mode
+#endif
 #endif
 
 #ifndef V_CTL_ALTITUDE_PRE_CLIMB_CORRECTION

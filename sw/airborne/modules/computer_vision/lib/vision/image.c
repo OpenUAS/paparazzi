@@ -24,9 +24,12 @@
  * Image helper functions, like resizing, color filter, converters...
  */
 
-#include "image.h"
 #include <stdlib.h>
 #include <string.h>
+#ifdef USE_MEMALIGN
+#include <malloc.h>
+#endif
+#include "image.h"
 #include "lucas_kanade.h"
 
 #ifndef CACHE_LINE_LENGTH
@@ -60,8 +63,14 @@ void image_create(struct image_t *img, uint16_t width, uint16_t height, enum ima
     img->buf_size = sizeof(uint8_t) * width * height;
   }
 
-  // aligned memory slightly speeds up any later copies
+  // aligned_alloc used since aligned memory could slightly speed up any later copies
+  // However for compiling for the ARdrone2 a newer compiler can not be used the target for libc would be incompatible
+  // there is no (simple?) fix for this. So if the code should run onboard ARDRone2, use the older method
+  #ifndef USE_MEMALIGN
   img->buf = aligned_alloc(CACHE_LINE_LENGTH, img->buf_size + (CACHE_LINE_LENGTH - img->buf_size % CACHE_LINE_LENGTH) % CACHE_LINE_LENGTH);
+  #else
+  img->buf = memalign(CACHE_LINE_LENGTH, img->buf_size + (CACHE_LINE_LENGTH - img->buf_size % CACHE_LINE_LENGTH) % CACHE_LINE_LENGTH);
+  #endif
 }
 
 /**
@@ -763,7 +772,7 @@ void image_gradient_pixel(struct image_t *img, struct point_t *loc, int method, 
 {
   // create the simple and sobel filter only once:
 
-  int gradient_x, gradient_y, index;
+  int gradient_x, gradient_y;
   gradient_x = 0;
   gradient_y = 0;
 
@@ -774,22 +783,24 @@ void image_gradient_pixel(struct image_t *img, struct point_t *loc, int method, 
 
   // check if all pixels will fall in the image:
   if (loc->x >= 1 && (loc->x + 1) < img->w && loc->y >= 1 && (loc->y + 1) < img->h) {
+    int i;
     if (method == 0) {
 
       // *************
       // Simple method
       // *************
 
+
       // dx:
-      index = loc->y * img->w * pixel_width + (loc->x - 1) * pixel_width;
-      gradient_x -= (int) img_buf[index + add_ind];
-      index = loc->y * img->w * pixel_width + (loc->x + 1) * pixel_width;
-      gradient_x += (int) img_buf[index + add_ind];
+      i = loc->y * img->w * pixel_width + (loc->x - 1) * pixel_width;
+      gradient_x -= (int) img_buf[i + add_ind];
+      i = loc->y * img->w * pixel_width + (loc->x + 1) * pixel_width;
+      gradient_x += (int) img_buf[i + add_ind];
       // dy:
-      index = (loc->y - 1) * img->w * pixel_width + loc->x * pixel_width;
-      gradient_y -= (int) img_buf[index + add_ind];
-      index = (loc->y + 1) * img->w * pixel_width + loc->x * pixel_width;
-      gradient_y += (int) img_buf[index + add_ind];
+      i = (loc->y - 1) * img->w * pixel_width + loc->x * pixel_width;
+      gradient_y -= (int) img_buf[i + add_ind];
+      i = (loc->y + 1) * img->w * pixel_width + loc->x * pixel_width;
+      gradient_y += (int) img_buf[i + add_ind];
     } else {
 
       // *****
@@ -802,13 +813,13 @@ void image_gradient_pixel(struct image_t *img, struct point_t *loc, int method, 
       int filt_ind_x;
       for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
-          index = (loc->y + y) * img->w * pixel_width + (loc->x + x) * pixel_width;
+          i = (loc->y + y) * img->w * pixel_width + (loc->x + x) * pixel_width;
           if (x != 0) {
             filt_ind_x = (x + 1) % 3 + (y + 1) * 3;
-            gradient_x += Sobel[filt_ind_x] * (int) img_buf[index + add_ind];
+            gradient_x += Sobel[filt_ind_x] * (int) img_buf[i + add_ind];
           }
           if (y != 0) {
-            gradient_y += Sobel[filt_ind_y] * (int) img_buf[index + add_ind];
+            gradient_y += Sobel[filt_ind_y] * (int) img_buf[i + add_ind];
           }
           filt_ind_y++;
         }

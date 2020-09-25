@@ -47,11 +47,12 @@
 #define LOGGER_LED_OFF {}
 #endif
 
-#ifndef TELEMETRY_MODE_Main_empty
-#warning You need to define a main telemetry mode named "empty" without any \
+#if (!defined TELEMETRY_MODE_Main_empty) || (!defined TELEMETRY_MODE_Ap_empty)
+#warning You need to define a telemetry mode named "empty" without any \
   messages in your config file in /conf/telemetry/<your_config.xml>. \
   \
-  Add <mode name="empty"></mode> to your main telemetry process.
+  Add <mode name="empty"></mode> to your main or for fixedwing the Ap telemetry process.\
+
 #endif
 
 #ifndef TELEMETRY_PROCESS_Logger
@@ -351,7 +352,11 @@ void sdlogger_spi_direct_command(void)
     sdlogger_spi.status = SDLogger_GettingIndexForDownload;
   }
   else if (sdcard1.status == SDCard_Idle && sdlogger_spi.command == 255) {
-    telemetry_mode_Main = TELEMETRY_MODE_Main_empty;
+    #ifdef TELEMETRY_MODE_Main_empty
+      telemetry_mode_Main = TELEMETRY_MODE_Main_empty;
+    #else
+      telemetry_mode_Ap = TELEMETRY_MODE_Ap_empty;
+    #endif
     LOGGER_LED_ON;
     sdcard_spi_read_block(&sdcard1, 0x00002000, NULL);
     sdlogger_spi.download_length = 0;

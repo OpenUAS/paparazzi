@@ -28,13 +28,6 @@
  * Actuator driver for ardrone2 version
  */
 
-#include "subsystems/actuators.h"
-#include "actuators.h"
-#include "mcu_periph/gpio.h"
-#include "led_hw.h"
-#include "mcu_periph/sys_time.h"
-#include "navdata.h" // for full_write
-
 #include <stdio.h>   /* Standard input/output definitions */
 #include <string.h>  /* String function definitions */
 #include <unistd.h>  /* UNIX standard function definitions */
@@ -42,6 +35,13 @@
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
 #include <stdint.h>
+
+#include "subsystems/actuators.h"
+#include "actuators.h"
+#include "mcu_periph/gpio.h"
+#include "led_hw.h"
+#include "mcu_periph/sys_time.h"
+#include "navdata.h" // for full_write
 
 /**
  * Power consumption @ 11V all 4 motors running

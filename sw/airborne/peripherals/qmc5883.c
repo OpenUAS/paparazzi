@@ -239,7 +239,7 @@ void qmc5883_event(struct Qmc5883 *qmc)
     if (qmc->i2c_trans.status == I2CTransFailed) {
       qmc->init_status--;
       qmc->i2c_trans.status = I2CTransDone;
-      qmc5883_send_config(qmc); // Retry config (TODO max retry)
+      qmc5883_send_config(qmc); // Retry config (TODO: add max retry code)
     }
   }
 }
