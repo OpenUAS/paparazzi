@@ -124,12 +124,12 @@
       <configure name="MAG_QMC5883_I2C_DEV" value="i2c2"/>
       <define name="MODULE_QMC5883_SYNC_SEND" value="TRUE"/>
       <!--<define name="MODULE_QMC5883_UPDATE_AHRS" value="TRUE"/>-->
-      <define name="QMC5883_CHAN_X" value="1"/>
+      <!--<define name="QMC5883_CHAN_X" value="1"/>
       <define name="QMC5883_CHAN_Y" value="0"/>
       <define name="QMC5883_CHAN_Z" value="2"/>
       <define name="QMC5883_CHAN_X_SIGN" value="-"/>
       <define name="QMC5883_CHAN_Y_SIGN" value="+"/>
-      <define name="QMC5883_CHAN_Z_SIGN" value="+"/>
+      <define name="QMC5883_CHAN_Z_SIGN" value="+"/>-->
     </module>
 
   </firmware>
@@ -271,7 +271,6 @@ The most crucial part for the magnetometer calibration:
   </section>
 
   <section name="INS"> <!-- prefix="INS_"> -->
-    <!--  For those super precice target landings ;) well better build in a uBLox M8P-->
     <define name="INS_BODY_TO_GPS_X" value="0.09" unit="m"/>
     <define name="INS_BODY_TO_GPS_Y" value="0.0" unit="m"/>
     <define name="INS_BODY_TO_GPS_Z" value="0.15" unit="m"/>

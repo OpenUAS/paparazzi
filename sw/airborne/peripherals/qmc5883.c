@@ -23,7 +23,7 @@
  * @file peripherals/qmc5883.c
  *
  * Driver for QMC5883 magnetometer.
- * @todo DRDY/IRQ handling
+ * @todo DRDY/IRQ handling not implemented
  */
 
 #include "peripherals/qmc5883.h"
@@ -154,10 +154,10 @@ static void qmc5883_send_config(struct Qmc5883 *qmc)
       //qmc5883_i2c_tx_reg(qmc, QMC5883_REG_CONTROL_1, 0x1D);
       //qmc5883_i2c_tx_reg(qmc, QMC5883_REG_CONTROL_1, 0x1D);
        qmc->init_status++;
-       debuggy = 10;
+       debuggy = 3;
        break;
      case QMC_CONF_DONE:
-      debuggy = 22;
+      debuggy = 6;
       qmc->initialized = true;
       qmc->i2c_trans.status = I2CTransDone;
       break;
@@ -184,7 +184,7 @@ void qmc5883_start_configure(struct Qmc5883 *qmc)
 void qmc5883_read(struct Qmc5883 *qmc)
 {
   if (qmc->initialized && qmc->i2c_trans.status == I2CTransDone) {
-    debuggy = 10 + rand() % 10; //stuffed in Z as debug to see if we get here every time 
+    debuggy = 0 + rand() % 10; //stuffed in Z as debug to see if we get here every time 
     qmc->i2c_trans.buf[0] = QMC5883_REG_DATXL;
     qmc->i2c_trans.type = I2CTransRx;
     qmc->i2c_trans.len_r = 6;
@@ -199,17 +199,17 @@ void qmc5883_read(struct Qmc5883 *qmc)
 
 void qmc5883_event(struct Qmc5883 *qmc)
 {
-  debuggy = 40+rand() % 10;
+  debuggy = 50+rand() % 10;
   if (qmc->initialized) {
-    debuggy = 50 + rand() % 10;
+    debuggy = 100 + rand() % 10;
     if (qmc->i2c_trans.status == I2CTransFailed) {
       qmc->i2c_trans.status = I2CTransDone;
     } else if (qmc->i2c_trans.status == I2CTransSuccess) {
-      debuggy = 50 + rand() % 10;
+      debuggy = 150 + rand() % 10;
       //if (qmc->type == QMC_TYPE_DB5883) {
         qmc->data.vect.x = Int16FromBuf(qmc->i2c_trans.buf, 0);
         qmc->data.vect.y = Int16FromBuf(qmc->i2c_trans.buf, 2);
-        qmc->data.vect.z = Int16FromBuf(qmc->i2c_trans.buf, 4);
+        qmc->data.vect.z = 44;//Int16FromBuf(qmc->i2c_trans.buf, 4);
       //}
       /* QMC_DA_5883 has xzy order of axes in returned data */
       //else {
